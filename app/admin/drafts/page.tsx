@@ -15,6 +15,7 @@ import {
   ExternalLink,
   AlertCircle,
   RefreshCw,
+  KeyRound,
 } from "lucide-react"
 import Link from "next/link"
 
@@ -45,6 +46,9 @@ export default function AdminDraftsPage() {
   const [creating, setCreating] = useState(false)
   const [showCreate, setShowCreate] = useState(false)
   const [codes, setCodes] = useState<SeatCode[]>([])
+  const [viewingSessionId, setViewingSessionId] = useState<string | null>(null)
+  const [viewCodes, setViewCodes] = useState<SeatCode[]>([])
+  const [viewCodesLoading, setViewCodesLoading] = useState(false)
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -126,6 +130,25 @@ export default function AdminDraftsPage() {
       fetchData()
     } catch {
       setError("Network error")
+    }
+  }
+
+  const handleViewCodes = async (sessionId: string) => {
+    if (viewingSessionId === sessionId) {
+      setViewingSessionId(null)
+      setViewCodes([])
+      return
+    }
+    setViewCodesLoading(true)
+    setViewingSessionId(sessionId)
+    try {
+      const res = await fetch(`/api/draft/${sessionId}/codes`)
+      const data = await res.json()
+      setViewCodes(data.codes ?? [])
+    } catch {
+      setError("Failed to load codes")
+    } finally {
+      setViewCodesLoading(false)
     }
   }
 
@@ -300,6 +323,14 @@ export default function AdminDraftsPage() {
                         <Play className="h-3.5 w-3.5 mr-1" /> Resume
                       </Button>
                     )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleViewCodes(sess.id)}
+                      className={viewingSessionId === sess.id ? "border-yellow-500/50 text-yellow-400" : ""}
+                    >
+                      <KeyRound className="h-3.5 w-3.5 mr-1" /> Codes
+                    </Button>
                     <Button size="sm" variant="outline" asChild>
                       <Link href={`/draft/${sess.id}`} target="_blank">
                         <ExternalLink className="h-3.5 w-3.5 mr-1" /> Spectator
@@ -307,6 +338,44 @@ export default function AdminDraftsPage() {
                     </Button>
                   </div>
                 </div>
+
+                {/* Expandable Codes Panel */}
+                {viewingSessionId === sess.id && (
+                  <div className="mt-4 pt-4 border-t border-slate-700">
+                    {viewCodesLoading ? (
+                      <div className="flex items-center gap-2 text-slate-400 text-sm py-2">
+                        <Loader2 className="h-4 w-4 animate-spin" /> Loading codes...
+                      </div>
+                    ) : viewCodes.length === 0 ? (
+                      <p className="text-sm text-slate-500 py-2">No codes found for this session.</p>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {viewCodes.map((c: any) => (
+                          <div
+                            key={c.code}
+                            className={`flex items-center justify-between bg-slate-900 rounded-lg px-4 py-2.5 border ${c.used ? "border-slate-600 opacity-60" : "border-slate-700"}`}
+                          >
+                            <div>
+                              <p className="text-xs text-slate-400">
+                                {c.seat_label}
+                                {c.used && <span className="ml-2 text-yellow-500">(Used)</span>}
+                              </p>
+                              <p className="font-mono text-base text-slate-100 tracking-widest">{c.code}</p>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => copyCode(c.code)}
+                              className="text-slate-400 hover:text-white"
+                            >
+                              {copiedCode === c.code ? <CheckCircle2 className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )
           })}

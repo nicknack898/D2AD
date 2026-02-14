@@ -1,8 +1,11 @@
 "use client"
 
+import { useState, useCallback } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Gavel, Eye, KeyRound, Clock, CheckCircle2, Radio } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Gavel, Eye, KeyRound, Clock, CheckCircle2, Radio, Loader2, AlertCircle } from "lucide-react"
 import Link from "next/link"
 import useSWR from "swr"
 
@@ -16,12 +19,63 @@ const statusConfig: Record<string, { label: string; color: string; icon: typeof 
 }
 
 export default function DraftListClient() {
+  const router = useRouter()
   const { data, isLoading } = useSWR("/api/draft/list", fetcher, { refreshInterval: 10000 })
   const sessions = data?.data ?? []
+
+  const [code, setCode] = useState("")
+  const [codeLoading, setCodeLoading] = useState(false)
+  const [codeError, setCodeError] = useState<string | null>(null)
 
   const liveSessions = sessions.filter((s: any) => s.status === "active" || s.status === "paused")
   const upcomingSessions = sessions.filter((s: any) => s.status === "pending")
   const pastSessions = sessions.filter((s: any) => s.status === "completed")
+
+  const handleCodeRedeem = useCallback(async () => {
+    if (!code.trim()) return
+    setCodeLoading(true)
+    setCodeError(null)
+
+    try {
+      // Try to redeem code against each non-completed session
+      const activeSessions = sessions.filter((s: any) => s.status !== "completed")
+
+      if (activeSessions.length === 0) {
+        setCodeError("No active draft sessions found")
+        setCodeLoading(false)
+        return
+      }
+
+      for (const sess of activeSessions) {
+        const res = await fetch(`/api/draft/${sess.id}/redeem`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: code.trim().toUpperCase() }),
+        })
+
+        if (res.ok) {
+          // Code was valid for this session, navigate to captain panel
+          router.push(`/draft/${sess.id}/captain`)
+          return
+        }
+
+        const data = await res.json()
+        // If the code was already used, stop trying
+        if (res.status === 409) {
+          setCodeError(data.error ?? "This code has already been used")
+          setCodeLoading(false)
+          return
+        }
+        // If it was a 404 (wrong code for this session), try the next session
+      }
+
+      setCodeError("Invalid code. Please check and try again.")
+    } catch {
+      setCodeError("Network error, please try again")
+    } finally {
+      setCodeLoading(false)
+    }
+  }, [code, sessions, router])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
@@ -40,15 +94,45 @@ export default function DraftListClient() {
         </div>
 
         {/* Captain Code Entry */}
-        <Card className="bg-slate-800/60 border-slate-700 mb-10">
-          <CardContent className="py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
+        <Card className="bg-slate-800/60 border-blue-500/20 border mb-10">
+          <CardContent className="py-6">
+            <div className="flex items-center gap-3 mb-4">
               <KeyRound className="h-5 w-5 text-yellow-400 shrink-0" />
               <div>
                 <p className="text-white font-semibold text-sm">Have a captain code?</p>
-                <p className="text-slate-400 text-xs">Enter the Draft Room for a specific session from the event page or admin.</p>
+                <p className="text-slate-400 text-xs">Enter your one-time code to join the captain panel for bidding.</p>
               </div>
             </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Input
+                placeholder="Enter captain code (e.g. A1B2C3D4)"
+                value={code}
+                onChange={(e) => { setCode(e.target.value.toUpperCase()); setCodeError(null) }}
+                onKeyDown={(e) => e.key === "Enter" && handleCodeRedeem()}
+                className="bg-slate-900 border-slate-600 font-mono text-center text-lg tracking-widest uppercase flex-1"
+                maxLength={20}
+              />
+              <Button
+                onClick={handleCodeRedeem}
+                disabled={codeLoading || !code.trim()}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6"
+              >
+                {codeLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <KeyRound className="h-4 w-4 mr-2" />
+                    Enter Draft
+                  </>
+                )}
+              </Button>
+            </div>
+            {codeError && (
+              <div className="flex items-center gap-2 text-red-400 text-sm mt-3">
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                <span>{codeError}</span>
+              </div>
+            )}
           </CardContent>
         </Card>
 
