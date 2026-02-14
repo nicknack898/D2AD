@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { LayoutDashboard, Users, Gamepad2, Calendar, Settings, Trophy, UserCheck, LogOut } from "lucide-react"
+import { LayoutDashboard, Users, Gavel, Calendar, Settings, UserCheck, LogOut } from "lucide-react"
 import Image from "next/image"
 
 const sidebarNavItems = [
@@ -24,6 +24,11 @@ const sidebarNavItems = [
     title: "Player Pool",
     href: "/admin/player-pool",
     icon: UserCheck,
+  },
+  {
+    title: "Draft Room",
+    href: "/admin/drafts",
+    icon: Gavel,
   },
   {
     title: "Teams",

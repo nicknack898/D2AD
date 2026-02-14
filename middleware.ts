@@ -15,10 +15,14 @@ export function middleware(request: NextRequest) {
   response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
 
   // Add a conservative CSP in production
+  // Allow Supabase Realtime WebSocket connections for the Draft Room
   if (process.env.NODE_ENV === "production") {
+    const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
+      ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).host
+      : "*.supabase.co"
     response.headers.set(
       "Content-Security-Policy",
-      "default-src 'self'; connect-src 'self'; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:;"
+      `default-src 'self'; connect-src 'self' https://${supabaseHost} wss://${supabaseHost}; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:;`
     )
   }
 
