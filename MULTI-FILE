@@ -1,0 +1,133 @@
+// app/actions/profile-actions.ts
+'use server'
+
+import { revalidatePath } from 'next/cache'
+import { supabaseServer } from '@/lib/supabase-server'
+import { playerSchema } from '@/lib/validation'
+
+type ProfileFormData = {
+  name: string
+  email: string
+  phone: string
+  area: string
+  areaOther?: string
+  timePreferences: string[]
+  dayPreferences: string[]
+  skillLevel: string
+}
+
+export async function updatePlayerProfile(formData: ProfileFormData) {
+  try {
+    if (!supabaseServer) {
+      return { success: false, message: 'Database connection unavailable.' }
+    }
+
+    const parsed = playerSchema.safeParse({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      area: formData.area,
+      areaOther: formData.areaOther,
+      timePreferences: formData.timePreferences,
+      dayPreferences: formData.dayPreferences,
+      skillLevel: formData.skillLevel,
+    })
+
+    if (!parsed.success) {
+      return {
+        success: false,
+        message: 'Invalid profile data',
+        issues: parsed.error.flatten(),
+      }
+    }
+
+    const { error: upsertError } = await supabaseServer
+      .from('players')
+      .upsert(
+        {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          area: formData.area,
+          area_other: formData.area === 'Other' ? formData.areaOther ?? null : null,
+          time_preferences: formData.timePreferences,
+          day_preferences: formData.dayPreferences,
+          skill_level: formData.skillLevel,
+          profile_completed: true,
+        },
+        { onConflict: 'email' },
+      )
+
+    if (upsertError) {
+      console.error('Error upserting player profile:', upsertError)
+      return { success: false, message: 'Error saving player profile' }
+    }
+
+    revalidatePath('/profile')
+    return { success: true, message: 'Profile updated successfully' }
+  } catch (error) {
+    console.error('Unexpected error updating profile:', error)
+    return { success: false, message: 'An unexpected error occurred' }
+  }
+}
+
+export async function getPlayerProfile(email: string) {
+  try {
+    if (!supabaseServer) return null
+    const { data, error } = await supabaseServer
+      .from('players')
+      .select('*')
+      .eq('email', email)
+      .maybeSingle()
+
+    if (error) {
+      console.error('Error fetching player profile:', error)
+      return null
+    }
+    return data
+  } catch (error) {
+    console.error('Unexpected error fetching profile:', error)
+    return null
+  }
+}
+
+// components/navbar.tsx
+import Link from 'next/link'
+
+const Navbar = () => {
+  return (
+    <nav>
+      <ul>
+        <li>
+          <Link href="/">Home</Link>
+        </li>
+        <li>
+          <Link href="/about">About</Link>
+        </li>
+        <li>
+          <Link href="/contact">Contact</Link>
+        </li>
+        <li>
+          <Link href="https://discord.gg/W6fCSMzzPz">Discord</Link>
+        </li>
+      </ul>
+    </nav>
+  )
+}
+
+export default Navbar
+
+// app/page.tsx
+import Link from 'next/link'
+
+const HomePage = () => {
+  return (
+    <div>
+      <h1>Welcome to Our Website</h1>
+      <p>Join our community on Discord:</p>
+      <Link href="https://discord.gg/W6fCSMzzPz">Discord</Link>
+    </div>
+  )
+}
+
+export default HomePage
