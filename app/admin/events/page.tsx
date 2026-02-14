@@ -48,7 +48,7 @@ const defaultForm = {
   status: "draft",
   registration_opens_at: "",
   registration_closes_at: "",
-  event_date: "",
+  starts_at: "",
 }
 
 export default function AdminEventsPage() {
@@ -76,7 +76,7 @@ export default function AdminEventsPage() {
       status: event.status,
       registration_opens_at: event.registration_opens_at?.slice(0, 16) || "",
       registration_closes_at: event.registration_closes_at?.slice(0, 16) || "",
-      event_date: event.event_date?.slice(0, 16) || "",
+      starts_at: event.starts_at?.slice(0, 16) || "",
     })
     setEditingSlug(event.slug)
     setError("")
@@ -92,7 +92,7 @@ export default function AdminEventsPage() {
       ...form,
       registration_opens_at: form.registration_opens_at ? new Date(form.registration_opens_at).toISOString() : null,
       registration_closes_at: form.registration_closes_at ? new Date(form.registration_closes_at).toISOString() : null,
-      event_date: form.event_date ? new Date(form.event_date).toISOString() : null,
+      starts_at: form.starts_at ? new Date(form.starts_at).toISOString() : null,
     }
 
     try {
@@ -215,11 +215,11 @@ export default function AdminEventsPage() {
                 </div>
               </div>
               <div>
-                <label className="text-sm text-slate-300 mb-1 block">Event Date</label>
+                <label className="text-sm text-slate-300 mb-1 block">Starts At</label>
                 <Input
                   type="datetime-local"
-                  value={form.event_date}
-                  onChange={(e) => setForm({ ...form, event_date: e.target.value })}
+                  value={form.starts_at}
+                  onChange={(e) => setForm({ ...form, starts_at: e.target.value })}
                   className="bg-slate-700/50 border-slate-600 text-white"
                 />
               </div>

@@ -91,10 +91,10 @@ export default function EventsClient() {
                               <p className="text-slate-400 text-sm line-clamp-3">{event.description}</p>
                             )}
                             <div className="flex flex-wrap gap-4 text-xs text-slate-500 pt-2">
-                              {event.event_date && (
+                              {event.starts_at && (
                                 <span className="flex items-center gap-1">
                                   <Clock className="h-3.5 w-3.5" />
-                                  {formatDate(event.event_date)}
+                                  {formatDate(event.starts_at)}
                                 </span>
                               )}
                               {event.registration_closes_at && event.status === "registration_open" && (
@@ -137,7 +137,7 @@ export default function EventsClient() {
                             <CardTitle className="text-slate-300 text-lg mt-2">{event.name}</CardTitle>
                           </CardHeader>
                           <CardContent>
-                            <span className="text-xs text-slate-500">{formatDate(event.event_date)}</span>
+                            <span className="text-xs text-slate-500">{formatDate(event.starts_at)}</span>
                           </CardContent>
                         </Card>
                       </Link>

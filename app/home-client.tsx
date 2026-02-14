@@ -120,10 +120,10 @@ export default function HomeClient() {
                           >
                             {st.label}
                           </span>
-                          {event.event_date && (
+                          {event.starts_at && (
                             <span className="text-xs text-slate-500 flex items-center gap-1">
                               <Clock className="h-3 w-3" />
-                              {formatDate(event.event_date)}
+                              {formatDate(event.starts_at)}
                             </span>
                           )}
                         </div>

@@ -144,9 +144,9 @@ export default function EventDetailClient({ slug }: { slug: string }) {
             {event.name}
           </h1>
           <div className="flex flex-wrap gap-6 text-sm text-slate-400">
-            {event.event_date && (
+            {event.starts_at && (
               <span className="flex items-center gap-1.5">
-                <Calendar className="h-4 w-4" /> {formatDate(event.event_date)}
+                <Calendar className="h-4 w-4" /> {formatDate(event.starts_at)}
               </span>
             )}
             {event.registration_closes_at && (

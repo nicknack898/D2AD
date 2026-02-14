@@ -52,7 +52,8 @@ export const eventSchema = z.object({
   status: z.enum(["draft", "registration_open", "registration_closed", "in_progress", "completed", "cancelled"]).default("draft"),
   registration_opens_at: z.string().datetime().optional().nullable(),
   registration_closes_at: z.string().datetime().optional().nullable(),
-  event_date: z.string().datetime().optional().nullable(),
+  starts_at: z.string().datetime().optional().nullable(),
+  ends_at: z.string().datetime().optional().nullable(),
   rules_json: z.any().optional().nullable(),
 })
 

@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     let query = supabase
       .from("events")
       .select("*")
-      .order("event_date", { ascending: true, nullsFirst: false })
+      .order("starts_at", { ascending: true, nullsFirst: false })
 
     if (status) {
       query = query.eq("status", status)
