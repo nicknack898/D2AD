@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Gavel, MessageCircle, Menu, X } from "lucide-react"
+import { Gavel, Shield, Menu, X } from "lucide-react"
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -34,6 +34,10 @@ export default function Navbar() {
             </Link>
             <Link href="https://discord.gg/d2ad" target="_blank" rel="noopener noreferrer" className="text-slate-300 hover:text-white transition-colors duration-200 text-sm font-medium">
               Discord
+            </Link>
+            <Link href="/admin" className="text-slate-500 hover:text-slate-300 transition-colors duration-200 text-sm flex items-center gap-1">
+              <Shield className="h-3 w-3" />
+              Admin
             </Link>
             <Button
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg text-sm"
@@ -80,6 +84,14 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Discord
+              </Link>
+              <Link
+                href="/admin"
+                className="flex items-center gap-2 px-3 py-2 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded-md transition-colors duration-200 text-sm"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Shield className="h-3.5 w-3.5" />
+                Admin
               </Link>
               <div className="px-3 py-2">
                 <Button

@@ -4,13 +4,21 @@ import { useState, useCallback } from "react"
 import { useDraftRealtime, type DraftLot, type DraftSeat } from "@/hooks/use-draft-realtime"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { KeyRound, Gavel, Loader2, CheckCircle2, AlertCircle, Wallet, Trophy, Users } from "lucide-react"
+import { KeyRound, Gavel, Loader2, CheckCircle2, AlertCircle, Wallet, Trophy, Users, Lock } from "lucide-react"
+import Image from "next/image"
+
+const CAPTAIN_PASSWORD = "1234"
 
 // ---------- Main Component ----------
 
 export function CaptainClient({ sessionId }: { sessionId: string }) {
+  const [passwordOk, setPasswordOk] = useState(false)
   const [authed, setAuthed] = useState(false)
   const [seatInfo, setSeatInfo] = useState<{ id: string; seat_label: string; captain_name: string } | null>(null)
+
+  if (!passwordOk) {
+    return <CaptainPasswordGate onSuccess={() => setPasswordOk(true)} />
+  }
 
   if (!authed || !seatInfo) {
     return (
@@ -25,6 +33,75 @@ export function CaptainClient({ sessionId }: { sessionId: string }) {
   }
 
   return <CaptainDashboard sessionId={sessionId} seat={seatInfo} />
+}
+
+// ---------- Captain Password Gate ----------
+
+function CaptainPasswordGate({ onSuccess }: { onSuccess: () => void }) {
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState<string | null>(null)
+
+  const handleSubmit = () => {
+    if (password === CAPTAIN_PASSWORD) {
+      onSuccess()
+    } else {
+      setError("Incorrect password. Please try again.")
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        <div className="bg-slate-800 border border-slate-700 rounded-lg p-8">
+          <div className="text-center mb-6">
+            <Image
+              src="/ability-draft-logo.png"
+              alt="D2AD Logo"
+              width={48}
+              height={48}
+              className="mx-auto mb-4 rounded-lg"
+            />
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Lock className="h-5 w-5 text-yellow-400" />
+              <h1 className="font-bebas text-2xl tracking-wide text-slate-100">Captain Access</h1>
+            </div>
+            <p className="text-sm text-slate-400">Enter the captain password to continue.</p>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="captain-pw" className="mb-1.5 block text-sm font-medium text-slate-300">
+                Password
+              </label>
+              <Input
+                id="captain-pw"
+                type="password"
+                placeholder="Enter captain password"
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setError(null) }}
+                onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
+                autoFocus
+              />
+              {error && (
+                <p className="mt-2 text-sm text-red-400 flex items-center gap-1.5">
+                  <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                  {error}
+                </p>
+              )}
+            </div>
+            <Button
+              onClick={handleSubmit}
+              disabled={!password}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Continue
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 // ---------- Code Redemption ----------

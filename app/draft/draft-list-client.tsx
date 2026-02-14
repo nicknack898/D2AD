@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Gavel, Eye, KeyRound, Clock, CheckCircle2, Radio, Loader2, AlertCircle } from "lucide-react"
+import { Gavel, Eye, KeyRound, Clock, CheckCircle2, Radio, Loader2, AlertCircle, Lock } from "lucide-react"
 import Link from "next/link"
 import useSWR from "swr"
+
+const CAPTAIN_PASSWORD = "1234"
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -24,6 +26,7 @@ export default function DraftListClient() {
   const sessions = data?.data ?? []
 
   const [code, setCode] = useState("")
+  const [captainPw, setCaptainPw] = useState("")
   const [codeLoading, setCodeLoading] = useState(false)
   const [codeError, setCodeError] = useState<string | null>(null)
 
@@ -33,6 +36,10 @@ export default function DraftListClient() {
 
   const handleCodeRedeem = useCallback(async () => {
     if (!code.trim()) return
+    if (captainPw !== CAPTAIN_PASSWORD) {
+      setCodeError("Incorrect captain password")
+      return
+    }
     setCodeLoading(true)
     setCodeError(null)
 
@@ -75,7 +82,7 @@ export default function DraftListClient() {
     } finally {
       setCodeLoading(false)
     }
-  }, [code, sessions, router])
+  }, [code, captainPw, sessions, router])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
@@ -103,19 +110,28 @@ export default function DraftListClient() {
                 <p className="text-slate-400 text-xs">Enter your one-time code to join the captain panel for bidding.</p>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Input
-                placeholder="Enter captain code (e.g. A1B2C3D4)"
-                value={code}
-                onChange={(e) => { setCode(e.target.value.toUpperCase()); setCodeError(null) }}
-                onKeyDown={(e) => e.key === "Enter" && handleCodeRedeem()}
-                className="bg-slate-900 border-slate-600 font-mono text-center text-lg tracking-widest uppercase flex-1"
-                maxLength={20}
-              />
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Input
+                  type="password"
+                  placeholder="Captain password"
+                  value={captainPw}
+                  onChange={(e) => { setCaptainPw(e.target.value); setCodeError(null) }}
+                  className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500 sm:w-44"
+                />
+                <Input
+                  placeholder="Captain code (e.g. A1B2C3D4)"
+                  value={code}
+                  onChange={(e) => { setCode(e.target.value.toUpperCase()); setCodeError(null) }}
+                  onKeyDown={(e) => e.key === "Enter" && handleCodeRedeem()}
+                  className="bg-slate-900 border-slate-600 font-mono text-center text-lg tracking-widest uppercase flex-1"
+                  maxLength={20}
+                />
+              </div>
               <Button
                 onClick={handleCodeRedeem}
-                disabled={codeLoading || !code.trim()}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6"
+                disabled={codeLoading || !code.trim() || !captainPw}
+                className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto px-6"
               >
                 {codeLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

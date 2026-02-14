@@ -90,9 +90,9 @@ export default function AdminSidebar() {
         <Button
           variant="ghost"
           className="w-full justify-start gap-3 text-slate-300 hover:bg-slate-800 hover:text-white"
-          onClick={() => {
-            // Handle logout
-            window.location.href = "/admin/login"
+          onClick={async () => {
+            await fetch("/api/admin/logout", { method: "POST" })
+            window.location.href = "/admin/access"
           }}
         >
           <LogOut className="h-4 w-4" />

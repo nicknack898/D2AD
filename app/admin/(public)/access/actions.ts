@@ -5,11 +5,10 @@ import { redirect } from 'next/navigation'
 
 type ActionState = { error?: string }
 
-// Password: 88008800
 export async function accessAction(prevState: ActionState | undefined, formData: FormData): Promise<ActionState | void> {
   const password = (formData.get('password') || '').toString().trim()
 
-  if (password === '88008800') {
+  if (password === (process.env.ADMIN_PASSWORD || 'd2ad')) {
     // Issue an httpOnly cookie for 8 hours
     cookies().set('admin_access', '1', {
       httpOnly: true,
@@ -17,7 +16,7 @@ export async function accessAction(prevState: ActionState | undefined, formData:
       path: '/',
       maxAge: 60 * 60 * 8,
     })
-    redirect('/admin/dashboard')
+    redirect('/admin')
   }
 
   return { error: 'Incorrect password. Please try again.' }
