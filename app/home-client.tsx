@@ -1,300 +1,211 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { MessageCircle, Users, Zap, Trophy, Heart, Target, BookOpen, Gamepad2, Star, ArrowRight } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { MessageCircle, Users, Zap, Trophy, Calendar, ArrowRight, Clock, Shield } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import useSWR from "swr"
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json())
+
+function formatDate(dateStr: string | null) {
+  if (!dateStr) return "TBD"
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  })
+}
+
+const statusLabels: Record<string, { label: string; color: string }> = {
+  registration_open: { label: "Registration Open", color: "bg-green-500/20 text-green-400 border-green-500/30" },
+  registration_closed: { label: "Registration Closed", color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
+  in_progress: { label: "In Progress", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+  completed: { label: "Completed", color: "bg-slate-500/20 text-slate-400 border-slate-500/30" },
+  draft: { label: "Coming Soon", color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
+  cancelled: { label: "Cancelled", color: "bg-red-500/20 text-red-400 border-red-500/30" },
+}
 
 export default function HomeClient() {
+  const { data: eventsRes } = useSWR("/api/events", fetcher)
+  const events = eventsRes?.data ?? []
+
+  const upcomingEvents = events.filter(
+    (e: any) => e.status !== "completed" && e.status !== "cancelled"
+  ).slice(0, 3)
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
-      {/* Hero Section */}
+      {/* Hero */}
       <section className="relative py-20 px-4 text-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10" />
         <div className="relative max-w-4xl mx-auto">
-          <div className="mb-8">
-            <Image
-              src="/ability-draft-logo.png"
-              alt="D2AD Community Logo"
-              width={120}
-              height={120}
-              className="mx-auto mb-6"
-            />
-          </div>
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">D2AD Community</h1>
-          <p className="text-xl md:text-2xl text-slate-300 mb-8 max-w-3xl mx-auto">
-            Join the growing grassroots Dota 2 Ability Draft community. Connect with passionate players, find teammates,
-            and master the art of ability combinations.
+          <Image
+            src="/ability-draft-logo.png"
+            alt="D2AD Community Logo"
+            width={120}
+            height={120}
+            className="mx-auto mb-6"
+          />
+          <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 leading-tight font-bebas tracking-wide">
+            D2AD
+          </h1>
+          <p className="text-lg md:text-xl text-slate-300 mb-2 font-teko tracking-wide uppercase">
+            Dota 2 Ability Draft League
+          </p>
+          <p className="text-base md:text-lg text-slate-400 mb-8 max-w-2xl mx-auto leading-relaxed">
+            The grassroots platform for competitive Ability Draft. Sign up for events, get drafted by captains, and
+            prove yourself in the arena.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button
               size="lg"
-              className="bg-[#5865F2] hover:bg-[#4752C4] text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold"
+              asChild
+            >
+              <Link href="/events">
+                <Calendar className="mr-2 h-5 w-5" />
+                View Events
+              </Link>
+            </Button>
+            <Button
+              size="lg"
+              className="bg-[#5865F2] hover:bg-[#4752C4] text-white px-8 py-4 text-lg font-semibold"
               asChild
             >
               <Link href="https://discord.gg/d2ad" target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="mr-2 h-5 w-5" />
-                Join Our Discord
+                Join Discord
               </Link>
             </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-slate-400 text-slate-300 hover:bg-slate-800 px-8 py-4 text-lg bg-transparent"
-              asChild
+          </div>
+        </div>
+      </section>
+
+      {/* Upcoming Events */}
+      <section className="py-16 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-white font-bebas tracking-wide">Upcoming Events</h2>
+            <Link
+              href="/events"
+              className="text-blue-400 hover:text-blue-300 flex items-center gap-1 text-sm font-medium"
             >
-              <Link href="#about">
-                <BookOpen className="mr-2 h-5 w-5" />
-                Learn About AD
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* About Ability Draft Section */}
-      <section id="about" className="py-16 px-4 bg-slate-800/50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-white mb-4">What is Ability Draft?</h2>
-            <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-              Ability Draft is Dota 2's most creative game mode where strategy meets innovation
-            </p>
+              View all <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div className="space-y-6">
-              <div className="bg-slate-700/50 p-6 rounded-lg border border-slate-600">
-                <h3 className="text-2xl font-semibold text-white mb-3 flex items-center">
-                  <Zap className="mr-3 h-6 w-6 text-yellow-400" />
-                  The Draft Phase
-                </h3>
-                <p className="text-slate-300 leading-relaxed">
-                  Players take turns picking abilities from a shared pool, creating unique hero combinations. Every game
-                  offers fresh strategic possibilities and unexpected synergies.
+          {upcomingEvents.length === 0 ? (
+            <Card className="bg-slate-800/50 border-slate-700">
+              <CardContent className="py-12 text-center">
+                <Calendar className="h-12 w-12 text-slate-500 mx-auto mb-4" />
+                <p className="text-slate-400 text-lg">No upcoming events yet.</p>
+                <p className="text-slate-500 text-sm mt-2">
+                  Join our Discord to be the first to know when new events are announced.
                 </p>
-              </div>
-
-              <div className="bg-slate-700/50 p-6 rounded-lg border border-slate-600">
-                <h3 className="text-2xl font-semibold text-white mb-3 flex items-center">
-                  <Target className="mr-3 h-6 w-6 text-blue-400" />
-                  Strategic Depth
-                </h3>
-                <p className="text-slate-300 leading-relaxed">
-                  Success requires deep game knowledge, quick adaptation, and creative thinking. Master ability
-                  interactions and counter-picking to dominate the battlefield.
-                </p>
-              </div>
-
-              <div className="bg-slate-700/50 p-6 rounded-lg border border-slate-600">
-                <h3 className="text-2xl font-semibold text-white mb-3 flex items-center">
-                  <Gamepad2 className="mr-3 h-6 w-6 text-green-400" />
-                  Endless Variety
-                </h3>
-                <p className="text-slate-300 leading-relaxed">
-                  With thousands of possible combinations, no two games are alike. Experience Dota 2 in completely new
-                  ways with every match.
-                </p>
-              </div>
-            </div>
-
-            <div className="relative">
-              <Image
-                src="/3x3-basketball-action.png"
-                alt="Ability Draft Strategy"
-                width={500}
-                height={400}
-                className="rounded-lg shadow-2xl"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent rounded-lg" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Community Features */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-white mb-4">Built by Players, for Players</h2>
-            <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-              Our grassroots community focuses on quality connections and shared passion for Ability Draft
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="bg-slate-800/50 border-slate-600 hover:bg-slate-700/50 transition-colors">
-              <CardHeader>
-                <Users className="h-12 w-12 text-blue-400 mb-4" />
-                <CardTitle className="text-white">Find Your Team</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Connect with players of similar skill levels and playstyles through our dedicated team-finding
-                  channels.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="bg-slate-800/50 border-slate-600 hover:bg-slate-700/50 transition-colors">
-              <CardHeader>
-                <MessageCircle className="h-12 w-12 text-green-400 mb-4" />
-                <CardTitle className="text-white">Strategy Discussions</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Share builds, discuss meta shifts, and learn from experienced players in our strategy channels.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="bg-slate-800/50 border-slate-600 hover:bg-slate-700/50 transition-colors">
-              <CardHeader>
-                <Trophy className="h-12 w-12 text-yellow-400 mb-4" />
-                <CardTitle className="text-white">Community Events</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Participate in inhouse games, community challenges, and skill-building workshops.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Community Values */}
-      <section className="py-16 px-4 bg-slate-800/50">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-white mb-8">Our Community Values</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="space-y-4">
-              <div className="bg-blue-600/20 p-4 rounded-full w-16 h-16 mx-auto flex items-center justify-center">
-                <Target className="h-8 w-8 text-blue-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-white">Skill Growth</h3>
-              <p className="text-slate-300">
-                We believe in continuous improvement and helping each other become better players.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-green-600/20 p-4 rounded-full w-16 h-16 mx-auto flex items-center justify-center">
-                <Heart className="h-8 w-8 text-green-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-white">Respect</h3>
-              <p className="text-slate-300">Every player deserves respect regardless of skill level or experience.</p>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-yellow-600/20 p-4 rounded-full w-16 h-16 mx-auto flex items-center justify-center">
-                <Zap className="h-8 w-8 text-yellow-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-white">Passion</h3>
-              <p className="text-slate-300">
-                We're united by our love for Ability Draft and the unique experiences it creates.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold text-white text-center mb-12">What Our Community Says</h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            <Card className="bg-slate-800/50 border-slate-600">
-              <CardContent className="p-6">
-                <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-                <p className="text-slate-300 mb-4 italic">
-                  "Finally found a community that understands AD strategy. The discussions here have improved my game
-                  significantly."
-                </p>
-                <p className="text-white font-semibold">- AD Enthusiast</p>
               </CardContent>
             </Card>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-6">
+              {upcomingEvents.map((event: any) => {
+                const st = statusLabels[event.status] ?? statusLabels.draft
+                return (
+                  <Link key={event.id} href={`/events/${event.slug}`}>
+                    <Card className="bg-slate-800/50 border-slate-700 hover:border-blue-500/50 transition-colors h-full">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <span
+                            className={`text-xs px-2 py-1 rounded-full border ${st.color}`}
+                          >
+                            {st.label}
+                          </span>
+                          {event.event_date && (
+                            <span className="text-xs text-slate-500 flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {formatDate(event.event_date)}
+                            </span>
+                          )}
+                        </div>
+                        <CardTitle className="text-white text-xl">{event.name}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-slate-400 text-sm line-clamp-2">
+                          {event.description || "Details coming soon."}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      </section>
 
-            <Card className="bg-slate-800/50 border-slate-600">
-              <CardContent className="p-6">
-                <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                  ))}
+      {/* How It Works */}
+      <section className="py-16 px-4 bg-slate-800/50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12 font-bebas tracking-wide">
+            How It Works
+          </h2>
+          <div className="grid md:grid-cols-4 gap-8">
+            {[
+              {
+                icon: Users,
+                title: "1. Sign Up",
+                desc: "Register for an event with your Discord username and in-game name.",
+                color: "text-blue-400",
+              },
+              {
+                icon: Shield,
+                title: "2. Get Drafted",
+                desc: "Captains bid on players in our live auction Draft Room.",
+                color: "text-green-400",
+              },
+              {
+                icon: Zap,
+                title: "3. Draft Abilities",
+                desc: "Your team enters Ability Draft and picks the perfect combo.",
+                color: "text-yellow-400",
+              },
+              {
+                icon: Trophy,
+                title: "4. Compete",
+                desc: "Play matches, climb the standings, and prove your worth.",
+                color: "text-purple-400",
+              },
+            ].map((step) => (
+              <div key={step.title} className="text-center space-y-3">
+                <div className="bg-slate-700/50 rounded-full w-16 h-16 mx-auto flex items-center justify-center">
+                  <step.icon className={`h-8 w-8 ${step.color}`} />
                 </div>
-                <p className="text-slate-300 mb-4 italic">
-                  "Great place to find teammates who actually know how to draft. Quality over quantity for sure."
-                </p>
-                <p className="text-white font-semibold">- Veteran Player</p>
-              </CardContent>
-            </Card>
+                <h3 className="text-lg font-semibold text-white">{step.title}</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="py-16 px-4 bg-slate-800/50">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold text-white text-center mb-12">Frequently Asked Questions</h2>
-          <Accordion type="single" collapsible className="space-y-4">
-            <AccordionItem value="item-1" className="bg-slate-700/50 border-slate-600 rounded-lg px-6">
-              <AccordionTrigger className="text-white hover:text-slate-300">
-                Is this community free to join?
-              </AccordionTrigger>
-              <AccordionContent className="text-slate-300">
-                Yes! Our Discord community is completely free. We're a grassroots movement focused on bringing AD
-                players together.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-2" className="bg-slate-700/50 border-slate-600 rounded-lg px-6">
-              <AccordionTrigger className="text-white hover:text-slate-300">
-                What skill level do I need to join?
-              </AccordionTrigger>
-              <AccordionContent className="text-slate-300">
-                All skill levels are welcome! We have channels for beginners learning the basics and veterans discussing
-                advanced strategies.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-3" className="bg-slate-700/50 border-slate-600 rounded-lg px-6">
-              <AccordionTrigger className="text-white hover:text-slate-300">How do I find teammates?</AccordionTrigger>
-              <AccordionContent className="text-slate-300">
-                We have dedicated team-finding channels where you can post your rank, preferred playtime, and what
-                you're looking for in teammates.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-4" className="bg-slate-700/50 border-slate-600 rounded-lg px-6">
-              <AccordionTrigger className="text-white hover:text-slate-300">
-                Are there community events?
-              </AccordionTrigger>
-              <AccordionContent className="text-slate-300">
-                Yes! We regularly host inhouse games, strategy workshops, and community challenges. Check our events
-                channel for upcoming activities.
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-20 px-4 text-center">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-6">Ready to Join the Movement?</h2>
-          <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-            Connect with passionate Ability Draft players, improve your skills, and be part of our growing grassroots
-            community.
+      {/* Discord CTA */}
+      <section className="py-16 px-4 text-center">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 font-bebas tracking-wide">
+            Join the Community
+          </h2>
+          <p className="text-slate-400 mb-8 leading-relaxed">
+            All event announcements, captain coordination, and post-game discussions happen on Discord. It is the
+            heartbeat of D2AD.
           </p>
           <Button
             size="lg"
-            className="bg-[#5865F2] hover:bg-[#4752C4] text-white px-12 py-6 text-xl font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            className="bg-[#5865F2] hover:bg-[#4752C4] text-white px-10 py-5 text-lg font-semibold"
             asChild
           >
             <Link href="https://discord.gg/d2ad" target="_blank" rel="noopener noreferrer">
-              <MessageCircle className="mr-3 h-6 w-6" />
-              Join Our Discord Now
-              <ArrowRight className="ml-3 h-6 w-6" />
+              <MessageCircle className="mr-2 h-5 w-5" />
+              Join Our Discord
             </Link>
           </Button>
         </div>

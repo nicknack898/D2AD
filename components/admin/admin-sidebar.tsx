@@ -16,29 +16,19 @@ const sidebarNavItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Teams",
-    href: "/admin/teams",
-    icon: Users,
-  },
-  {
-    title: "Players",
-    href: "/admin/players",
-    icon: UserCheck,
-  },
-  {
-    title: "Games",
-    href: "/admin/games",
-    icon: Gamepad2,
-  },
-  {
-    title: "Schedule",
-    href: "/admin/schedule",
+    title: "Events",
+    href: "/admin/events",
     icon: Calendar,
   },
   {
-    title: "Tournament",
-    href: "/admin/games/manage",
-    icon: Trophy,
+    title: "Player Pool",
+    href: "/admin/player-pool",
+    icon: UserCheck,
+  },
+  {
+    title: "Teams",
+    href: "/admin/teams",
+    icon: Users,
   },
   {
     title: "Settings",
@@ -56,8 +46,8 @@ export default function AdminSidebar() {
       <div className="flex h-16 items-center gap-3 border-b border-slate-700 px-6">
         <Image src="/ability-draft-logo.png" alt="Ability Draft Logo" width={32} height={32} className="w-8 h-8" />
         <div>
-          <h2 className="text-lg font-semibold">Tournament Admin</h2>
-          <p className="text-xs text-slate-400">Ability Draft</p>
+          <h2 className="text-lg font-semibold">D2AD Admin</h2>
+          <p className="text-xs text-slate-400">League Management</p>
         </div>
       </div>
 

@@ -11,10 +11,10 @@ const bebasNeue = Bebas_Neue({ weight: "400", subsets: ["latin"], variable: "--f
 const teko = Teko({ subsets: ["latin"], variable: "--font-teko" })
 
 export const metadata: Metadata = {
-  title: "D2AD - Dota 2 Ability Draft Community",
+  title: "D2AD - Dota 2 Ability Draft League",
   description:
-    "Join the growing grassroots Dota 2 Ability Draft community. Connect with passionate players, find teammates, and master ability combinations.",
-  keywords: ["Dota 2", "Ability Draft", "Discord community", "AD players", "teammates", "strategy"],
+    "The grassroots platform for competitive Dota 2 Ability Draft. Sign up for events, get drafted by captains, and compete in community leagues.",
+  keywords: ["Dota 2", "Ability Draft", "league", "draft room", "captain draft", "competitive AD", "community events"],
   authors: [{ name: "D2AD Community" }],
   creator: "D2AD Community",
   publisher: "D2AD Community",
@@ -31,10 +31,10 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://d2ad.gg",
-    siteName: "D2AD Community",
-    title: "D2AD - Dota 2 Ability Draft Community",
+    siteName: "D2AD",
+    title: "D2AD - Dota 2 Ability Draft League",
     description:
-      "Join the growing grassroots Dota 2 Ability Draft community. Connect with passionate players and improve your skills.",
+      "The grassroots platform for competitive Ability Draft. Sign up for events, get drafted, and compete.",
     images: [
       {
         url: "/ability-draft-logo.png",
@@ -46,9 +46,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "D2AD - Dota 2 Ability Draft Community",
+    title: "D2AD - Dota 2 Ability Draft League",
     description:
-      "Join the growing grassroots Dota 2 Ability Draft community. Connect with passionate players and improve your skills.",
+      "The grassroots platform for competitive Ability Draft. Sign up, get drafted, compete.",
     images: ["/ability-draft-logo.png"],
   },
   robots: {
@@ -79,8 +79,8 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              name: "D2AD Community",
-              description: "Grassroots Dota 2 Ability Draft community focused on connecting passionate players",
+              name: "D2AD",
+              description: "The grassroots platform for competitive Dota 2 Ability Draft leagues and events.",
               url: "https://d2ad.gg",
               logo: "https://d2ad.gg/ability-draft-logo.png",
               sameAs: ["https://discord.gg/d2ad"],

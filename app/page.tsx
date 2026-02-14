@@ -2,35 +2,25 @@ import type { Metadata } from "next"
 import HomeClient from "./home-client"
 
 export const metadata: Metadata = {
-  title: "D2AD - Dota 2 Ability Draft Community | Join the Discord",
+  title: "D2AD - Dota 2 Ability Draft League | Events & Draft Room",
   description:
-    "Join the growing grassroots Dota 2 Ability Draft community. Connect with passionate players, find teammates, discuss strategies, and improve your skills in our Discord server.",
-  keywords: ["Dota 2", "Ability Draft", "Discord community", "AD players", "teammates", "strategy", "grassroots"],
+    "The grassroots platform for competitive Dota 2 Ability Draft. Sign up for events, get drafted by captains in our live auction Draft Room, and compete in community leagues.",
+  keywords: ["Dota 2", "Ability Draft", "league", "draft room", "captain draft", "competitive AD", "community events"],
   openGraph: {
-    title: "D2AD - Dota 2 Ability Draft Community",
+    title: "D2AD - Dota 2 Ability Draft League",
     description:
-      "Join the growing grassroots Dota 2 Ability Draft community. Connect with passionate players and improve your skills.",
+      "The grassroots platform for competitive Ability Draft. Sign up for events, get drafted, and compete.",
     type: "website",
     url: "https://d2ad.gg",
-    images: [
-      {
-        url: "/ability-draft-logo.png",
-        width: 1200,
-        height: 630,
-        alt: "D2AD Community Logo",
-      },
-    ],
+    images: [{ url: "/ability-draft-logo.png", width: 1200, height: 630, alt: "D2AD League Logo" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "D2AD - Dota 2 Ability Draft Community",
-    description:
-      "Join the growing grassroots Dota 2 Ability Draft community. Connect with passionate players and improve your skills.",
+    title: "D2AD - Dota 2 Ability Draft League",
+    description: "The grassroots platform for competitive Ability Draft. Sign up, get drafted, compete.",
     images: ["/ability-draft-logo.png"],
   },
-  alternates: {
-    canonical: "https://d2ad.gg",
-  },
+  alternates: { canonical: "https://d2ad.gg" },
 }
 
 export default function HomePage() {

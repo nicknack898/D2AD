@@ -25,22 +25,19 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="#about" className="text-slate-300 hover:text-white transition-colors duration-200">
-              About AD
+            <Link href="/events" className="text-slate-300 hover:text-white transition-colors duration-200">
+              Events
             </Link>
-            <Link href="#community" className="text-slate-300 hover:text-white transition-colors duration-200">
-              Community
-            </Link>
-            <Link href="#faq" className="text-slate-300 hover:text-white transition-colors duration-200">
-              FAQ
+            <Link href="https://discord.gg/d2ad" target="_blank" rel="noopener noreferrer" className="text-slate-300 hover:text-white transition-colors duration-200">
+              Discord
             </Link>
             <Button
-              className="bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold px-6 py-2 rounded-lg transition-all duration-200 transform hover:scale-105"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg"
               asChild
             >
-              <Link href="https://discord.gg/d2ad" target="_blank" rel="noopener noreferrer">
+              <Link href="/events">
                 <MessageCircle className="mr-2 h-4 w-4" />
-                Join Discord
+                Register
               </Link>
             </Button>
           </div>
@@ -58,34 +55,28 @@ export default function Navbar() {
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-slate-800/95 rounded-lg mt-2 border border-slate-700">
               <Link
-                href="#about"
+                href="/events"
                 className="block px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-md transition-colors duration-200"
                 onClick={() => setIsMenuOpen(false)}
               >
-                About AD
+                Events
               </Link>
               <Link
-                href="#community"
+                href="https://discord.gg/d2ad"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-md transition-colors duration-200"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Community
-              </Link>
-              <Link
-                href="#faq"
-                className="block px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-md transition-colors duration-200"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                FAQ
+                Discord
               </Link>
               <div className="px-3 py-2">
                 <Button
-                  className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold py-2 rounded-lg"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg"
                   asChild
                 >
-                  <Link href="https://discord.gg/d2ad" target="_blank" rel="noopener noreferrer">
-                    <MessageCircle className="mr-2 h-4 w-4" />
-                    Join Discord
+                  <Link href="/events">
+                    Register
                   </Link>
                 </Button>
               </div>
