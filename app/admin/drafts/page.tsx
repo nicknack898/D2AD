@@ -57,18 +57,16 @@ export default function AdminDraftsPage() {
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const [evRes, sessRes] = await Promise.all([
+      const [evRes, sessResponse] = await Promise.all([
         fetch("/api/events"),
-        fetch("/api/events"), // We'll get sessions from Supabase directly via the list
+        fetch("/api/draft/list"),
       ])
       const evData = await evRes.json()
-      setEvents(evData.events ?? [])
+      setEvents(evData.data ?? [])
 
-      // Fetch draft sessions
-      const sessResponse = await fetch("/api/draft/list")
       if (sessResponse.ok) {
         const sessData = await sessResponse.json()
-        setSessions(sessData.sessions ?? [])
+        setSessions(sessData.data ?? [])
       }
     } catch {
       setError("Failed to load data")

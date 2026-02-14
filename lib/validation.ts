@@ -59,10 +59,10 @@ export const eventSchema = z.object({
 
 export const playerRegistrationSchema = z.object({
   event_id: z.string().uuid("Invalid event ID"),
-  discord_username: z.string().min(1, "Discord username is required").max(50),
-  in_game_name: z.string().min(1, "In-game name is required").max(50),
-  mmr_estimate: z.number().int().min(0).max(15000).optional().nullable(),
-  preferred_roles: z.array(z.string()).max(5).optional().default([]),
+  display_name: z.string().min(1, "In-game name is required").max(50),
+  discord_id: z.string().min(1, "Discord username is required").max(50),
+  steam_id: z.string().max(50).optional().nullable(),
+  rating: z.number().int().min(0).max(15000).optional().nullable(),
   notes: z.string().max(500).optional().nullable(),
 })
 

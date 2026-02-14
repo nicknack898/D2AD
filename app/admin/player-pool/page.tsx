@@ -40,12 +40,12 @@ export default function AdminPlayerPoolPage() {
       if (!searchQuery) return true
       const q = searchQuery.toLowerCase()
       return (
-        p.discord_username?.toLowerCase().includes(q) ||
-        p.in_game_name?.toLowerCase().includes(q)
+        p.discord_id?.toLowerCase().includes(q) ||
+        p.display_name?.toLowerCase().includes(q)
       )
     })
     .sort((a: any, b: any) => {
-      if (sortBy === "mmr_estimate") return (b.mmr_estimate ?? 0) - (a.mmr_estimate ?? 0)
+      if (sortBy === "mmr_estimate") return (b.rating ?? 0) - (a.rating ?? 0)
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     })
 
@@ -158,41 +158,25 @@ export default function AdminPlayerPoolPage() {
           {/* Table header */}
           <div className="grid grid-cols-12 gap-4 px-4 py-2 text-xs text-slate-500 font-medium uppercase">
             <div className="col-span-3">Player</div>
-            <div className="col-span-2">Discord</div>
+            <div className="col-span-3">Discord</div>
             <div className="col-span-1 text-center">MMR</div>
-            <div className="col-span-3">Roles</div>
-            <div className="col-span-1 text-center">Status</div>
-            <div className="col-span-2 text-right">Actions</div>
+            <div className="col-span-2 text-center">Status</div>
+            <div className="col-span-3 text-right">Actions</div>
           </div>
 
           {filteredPlayers.map((player: any) => (
             <Card key={player.id} className="bg-slate-800/50 border-slate-700">
               <CardContent className="grid grid-cols-12 gap-4 items-center py-3">
                 <div className="col-span-3">
-                  <p className="text-white text-sm font-medium truncate">{player.in_game_name}</p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-slate-400 text-sm truncate">{player.discord_username}</p>
-                </div>
-                <div className="col-span-1 text-center">
-                  <span className="text-slate-300 text-sm">{player.mmr_estimate ?? "-"}</span>
+                  <p className="text-white text-sm font-medium truncate">{player.display_name}</p>
                 </div>
                 <div className="col-span-3">
-                  <div className="flex flex-wrap gap-1">
-                    {(player.preferred_roles ?? []).map((role: string) => (
-                      <span
-                        key={role}
-                        className="text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-300 border border-slate-600"
-                      >
-                        {role}
-                      </span>
-                    ))}
-                    {(!player.preferred_roles || player.preferred_roles.length === 0) && (
-                      <span className="text-xs text-slate-500">-</span>
-                    )}
-                  </div>
+                  <p className="text-slate-400 text-sm truncate">{player.discord_id}</p>
                 </div>
                 <div className="col-span-1 text-center">
+                  <span className="text-slate-300 text-sm">{player.rating ?? "-"}</span>
+                </div>
+                <div className="col-span-2 text-center">
                   <span
                     className={`text-xs px-2 py-0.5 rounded-full border ${
                       player.status === "confirmed"
@@ -205,7 +189,7 @@ export default function AdminPlayerPoolPage() {
                     {player.status}
                   </span>
                 </div>
-                <div className="col-span-2 flex justify-end gap-1">
+                <div className="col-span-3 flex justify-end gap-1">
                   {player.status !== "confirmed" && (
                     <Button
                       variant="ghost"

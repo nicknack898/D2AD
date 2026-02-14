@@ -39,8 +39,6 @@ const statusLabels: Record<string, { label: string; color: string }> = {
   cancelled: { label: "Cancelled", color: "bg-red-500/20 text-red-400 border-red-500/30" },
 }
 
-const ROLE_OPTIONS = ["Carry", "Mid", "Offlane", "Soft Support", "Hard Support"]
-
 export default function EventDetailClient({ slug }: { slug: string }) {
   const { data: eventRes, isLoading } = useSWR(`/api/events/${slug}`, fetcher)
   const { data: playersRes } = useSWR(`/api/events/${slug}/players?status=confirmed`, fetcher)
@@ -49,23 +47,13 @@ export default function EventDetailClient({ slug }: { slug: string }) {
   const players = playersRes?.data ?? []
 
   const [form, setForm] = useState({
-    discord_username: "",
-    in_game_name: "",
-    mmr_estimate: "",
-    preferred_roles: [] as string[],
+    discord_id: "",
+    display_name: "",
+    rating: "",
     notes: "",
   })
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null)
-
-  function toggleRole(role: string) {
-    setForm((prev) => ({
-      ...prev,
-      preferred_roles: prev.preferred_roles.includes(role)
-        ? prev.preferred_roles.filter((r) => r !== role)
-        : [...prev.preferred_roles, role],
-    }))
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -78,14 +66,14 @@ export default function EventDetailClient({ slug }: { slug: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
-          mmr_estimate: form.mmr_estimate ? parseInt(form.mmr_estimate, 10) : null,
+          rating: form.rating ? parseInt(form.rating, 10) : null,
         }),
       })
       const json = await res.json()
 
       if (res.ok) {
         setResult({ ok: true, msg: json.message || "Registration successful!" })
-        setForm({ discord_username: "", in_game_name: "", mmr_estimate: "", preferred_roles: [], notes: "" })
+        setForm({ discord_id: "", display_name: "", rating: "", notes: "" })
         mutate(`/api/events/${slug}`)
         mutate(`/api/events/${slug}/players?status=confirmed`)
       } else {
@@ -191,15 +179,15 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                         className="flex items-center gap-3 bg-slate-700/30 rounded-lg px-3 py-2"
                       >
                         <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-bold">
-                          {p.in_game_name?.charAt(0)?.toUpperCase() ?? "?"}
+                          {p.display_name?.charAt(0)?.toUpperCase() ?? "?"}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-white text-sm font-medium truncate">{p.in_game_name}</p>
-                          <p className="text-slate-500 text-xs truncate">{p.discord_username}</p>
+                          <p className="text-white text-sm font-medium truncate">{p.display_name}</p>
+                          <p className="text-slate-500 text-xs truncate">{p.discord_id}</p>
                         </div>
-                        {p.mmr_estimate && (
+                        {p.rating && (
                           <span className="ml-auto text-xs text-slate-400 shrink-0">
-                            ~{p.mmr_estimate} MMR
+                            ~{p.rating} MMR
                           </span>
                         )}
                       </div>
@@ -224,8 +212,8 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                       <Input
                         required
                         placeholder="e.g. player#1234"
-                        value={form.discord_username}
-                        onChange={(e) => setForm({ ...form, discord_username: e.target.value })}
+                        value={form.discord_id}
+                        onChange={(e) => setForm({ ...form, discord_id: e.target.value })}
                         className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
                       />
                     </div>
@@ -234,8 +222,8 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                       <Input
                         required
                         placeholder="Your Dota 2 display name"
-                        value={form.in_game_name}
-                        onChange={(e) => setForm({ ...form, in_game_name: e.target.value })}
+                        value={form.display_name}
+                        onChange={(e) => setForm({ ...form, display_name: e.target.value })}
                         className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
                       />
                     </div>
@@ -244,29 +232,10 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                       <Input
                         type="number"
                         placeholder="e.g. 3500"
-                        value={form.mmr_estimate}
-                        onChange={(e) => setForm({ ...form, mmr_estimate: e.target.value })}
+                        value={form.rating}
+                        onChange={(e) => setForm({ ...form, rating: e.target.value })}
                         className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
                       />
-                    </div>
-                    <div>
-                      <label className="text-sm text-slate-300 mb-1.5 block">Preferred Roles</label>
-                      <div className="flex flex-wrap gap-2">
-                        {ROLE_OPTIONS.map((role) => (
-                          <button
-                            key={role}
-                            type="button"
-                            onClick={() => toggleRole(role)}
-                            className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                              form.preferred_roles.includes(role)
-                                ? "bg-blue-500/20 text-blue-400 border-blue-500/40"
-                                : "bg-slate-700/50 text-slate-400 border-slate-600 hover:border-slate-500"
-                            }`}
-                          >
-                            {role}
-                          </button>
-                        ))}
-                      </div>
                     </div>
                     <div>
                       <label className="text-sm text-slate-300 mb-1 block">Notes (optional)</label>
