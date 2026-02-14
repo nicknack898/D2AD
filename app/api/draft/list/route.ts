@@ -8,12 +8,19 @@ import { createClient } from "@/lib/supabase-server"
 export async function GET() {
   try {
     const supabase = await createClient()
-    const { data, error } = await supabase
+    const { data: sessions, error } = await supabase
       .from("draft_sessions")
-      .select("*")
+      .select("*, events(name)")
       .order("created_at", { ascending: false })
     if (error) throw error
-    return NextResponse.json({ sessions: data ?? [] })
+
+    const data = (sessions ?? []).map((s: any) => ({
+      ...s,
+      event_name: s.events?.name ?? null,
+      events: undefined,
+    }))
+
+    return NextResponse.json({ data })
   } catch (err) {
     console.error("Draft list error:", err)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

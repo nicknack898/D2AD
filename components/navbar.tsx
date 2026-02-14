@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { MessageCircle, Menu, X } from "lucide-react"
+import { Gavel, MessageCircle, Menu, X } from "lucide-react"
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -24,19 +24,22 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link href="/events" className="text-slate-300 hover:text-white transition-colors duration-200">
+          <div className="hidden md:flex items-center gap-6">
+            <Link href="/events" className="text-slate-300 hover:text-white transition-colors duration-200 text-sm font-medium">
               Events
             </Link>
-            <Link href="https://discord.gg/d2ad" target="_blank" rel="noopener noreferrer" className="text-slate-300 hover:text-white transition-colors duration-200">
+            <Link href="/draft" className="text-slate-300 hover:text-white transition-colors duration-200 text-sm font-medium flex items-center gap-1.5">
+              <Gavel className="h-3.5 w-3.5" />
+              Draft Room
+            </Link>
+            <Link href="https://discord.gg/d2ad" target="_blank" rel="noopener noreferrer" className="text-slate-300 hover:text-white transition-colors duration-200 text-sm font-medium">
               Discord
             </Link>
             <Button
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg text-sm"
               asChild
             >
               <Link href="/events">
-                <MessageCircle className="mr-2 h-4 w-4" />
                 Register
               </Link>
             </Button>
@@ -60,6 +63,14 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Events
+              </Link>
+              <Link
+                href="/draft"
+                className="flex items-center gap-2 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-md transition-colors duration-200"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Gavel className="h-4 w-4" />
+                Draft Room
               </Link>
               <Link
                 href="https://discord.gg/d2ad"

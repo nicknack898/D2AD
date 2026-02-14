@@ -25,6 +25,9 @@ export default function Footer() {
               <Link href="/events" className="block text-slate-400 hover:text-white transition-colors duration-200">
                 Events
               </Link>
+              <Link href="/draft" className="block text-slate-400 hover:text-white transition-colors duration-200">
+                Draft Room
+              </Link>
               <Link
                 href="https://discord.gg/d2ad"
                 target="_blank"
