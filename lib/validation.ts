@@ -65,9 +65,32 @@ export const playerRegistrationSchema = z.object({
   notes: z.string().max(500).optional().nullable(),
 })
 
+// --- Phase 2: Draft Room ---
+
+export const redeemCodeSchema = z.object({
+  code: z.string().min(1, "Code is required").max(20),
+  session_id: z.string().uuid("Invalid session ID"),
+})
+
+export const placeBidSchema = z.object({
+  lot_id: z.string().uuid("Invalid lot ID"),
+  seat_id: z.string().uuid("Invalid seat ID"),
+  amount: z.number().int().min(1, "Bid must be at least 1"),
+})
+
+export const createDraftSchema = z.object({
+  event_id: z.string().uuid("Invalid event ID"),
+  seconds_per_lot: z.number().int().min(5).max(300).default(30),
+  captain_count: z.number().int().min(2).max(12).default(2),
+  budget_per_captain: z.number().int().min(10).max(10000).default(1000),
+})
+
 export type RegistrationInput = z.infer<typeof registrationSchema>
 export type BookingInput = z.infer<typeof bookingInputSchema>
 export type ProfileInput = z.infer<typeof profileSchema>
 export type TeamRegistrationInput = z.infer<typeof teamRegistrationSchema>
 export type EventInput = z.infer<typeof eventSchema>
 export type PlayerRegistrationInput = z.infer<typeof playerRegistrationSchema>
+export type RedeemCodeInput = z.infer<typeof redeemCodeSchema>
+export type PlaceBidInput = z.infer<typeof placeBidSchema>
+export type CreateDraftInput = z.infer<typeof createDraftSchema>
