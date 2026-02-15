@@ -153,11 +153,15 @@ export async function GET(
     const supabase = await createClient()
 
     // Query seats first, then join codes (reliable approach)
+    console.log("[v0] GET /codes for session:", sessionId)
+
     const { data: seats, error: sErr } = await supabase
       .from("captain_seats")
       .select("id, seat_label, captain_name, captain_codes(code, used)")
       .eq("draft_session_id", sessionId)
       .order("seat_label", { ascending: true })
+
+    console.log("[v0] Seats query result - error:", sErr, "seats count:", seats?.length, "raw:", JSON.stringify(seats)?.slice(0, 500))
 
     if (sErr) throw sErr
 
@@ -170,6 +174,7 @@ export async function GET(
       has_code: (s.captain_codes?.length ?? 0) > 0,
     }))
 
+    console.log("[v0] Returning codes:", JSON.stringify(seatCodes))
     return NextResponse.json({ codes: seatCodes })
   } catch (err) {
     console.error("Codes fetch error:", err)

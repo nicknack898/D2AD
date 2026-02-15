@@ -75,8 +75,11 @@ export default function CaptainCodesPage() {
       ])
       const evData = await evRes.json()
       const sessData = await sessRes.json()
+      console.log("[v0] Events response:", evRes.status, JSON.stringify(evData).slice(0, 200))
+      console.log("[v0] Sessions response:", sessRes.status, JSON.stringify(sessData).slice(0, 200))
       const evList: Event[] = evData.data ?? []
       const sessList: DraftSession[] = sessData.data ?? []
+      console.log("[v0] Events count:", evList.length, "Sessions count:", sessList.length)
 
       setEvents(evList)
       setSessionCodes(
@@ -108,8 +111,11 @@ export default function CaptainCodesPage() {
 
     // Fetch codes for this session
     try {
+      console.log("[v0] Fetching codes for session:", sessionId)
       const res = await fetch(`/api/draft/${sessionId}/codes`)
+      console.log("[v0] Codes response status:", res.status)
       const data = await res.json()
+      console.log("[v0] Codes response data:", JSON.stringify(data))
       setSessionCodes((prev) =>
         prev.map((sc) =>
           sc.session.id === sessionId
@@ -117,7 +123,8 @@ export default function CaptainCodesPage() {
             : sc
         )
       )
-    } catch {
+    } catch (err) {
+      console.error("[v0] Codes fetch error:", err)
       setSessionCodes((prev) =>
         prev.map((sc) =>
           sc.session.id === sessionId
