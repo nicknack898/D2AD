@@ -223,7 +223,7 @@ export default function CaptainCodesPage() {
       return (
         sc.event?.name.toLowerCase().includes(q) ||
         sc.session.id.toLowerCase().includes(q) ||
-        sc.codes.some((c) => c.code.toLowerCase().includes(q) || c.seat_label.toLowerCase().includes(q))
+        sc.codes.some((c) => (c.code ?? "").toLowerCase().includes(q) || c.seat_label.toLowerCase().includes(q))
       )
     }
     return true
@@ -635,8 +635,8 @@ export default function CaptainCodesPage() {
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      onClick={() => regenerateCode(sc.session.id, c.seat_label, c.code)}
-                                      disabled={actionLoading === c.code}
+                                      onClick={() => regenerateCode(sc.session.id, c.seat_label, c.code ?? "")}
+                                      disabled={actionLoading === c.code || !c.code}
                                       className="h-7 px-2 text-xs text-slate-500 hover:text-blue-400"
                                     >
                                       {actionLoading === c.code ? (
@@ -650,8 +650,8 @@ export default function CaptainCodesPage() {
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      onClick={() => revokeCode(sc.session.id, c.seat_label, c.code)}
-                                      disabled={actionLoading === c.code}
+                                      onClick={() => revokeCode(sc.session.id, c.seat_label, c.code ?? "")}
+                                      disabled={actionLoading === c.code || !c.code}
                                       className="h-7 px-2 text-xs text-slate-500 hover:text-red-400"
                                     >
                                       <XCircle className="h-3 w-3 mr-1" /> Revoke

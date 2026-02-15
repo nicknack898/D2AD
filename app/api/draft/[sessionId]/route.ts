@@ -30,10 +30,17 @@ export async function DELETE(
       await supabase.from("wallets").delete().in("seat_id", seatIds)
     }
 
+    // Get lot IDs to delete bids (bids table has no draft_session_id column)
+    const { data: lots } = await supabase
+      .from("lots")
+      .select("id")
+      .eq("draft_session_id", sessionId)
+    const lotIds = (lots ?? []).map((l) => l.id)
+    if (lotIds.length > 0) {
+      await supabase.from("bids").delete().in("lot_id", lotIds)
+    }
     // Delete lots
     await supabase.from("lots").delete().eq("draft_session_id", sessionId)
-    // Delete bids
-    await supabase.from("bids").delete().eq("draft_session_id", sessionId)
     // Delete captain seats
     await supabase.from("captain_seats").delete().eq("draft_session_id", sessionId)
     // Delete the session itself

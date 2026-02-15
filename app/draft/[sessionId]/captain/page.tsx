@@ -1,16 +1,14 @@
-import type { Metadata } from "next"
-import { CaptainClient } from "./captain-client"
+import { redirect } from "next/navigation"
 
-export const metadata: Metadata = {
-  title: "Captain Panel | D2AD Draft Room",
-  description: "Redeem your captain code and bid on players in the live auction.",
-}
-
+/**
+ * Captain page now redirects to the main draft room.
+ * Captains authenticate directly from the draft room via the "Captain Login" button.
+ */
 export default async function CaptainPage({
   params,
 }: {
   params: Promise<{ sessionId: string }>
 }) {
   const { sessionId } = await params
-  return <CaptainClient sessionId={sessionId} />
+  redirect(`/draft/${sessionId}`)
 }
