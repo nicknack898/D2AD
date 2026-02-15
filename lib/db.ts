@@ -1,20 +1,31 @@
-import { neon, type NeonQueryFunction } from "@neondatabase/serverless"
+import { neon } from "@neondatabase/serverless"
 
-function getSQL(): NeonQueryFunction<false, false> {
-  if (!process.env.DATABASE_URL) {
-    throw new Error("DATABASE_URL environment variable is required")
+let _sql: ReturnType<typeof neon> | null = null
+
+function getSQL() {
+  if (!_sql) {
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL environment variable is required")
+    }
+    _sql = neon(process.env.DATABASE_URL)
   }
-  return neon(process.env.DATABASE_URL)
+  return _sql
 }
 
-export const sql = new Proxy({} as NeonQueryFunction<false, false>, {
-  apply(_target, _thisArg, args) {
-    return getSQL()(...(args as [TemplateStringsArray, ...any[]]))
+export const sql: ReturnType<typeof neon> = new Proxy(
+  function () {} as unknown as ReturnType<typeof neon>,
+  {
+    apply(_target, thisArg, args) {
+      return Reflect.apply(getSQL(), thisArg, args)
+    },
+    get(_target, prop, receiver) {
+      if (prop === Symbol.toPrimitive || prop === "toString" || prop === "valueOf") {
+        return Reflect.get(getSQL(), prop, receiver)
+      }
+      return Reflect.get(getSQL(), prop, receiver)
+    },
   },
-  get(_target, prop) {
-    return (getSQL() as any)[prop]
-  },
-})
+)
 
 export interface TeamRegistration {
   id: number
