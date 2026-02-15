@@ -71,9 +71,10 @@ export async function POST(req: Request) {
 
       // Generate unique code
       const code = crypto.randomBytes(4).toString("hex").toUpperCase()
+      const codeHash = crypto.createHash("sha256").update(code).digest("hex")
       const { error: codeErr } = await supabase
         .from("captain_codes")
-        .insert({ seat_id: seat.id, code, used: false })
+        .insert({ seat_id: seat.id, code, code_hash: codeHash, used: false })
       if (codeErr) throw codeErr
       codes.push({ seat_label: label, code })
     }

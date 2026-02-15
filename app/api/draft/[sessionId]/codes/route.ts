@@ -2,6 +2,10 @@ import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase-server"
 import crypto from "crypto"
 
+function hashCode(code: string) {
+  return crypto.createHash("sha256").update(code).digest("hex")
+}
+
 /**
  * POST /api/draft/[sessionId]/codes
  * Admin actions: regenerate or revoke a captain code.
@@ -40,7 +44,7 @@ export async function POST(
           const newCode = crypto.randomBytes(4).toString("hex").toUpperCase()
           const { error: insertErr } = await supabase
             .from("captain_codes")
-            .insert({ seat_id: s.id, code: newCode, used: false })
+            .insert({ seat_id: s.id, code: newCode, code_hash: hashCode(newCode), used: false })
           if (insertErr) throw insertErr
           generated++
         }
@@ -79,7 +83,7 @@ export async function POST(
       // Insert new code
       const { error: insertErr } = await supabase
         .from("captain_codes")
-        .insert({ seat_id: seat.id, code: newCode, used: false })
+        .insert({ seat_id: seat.id, code: newCode, code_hash: hashCode(newCode), used: false })
 
       if (insertErr) throw insertErr
 
