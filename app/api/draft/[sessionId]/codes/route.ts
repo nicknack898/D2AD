@@ -20,6 +20,35 @@ export async function POST(
     const supabase = await createClient()
     const { _action, seat_label } = json
 
+    // Generate codes for ALL seats that don't have one yet
+    if (_action === "generate_all") {
+      const { data: seats, error: sErr } = await supabase
+        .from("captain_seats")
+        .select("id, seat_label, captain_codes(id)")
+        .eq("draft_session_id", sessionId)
+        .order("seat_label", { ascending: true })
+
+      if (sErr) throw sErr
+      if (!seats || seats.length === 0) {
+        return NextResponse.json({ error: "No seats found for this session" }, { status: 404 })
+      }
+
+      let generated = 0
+      for (const s of seats) {
+        const existingCodes = (s as any).captain_codes ?? []
+        if (existingCodes.length === 0) {
+          const newCode = crypto.randomBytes(4).toString("hex").toUpperCase()
+          const { error: insertErr } = await supabase
+            .from("captain_codes")
+            .insert({ seat_id: s.id, code: newCode, used: false })
+          if (insertErr) throw insertErr
+          generated++
+        }
+      }
+
+      return NextResponse.json({ success: true, generated, message: `Generated ${generated} new code(s)` })
+    }
+
     if (!seat_label) {
       return NextResponse.json({ error: "seat_label is required" }, { status: 400 })
     }
@@ -89,40 +118,25 @@ export async function GET(
     const { sessionId } = await params
     const supabase = await createClient()
 
-    const { data: codes, error } = await supabase
-      .from("captain_codes")
-      .select("code, used, captain_seats(seat_label, captain_name)")
-      .eq("captain_seats.draft_session_id", sessionId)
-      .order("created_at", { ascending: true })
+    // Query seats first, then join codes (reliable approach)
+    const { data: seats, error: sErr } = await supabase
+      .from("captain_seats")
+      .select("id, seat_label, captain_name, captain_codes(code, used)")
+      .eq("draft_session_id", sessionId)
+      .order("seat_label", { ascending: true })
 
-    if (error) {
-      // Fallback: query via captain_seats first
-      const { data: seats, error: sErr } = await supabase
-        .from("captain_seats")
-        .select("id, seat_label, captain_name, captain_codes(code, used)")
-        .eq("draft_session_id", sessionId)
-        .order("seat_label", { ascending: true })
+    if (sErr) throw sErr
 
-      if (sErr) throw sErr
-
-      const seatCodes = (seats ?? []).map((s: any) => ({
-        seat_label: s.seat_label,
-        captain_name: s.captain_name,
-        code: s.captain_codes?.[0]?.code ?? "N/A",
-        used: s.captain_codes?.[0]?.used ?? false,
-      }))
-
-      return NextResponse.json({ codes: seatCodes })
-    }
-
-    const mapped = (codes ?? []).map((c: any) => ({
-      seat_label: c.captain_seats?.seat_label ?? "Unknown",
-      captain_name: c.captain_seats?.captain_name ?? "",
-      code: c.code,
-      used: c.used,
+    const seatCodes = (seats ?? []).map((s: any) => ({
+      seat_id: s.id,
+      seat_label: s.seat_label,
+      captain_name: s.captain_name,
+      code: s.captain_codes?.[0]?.code ?? null,
+      used: s.captain_codes?.[0]?.used ?? false,
+      has_code: (s.captain_codes?.length ?? 0) > 0,
     }))
 
-    return NextResponse.json({ codes: mapped })
+    return NextResponse.json({ codes: seatCodes })
   } catch (err) {
     console.error("Codes fetch error:", err)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

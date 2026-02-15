@@ -39,10 +39,12 @@ interface Event {
 }
 
 interface CodeEntry {
+  seat_id: string
   seat_label: string
   captain_name: string
-  code: string
+  code: string | null
   used: boolean
+  has_code: boolean
 }
 
 type SessionCodes = {
@@ -134,6 +136,7 @@ export default function CaptainCodesPage() {
 
   const copyAllCodes = (sc: SessionCodes) => {
     const text = sc.codes
+      .filter((c) => c.code)
       .map((c) => `${c.seat_label}: ${c.code}${c.used ? " (Used)" : ""}`)
       .join("\n")
     navigator.clipboard.writeText(text)
@@ -371,8 +374,9 @@ export default function CaptainCodesPage() {
         <div className="space-y-3">
           {filtered.map((sc) => {
             const pl = phaseLabel(sc.session.phase)
-            const usedCount = sc.codes.filter((c) => c.used).length
-            const totalCodes = sc.codes.length
+            const codesWithCode = sc.codes.filter((c) => c.code)
+            const usedCount = codesWithCode.filter((c) => c.used).length
+            const totalCodes = codesWithCode.length
 
             return (
               <Card
@@ -435,10 +439,57 @@ export default function CaptainCodesPage() {
                           <Loader2 className="h-4 w-4 animate-spin" />
                           Loading codes...
                         </div>
-                      ) : sc.codes.length === 0 ? (
-                        <p className="text-sm text-slate-500 py-4 text-center">
-                          No codes found for this session.
-                        </p>
+                      ) : sc.codes.length === 0 || sc.codes.every((c) => !c.code) ? (
+                        <div className="flex flex-col items-center gap-3 py-6">
+                          <p className="text-sm text-slate-500">
+                            {sc.codes.length === 0
+                              ? "No captain seats found for this session."
+                              : "Seats exist but no codes have been generated yet."}
+                          </p>
+                          {sc.codes.length > 0 && (
+                            <Button
+                              size="sm"
+                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                              disabled={actionLoading === "gen_" + sc.session.id}
+                              onClick={async () => {
+                                setActionLoading("gen_" + sc.session.id)
+                                try {
+                                  const res = await fetch(`/api/draft/${sc.session.id}/codes`, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ _action: "generate_all" }),
+                                  })
+                                  if (res.ok) {
+                                    // Refresh codes
+                                    const codesRes = await fetch(`/api/draft/${sc.session.id}/codes`)
+                                    const codesData = await codesRes.json()
+                                    setSessionCodes((prev) =>
+                                      prev.map((s) =>
+                                        s.session.id === sc.session.id
+                                          ? { ...s, codes: codesData.codes ?? [] }
+                                          : s
+                                      )
+                                    )
+                                  } else {
+                                    const d = await res.json()
+                                    setError(d.error ?? "Failed to generate codes")
+                                  }
+                                } catch {
+                                  setError("Network error generating codes")
+                                } finally {
+                                  setActionLoading(null)
+                                }
+                              }}
+                            >
+                              {actionLoading === "gen_" + sc.session.id ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
+                              ) : (
+                                <KeyRound className="h-3.5 w-3.5 mr-1.5" />
+                              )}
+                              Generate Codes
+                            </Button>
+                          )}
+                        </div>
                       ) : (
                         <>
                           {/* Toolbar for codes */}
@@ -454,6 +505,45 @@ export default function CaptainCodesPage() {
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
+                              {sc.codes.some((c) => !c.code) && (
+                                <Button
+                                  size="sm"
+                                  className="bg-blue-600 hover:bg-blue-700 text-white h-7 text-xs"
+                                  disabled={actionLoading === "gen_" + sc.session.id}
+                                  onClick={async () => {
+                                    setActionLoading("gen_" + sc.session.id)
+                                    try {
+                                      const res = await fetch(`/api/draft/${sc.session.id}/codes`, {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ _action: "generate_all" }),
+                                      })
+                                      if (res.ok) {
+                                        const codesRes = await fetch(`/api/draft/${sc.session.id}/codes`)
+                                        const codesData = await codesRes.json()
+                                        setSessionCodes((prev) =>
+                                          prev.map((s) =>
+                                            s.session.id === sc.session.id
+                                              ? { ...s, codes: codesData.codes ?? [] }
+                                              : s
+                                          )
+                                        )
+                                      }
+                                    } catch {
+                                      setError("Failed to generate codes")
+                                    } finally {
+                                      setActionLoading(null)
+                                    }
+                                  }}
+                                >
+                                  {actionLoading === "gen_" + sc.session.id ? (
+                                    <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                                  ) : (
+                                    <KeyRound className="h-3 w-3 mr-1" />
+                                  )}
+                                  Generate Missing
+                                </Button>
+                              )}
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -481,9 +571,9 @@ export default function CaptainCodesPage() {
 
                           {/* Code cards grid */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {sc.codes.map((c) => (
+                            {sc.codes.filter((c) => c.code).map((c) => (
                               <div
-                                key={c.code + c.seat_label}
+                                key={(c.code ?? "") + c.seat_label}
                                 className={`group relative rounded-lg border p-4 transition-all ${
                                   c.used
                                     ? "bg-slate-900/40 border-slate-700/40"
@@ -515,9 +605,9 @@ export default function CaptainCodesPage() {
 
                                 {/* Code display */}
                                 <div className={`font-mono text-lg tracking-[0.2em] mb-3 ${
-                                  c.used ? "text-slate-600" : "text-slate-100"
+                                  !c.code ? "text-slate-600 italic text-sm" : c.used ? "text-slate-600" : "text-slate-100"
                                 }`}>
-                                  {c.code}
+                                  {c.code ?? "No code"}
                                 </div>
 
                                 {c.captain_name && c.captain_name !== c.seat_label && (
@@ -531,9 +621,9 @@ export default function CaptainCodesPage() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => copyCode(c.code)}
+                                    onClick={() => c.code && copyCode(c.code)}
                                     className="h-7 px-2 text-xs text-slate-500 hover:text-slate-200"
-                                    disabled={c.used}
+                                    disabled={c.used || !c.code}
                                   >
                                     {copiedCode === c.code ? (
                                       <><CheckCircle2 className="h-3 w-3 mr-1 text-green-400" /> Copied</>

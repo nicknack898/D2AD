@@ -16,6 +16,7 @@ import {
   AlertCircle,
   RefreshCw,
   KeyRound,
+  Trash2,
 } from "lucide-react"
 import Link from "next/link"
 
@@ -130,6 +131,27 @@ export default function AdminDraftsPage() {
       fetchData()
     } catch {
       setError("Network error")
+    }
+  }
+
+  const handleDelete = async (sessionId: string, eventName: string) => {
+    if (!confirm(`Delete the draft session for "${eventName}"? This will remove all seats, codes, lots, and bids. This cannot be undone.`)) return
+    setError(null)
+    try {
+      const res = await fetch(`/api/draft/${sessionId}`, { method: "DELETE" })
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.error ?? "Failed to delete draft")
+        return
+      }
+      // Clear codes view if showing for this session
+      if (viewingSessionId === sessionId) {
+        setViewingSessionId(null)
+        setViewCodes([])
+      }
+      fetchData()
+    } catch {
+      setError("Network error deleting draft")
     }
   }
 
@@ -335,6 +357,14 @@ export default function AdminDraftsPage() {
                       <Link href={`/draft/${sess.id}`} target="_blank">
                         <ExternalLink className="h-3.5 w-3.5 mr-1" /> Spectator
                       </Link>
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/50"
+                      onClick={() => handleDelete(sess.id, event?.name ?? "Unknown")}
+                    >
+                      <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
                     </Button>
                   </div>
                 </div>

@@ -3,6 +3,51 @@ import { createClient } from "@/lib/supabase-server"
 import { getDraftSession, getLotsForSession, getSeatsForSession } from "@/lib/draft-engine"
 
 /**
+ * DELETE /api/draft/[sessionId]
+ * Admin-only: deletes a draft session and all related data (cascade via foreign keys,
+ * or manual deletion if no cascade is set up).
+ */
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ sessionId: string }> },
+) {
+  try {
+    const { sessionId } = await params
+    const supabase = await createClient()
+
+    // Get seats to delete related codes and wallets
+    const { data: seats } = await supabase
+      .from("captain_seats")
+      .select("id")
+      .eq("draft_session_id", sessionId)
+
+    const seatIds = (seats ?? []).map((s) => s.id)
+
+    if (seatIds.length > 0) {
+      // Delete captain_codes for these seats
+      await supabase.from("captain_codes").delete().in("seat_id", seatIds)
+      // Delete wallets for these seats
+      await supabase.from("wallets").delete().in("seat_id", seatIds)
+    }
+
+    // Delete lots
+    await supabase.from("lots").delete().eq("draft_session_id", sessionId)
+    // Delete bids
+    await supabase.from("bids").delete().eq("draft_session_id", sessionId)
+    // Delete captain seats
+    await supabase.from("captain_seats").delete().eq("draft_session_id", sessionId)
+    // Delete the session itself
+    const { error: delErr } = await supabase.from("draft_sessions").delete().eq("id", sessionId)
+    if (delErr) throw delErr
+
+    return NextResponse.json({ success: true, message: "Draft session deleted" })
+  } catch (err) {
+    console.error("Draft DELETE error:", err)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
+}
+
+/**
  * GET /api/draft/[sessionId]
  * Returns the full draft state: session, lots (with player names), seats + wallets.
  * This is the single polling/initial-load endpoint for spectators and captains.
