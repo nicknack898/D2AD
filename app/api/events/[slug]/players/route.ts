@@ -71,11 +71,29 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
       }
       const { error: updateErr } = await supabase
         .from("players")
-        .update({ status: newStatus })
+        .update({ status: newStatus, updated_at: new Date().toISOString() })
         .eq("id", player_id)
         .eq("event_id", event.id)
       if (updateErr) throw updateErr
       return NextResponse.json({ success: true, message: `Player status updated to ${newStatus}` })
+    }
+
+    // Admin action: update player details (rating, notes)
+    if (json._action === "update_player") {
+      const { player_id, rating, notes } = json
+      if (!player_id) {
+        return NextResponse.json({ error: "player_id required" }, { status: 400 })
+      }
+      const updates: Record<string, any> = { updated_at: new Date().toISOString() }
+      if (rating !== undefined) updates.rating = typeof rating === "number" ? rating : null
+      if (notes !== undefined) updates.notes = notes
+      const { error: updateErr } = await supabase
+        .from("players")
+        .update(updates)
+        .eq("id", player_id)
+        .eq("event_id", event.id)
+      if (updateErr) throw updateErr
+      return NextResponse.json({ success: true, message: "Player updated" })
     }
 
     if (event.status !== "registration_open") {
@@ -85,8 +103,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
       )
     }
 
-    // Override event_id from URL
-    const parsed = playerRegistrationSchema.safeParse({ ...json, event_id: event.id })
+    // Override event_id from URL, pass through rating_source
+    const parsed = playerRegistrationSchema.safeParse({
+      ...json,
+      event_id: event.id,
+      rating_source: json.rating_source || null,
+    })
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Validation failed", details: parsed.error.issues.map((i) => ({ path: i.path, message: i.message })) },

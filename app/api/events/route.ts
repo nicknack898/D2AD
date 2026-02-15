@@ -21,7 +21,19 @@ export async function GET(req: NextRequest) {
 
     if (error) throw error
 
-    return NextResponse.json({ success: true, data })
+    // Fetch player counts for each event
+    const eventsWithCounts = await Promise.all(
+      (data ?? []).map(async (event: any) => {
+        const { count } = await supabase
+          .from("players")
+          .select("*", { count: "exact", head: true })
+          .eq("event_id", event.id)
+          .eq("status", "confirmed")
+        return { ...event, player_count: count ?? 0 }
+      })
+    )
+
+    return NextResponse.json({ success: true, data: eventsWithCounts })
   } catch (err) {
     console.error("Get events error:", err)
     return NextResponse.json({ success: false, message: "Failed to fetch events" }, { status: 500 })

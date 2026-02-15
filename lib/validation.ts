@@ -59,11 +59,12 @@ export const eventSchema = z.object({
 
 export const playerRegistrationSchema = z.object({
   event_id: z.string().uuid("Invalid event ID"),
-  display_name: z.string().min(1, "In-game name is required").max(50),
-  discord_id: z.string().min(1, "Discord username is required").max(50),
-  steam_id: z.string().max(50).optional().nullable(),
-  rating: z.number().int().min(0).max(15000).optional().nullable(),
-  notes: z.string().max(500).optional().nullable(),
+  display_name: z.string().min(1, "In-game name is required").max(50, "In-game name too long"),
+  discord_id: z.string().min(1, "Discord username is required").max(50, "Discord username too long"),
+  steam_id: z.string().max(50, "Steam ID too long").optional().nullable(),
+  rating: z.number().int().min(0, "MMR must be positive").max(15000, "MMR seems too high").optional().nullable(),
+  rating_source: z.enum(["self_reported", "dotabuff", "opendota", "stratz"]).optional().nullable(),
+  notes: z.string().max(500, "Notes too long").optional().nullable(),
 })
 
 // --- Phase 2: Draft Room ---

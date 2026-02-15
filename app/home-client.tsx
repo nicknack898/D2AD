@@ -133,6 +133,12 @@ export default function HomeClient() {
                         <p className="text-slate-400 text-sm line-clamp-2">
                           {event.description || "Details coming soon."}
                         </p>
+                        {event.player_count > 0 && (
+                          <p className="text-slate-500 text-xs mt-2 flex items-center gap-1">
+                            <Users className="h-3 w-3" />
+                            {event.player_count} player{event.player_count !== 1 ? "s" : ""} registered
+                          </p>
+                        )}
                       </CardContent>
                     </Card>
                   </Link>

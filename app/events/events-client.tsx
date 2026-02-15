@@ -97,9 +97,15 @@ export default function EventsClient() {
                                   {formatDate(event.starts_at)}
                                 </span>
                               )}
-                              {event.registration_closes_at && event.status === "registration_open" && (
+                              {event.player_count > 0 && (
                                 <span className="flex items-center gap-1">
                                   <Users className="h-3.5 w-3.5" />
+                                  {event.player_count} player{event.player_count !== 1 ? "s" : ""} registered
+                                </span>
+                              )}
+                              {event.registration_closes_at && event.status === "registration_open" && (
+                                <span className="flex items-center gap-1 text-yellow-500/70">
+                                  <Clock className="h-3.5 w-3.5" />
                                   Reg closes {formatDate(event.registration_closes_at)}
                                 </span>
                               )}
@@ -137,7 +143,14 @@ export default function EventsClient() {
                             <CardTitle className="text-slate-300 text-lg mt-2">{event.name}</CardTitle>
                           </CardHeader>
                           <CardContent>
-                            <span className="text-xs text-slate-500">{formatDate(event.starts_at)}</span>
+                            <div className="flex items-center gap-3 text-xs text-slate-500">
+                              <span>{formatDate(event.starts_at)}</span>
+                              {event.player_count > 0 && (
+                                <span className="flex items-center gap-1">
+                                  <Users className="h-3 w-3" /> {event.player_count}
+                                </span>
+                              )}
+                            </div>
                           </CardContent>
                         </Card>
                       </Link>
