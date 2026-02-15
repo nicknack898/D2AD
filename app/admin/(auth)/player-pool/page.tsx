@@ -30,7 +30,13 @@ import {
   Users,
   Bell,
   Radio,
+  Upload,
+  FileSpreadsheet,
+  ChevronDown,
+  ChevronUp,
+  Trash2,
 } from "lucide-react"
+import { Textarea } from "@/components/ui/textarea"
 import useSWR, { mutate } from "swr"
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
@@ -68,6 +74,20 @@ export default function AdminPlayerPoolPage() {
   const [editRating, setEditRating] = useState("")
   const [editNotes, setEditNotes] = useState("")
   const [actionError, setActionError] = useState<string | null>(null)
+
+  // Manual add player
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [addForm, setAddForm] = useState({
+    display_name: "", discord_id: "", steam_id: "", rating: "", notes: "",
+  })
+  const [addLoading, setAddLoading] = useState(false)
+
+  // CSV import
+  const [showImport, setShowImport] = useState(false)
+  const [csvText, setCsvText] = useState("")
+  const [csvParsed, setCsvParsed] = useState<any[]>([])
+  const [importLoading, setImportLoading] = useState(false)
+  const [importResult, setImportResult] = useState<{ imported: number; skipped: number; errors: string[] } | null>(null)
 
   const [toasts, setToasts] = useState<{ id: string; name: string; time: number }[]>([])
   const [autoRefresh, setAutoRefresh] = useState(true)
@@ -248,6 +268,153 @@ export default function AdminPlayerPoolPage() {
     }
   }
 
+  const handleBulkRemove = useCallback(async () => {
+    if (selectedIds.size === 0) return
+    if (!confirm(`Permanently remove ${selectedIds.size} player(s) from the pool?`)) return
+    setBulkLoading(true)
+    setActionError(null)
+    try {
+      await Promise.all(
+        Array.from(selectedIds).map((id) =>
+          fetch(`/api/events/${slug}/players`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ _action: "remove_player", player_id: id }),
+          })
+        )
+      )
+      setSelectedIds(new Set())
+      mutate(`/api/events/${slug}/players`)
+    } catch {
+      setActionError("Some removals failed. Please try again.")
+    } finally {
+      setBulkLoading(false)
+    }
+  }, [selectedIds, slug])
+
+  async function removePlayer(playerId: string) {
+    setActionError(null)
+    try {
+      await fetch(`/api/events/${slug}/players`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ _action: "remove_player", player_id: playerId }),
+      })
+      mutate(`/api/events/${slug}/players`)
+    } catch {
+      setActionError("Failed to remove player")
+    }
+  }
+
+  async function handleAddPlayer() {
+    if (!addForm.display_name.trim() || !addForm.discord_id.trim()) {
+      setActionError("Display name and Discord ID are required")
+      return
+    }
+    setAddLoading(true)
+    setActionError(null)
+    try {
+      const res = await fetch(`/api/events/${slug}/players`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          _action: "add_player",
+          display_name: addForm.display_name.trim(),
+          discord_id: addForm.discord_id.trim(),
+          steam_id: addForm.steam_id.trim() || null,
+          rating: addForm.rating ? parseInt(addForm.rating, 10) : null,
+          notes: addForm.notes.trim() || null,
+          status: "confirmed",
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok) {
+        setActionError(json.error || "Failed to add player")
+      } else {
+        setAddForm({ display_name: "", discord_id: "", steam_id: "", rating: "", notes: "" })
+        setShowAddForm(false)
+        mutate(`/api/events/${slug}/players`)
+      }
+    } catch {
+      setActionError("Network error adding player")
+    } finally {
+      setAddLoading(false)
+    }
+  }
+
+  function parseCSV(text: string) {
+    const lines = text.trim().split("\n").filter(Boolean)
+    if (lines.length === 0) return []
+    // Detect header: if first line contains "display_name" or "discord" (case-insensitive), skip it
+    let startIdx = 0
+    if (lines[0].toLowerCase().includes("display_name") || lines[0].toLowerCase().includes("discord")) {
+      startIdx = 1
+    }
+    const players: any[] = []
+    for (let i = startIdx; i < lines.length; i++) {
+      const cols = lines[i].split(",").map((c) => c.trim().replace(/^"|"$/g, ""))
+      if (cols.length >= 2) {
+        players.push({
+          display_name: cols[0] || "",
+          discord_id: cols[1] || "",
+          steam_id: cols[2] || "",
+          rating: cols[3] || "",
+          notes: cols[4] || "",
+        })
+      }
+    }
+    return players
+  }
+
+  function handleCSVChange(text: string) {
+    setCsvText(text)
+    setImportResult(null)
+    setCsvParsed(parseCSV(text))
+  }
+
+  function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      const text = ev.target?.result as string
+      setCsvText(text)
+      setImportResult(null)
+      setCsvParsed(parseCSV(text))
+    }
+    reader.readAsText(file)
+    e.target.value = ""
+  }
+
+  async function handleBulkImport() {
+    if (csvParsed.length === 0) return
+    setImportLoading(true)
+    setImportResult(null)
+    setActionError(null)
+    try {
+      const res = await fetch(`/api/events/${slug}/players`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          _action: "bulk_import",
+          players: csvParsed.map((p) => ({
+            ...p,
+            rating: p.rating ? parseInt(p.rating, 10) : null,
+          })),
+        }),
+      })
+      const json = await res.json()
+      setImportResult({ imported: json.imported ?? 0, skipped: json.skipped ?? 0, errors: json.errors ?? [] })
+      if (json.imported > 0) {
+        mutate(`/api/events/${slug}/players`)
+      }
+    } catch {
+      setActionError("Network error during import")
+    } finally {
+      setImportLoading(false)
+    }
+  }
+
   function exportCSV() {
     const headers = ["Display Name", "Discord", "Steam ID", "Rating", "Rating Source", "Status", "Notes", "Registered"]
     const rows = filteredPlayers.map((p) => [
@@ -331,6 +498,22 @@ export default function AdminPlayerPoolPage() {
           >
             <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Refresh
           </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
+            onClick={() => { setShowAddForm(!showAddForm); setShowImport(false) }}
+          >
+            <UserPlus className="h-3.5 w-3.5 mr-1.5" /> Add Player
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10"
+            onClick={() => { setShowImport(!showImport); setShowAddForm(false) }}
+          >
+            <Upload className="h-3.5 w-3.5 mr-1.5" /> Import CSV
+          </Button>
           {filteredPlayers.length > 0 && (
             <Button
               variant="outline"
@@ -343,6 +526,188 @@ export default function AdminPlayerPoolPage() {
           )}
         </div>
       </div>
+
+      {/* Manual Add Player Form */}
+      {showAddForm && slug && (
+        <Card className="bg-slate-800/60 border-blue-500/20">
+          <CardContent className="py-5">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                <UserPlus className="h-4 w-4 text-blue-400" /> Add Player Manually
+              </h3>
+              <Button variant="ghost" size="sm" className="text-slate-400 h-7 w-7 p-0" onClick={() => setShowAddForm(false)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              <div>
+                <label className="text-xs text-slate-400 mb-1 block">Display Name *</label>
+                <Input
+                  placeholder="In-game name"
+                  value={addForm.display_name}
+                  onChange={(e) => setAddForm({ ...addForm, display_name: e.target.value })}
+                  className="bg-slate-900 border-slate-600 text-white text-sm h-9"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-slate-400 mb-1 block">Discord ID *</label>
+                <Input
+                  placeholder="player#1234"
+                  value={addForm.discord_id}
+                  onChange={(e) => setAddForm({ ...addForm, discord_id: e.target.value })}
+                  className="bg-slate-900 border-slate-600 text-white text-sm h-9"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-slate-400 mb-1 block">Steam ID</label>
+                <Input
+                  placeholder="76561198..."
+                  value={addForm.steam_id}
+                  onChange={(e) => setAddForm({ ...addForm, steam_id: e.target.value })}
+                  className="bg-slate-900 border-slate-600 text-white text-sm h-9"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-slate-400 mb-1 block">MMR</label>
+                <Input
+                  type="number"
+                  placeholder="e.g. 3500"
+                  value={addForm.rating}
+                  onChange={(e) => setAddForm({ ...addForm, rating: e.target.value })}
+                  className="bg-slate-900 border-slate-600 text-white text-sm h-9"
+                />
+              </div>
+              <div className="flex items-end">
+                <Button
+                  onClick={handleAddPlayer}
+                  disabled={addLoading || !addForm.display_name || !addForm.discord_id}
+                  className="bg-blue-600 hover:bg-blue-700 text-white h-9 w-full"
+                  size="sm"
+                >
+                  {addLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><Check className="h-3.5 w-3.5 mr-1" /> Add</>}
+                </Button>
+              </div>
+            </div>
+            <div className="mt-2">
+              <Input
+                placeholder="Notes (optional)"
+                value={addForm.notes}
+                onChange={(e) => setAddForm({ ...addForm, notes: e.target.value })}
+                className="bg-slate-900 border-slate-600 text-white text-sm h-9"
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* CSV Import Panel */}
+      {showImport && slug && (
+        <Card className="bg-slate-800/60 border-yellow-500/20">
+          <CardContent className="py-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                <FileSpreadsheet className="h-4 w-4 text-yellow-400" /> Bulk Import Players
+              </h3>
+              <Button variant="ghost" size="sm" className="text-slate-400 h-7 w-7 p-0" onClick={() => setShowImport(false)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="bg-slate-900/60 rounded-lg px-4 py-3 text-xs text-slate-400 border border-slate-700">
+              <p className="font-medium text-slate-300 mb-1">CSV Format</p>
+              <p className="font-mono text-slate-500">display_name, discord_id, steam_id, rating, notes</p>
+              <p className="mt-1">First row is auto-skipped if it contains column headers. Max 200 players per import.</p>
+            </div>
+
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <Textarea
+                  placeholder={"PlayerOne, player1#1234, 76561198..., 3500, loves mid\nPlayerTwo, player2#5678, , 2800, pos 5 main"}
+                  value={csvText}
+                  onChange={(e) => handleCSVChange(e.target.value)}
+                  className="bg-slate-900 border-slate-600 text-white text-xs font-mono resize-none h-28 placeholder:text-slate-600"
+                />
+              </div>
+              <div className="flex flex-col gap-2 justify-center">
+                <label className="cursor-pointer">
+                  <input type="file" accept=".csv,.txt" onChange={handleFileUpload} className="sr-only" />
+                  <div className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-dashed border-slate-600 text-slate-400 hover:border-slate-500 hover:text-white transition-colors text-xs">
+                    <Upload className="h-3.5 w-3.5" /> Upload File
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* Preview */}
+            {csvParsed.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs text-slate-400">{csvParsed.length} player{csvParsed.length !== 1 ? "s" : ""} detected</p>
+                <div className="max-h-40 overflow-auto rounded-lg border border-slate-700">
+                  <table className="w-full text-xs">
+                    <thead className="bg-slate-800 sticky top-0">
+                      <tr className="text-slate-500">
+                        <th className="text-left px-3 py-1.5 font-medium">Name</th>
+                        <th className="text-left px-3 py-1.5 font-medium">Discord</th>
+                        <th className="text-left px-3 py-1.5 font-medium">Steam</th>
+                        <th className="text-right px-3 py-1.5 font-medium">MMR</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-700/50">
+                      {csvParsed.slice(0, 20).map((p, i) => (
+                        <tr key={i} className={`${!p.display_name || !p.discord_id ? "bg-red-500/5" : ""}`}>
+                          <td className="px-3 py-1.5 text-white">{p.display_name || <span className="text-red-400">missing</span>}</td>
+                          <td className="px-3 py-1.5 text-slate-400">{p.discord_id || <span className="text-red-400">missing</span>}</td>
+                          <td className="px-3 py-1.5 text-slate-500">{p.steam_id || "-"}</td>
+                          <td className="px-3 py-1.5 text-right text-slate-400 tabular-nums">{p.rating || "-"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {csvParsed.length > 20 && (
+                    <p className="text-xs text-slate-500 px-3 py-1.5 bg-slate-800">... and {csvParsed.length - 20} more</p>
+                  )}
+                </div>
+
+                <Button
+                  onClick={handleBulkImport}
+                  disabled={importLoading || csvParsed.length === 0}
+                  className="bg-yellow-600 hover:bg-yellow-700 text-white w-full"
+                  size="sm"
+                >
+                  {importLoading ? (
+                    <><Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> Importing...</>
+                  ) : (
+                    <><Upload className="h-3.5 w-3.5 mr-1.5" /> Import {csvParsed.length} Player{csvParsed.length !== 1 ? "s" : ""}</>
+                  )}
+                </Button>
+              </div>
+            )}
+
+            {/* Import results */}
+            {importResult && (
+              <div className={`rounded-lg px-4 py-3 text-sm border ${
+                importResult.errors.length > 0
+                  ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-400"
+                  : "bg-green-500/10 border-green-500/20 text-green-400"
+              }`}>
+                <p className="font-medium">
+                  {importResult.imported} imported, {importResult.skipped} skipped
+                </p>
+                {importResult.errors.length > 0 && (
+                  <ul className="mt-1 text-xs space-y-0.5 text-yellow-400/80 max-h-20 overflow-auto">
+                    {importResult.errors.slice(0, 10).map((err, i) => (
+                      <li key={i}>{err}</li>
+                    ))}
+                    {importResult.errors.length > 10 && (
+                      <li>... and {importResult.errors.length - 10} more</li>
+                    )}
+                  </ul>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Filters bar */}
       <div className="flex flex-wrap gap-3 items-end">
@@ -423,6 +788,16 @@ export default function AdminPlayerPoolPage() {
             >
               {bulkLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <X className="h-3 w-3 mr-1" />}
               Drop All
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-slate-500/30 text-slate-400 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 h-7 text-xs"
+              onClick={handleBulkRemove}
+              disabled={bulkLoading}
+            >
+              {bulkLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3 mr-1" />}
+              Remove All
             </Button>
             <Button
               size="sm"
@@ -599,6 +974,19 @@ export default function AdminPlayerPoolPage() {
                             <X className="h-3.5 w-3.5" />
                           </Button>
                         )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-slate-500 hover:text-red-400 h-7 w-7 p-0"
+                          onClick={() => {
+                            if (confirm(`Remove ${player.display_name} from the pool?`)) {
+                              removePlayer(player.id)
+                            }
+                          }}
+                          title="Remove permanently"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
                       </>
                     )}
                   </div>
