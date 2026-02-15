@@ -281,6 +281,26 @@ export default function EventDetailClient({ slug }: { slug: string }) {
           </div>
         </div>
 
+        {/* Prominent Registration CTA */}
+        {isOpen && (
+          <div className="mb-8 bg-gradient-to-r from-green-500/10 via-blue-500/5 to-green-500/10 border border-green-500/20 rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+                <Users className="h-5 w-5 text-green-400" />
+              </div>
+              <div>
+                <p className="text-white font-semibold">Ready to play?</p>
+                <p className="text-slate-400 text-sm">Join {players.length} other players in the pool for this event.</p>
+              </div>
+            </div>
+            <Button className="bg-green-600 hover:bg-green-700 text-white px-6 shrink-0" asChild>
+              <Link href={`/events/${slug}/register`}>
+                Register Now <ChevronRight className="ml-1 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        )}
+
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main content */}
           <div className="lg:col-span-2 space-y-8">
@@ -367,10 +387,14 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                     <CardHeader className="pb-3">
                       <CardTitle className="text-white text-lg flex items-center gap-2">
                         <User className="h-5 w-5 text-green-400" />
-                        Register as Player
+                        Quick Register
                       </CardTitle>
                       <p className="text-slate-400 text-xs">
-                        Fill in your details to join the player pool for this event.
+                        Fill in your details below, or use the{" "}
+                        <Link href={`/events/${slug}/register`} className="text-blue-400 hover:underline">
+                          full registration page
+                        </Link>
+                        .
                       </p>
                     </CardHeader>
                     <CardContent>
@@ -612,6 +636,13 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                           onClick={handleRegisterAnother}
                         >
                           Register Another Player
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          className="text-slate-400 hover:text-white w-full text-xs"
+                          asChild
+                        >
+                          <Link href={`/events/${slug}/register`}>Use Full Registration Page</Link>
                         </Button>
                       </div>
                     </CardContent>

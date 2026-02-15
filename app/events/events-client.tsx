@@ -110,10 +110,15 @@ export default function EventsClient() {
                                 </span>
                               )}
                             </div>
-                            <div className="pt-2">
+                            <div className="flex items-center justify-between pt-3">
                               <span className="text-blue-400 text-sm flex items-center gap-1">
                                 View details <ArrowRight className="h-3.5 w-3.5" />
                               </span>
+                              {event.status === "registration_open" && (
+                                <span className="text-xs px-3 py-1 rounded-full bg-green-500/20 text-green-400 border border-green-500/30 font-medium">
+                                  Register Now
+                                </span>
+                              )}
                             </div>
                           </CardContent>
                         </Card>

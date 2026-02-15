@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useCallback } from "react"
+import { useState, useMemo, useCallback, useEffect, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -28,6 +28,8 @@ import {
   Save,
   AlertCircle,
   Users,
+  Bell,
+  Radio,
 } from "lucide-react"
 import useSWR, { mutate } from "swr"
 
@@ -67,12 +69,50 @@ export default function AdminPlayerPoolPage() {
   const [editNotes, setEditNotes] = useState("")
   const [actionError, setActionError] = useState<string | null>(null)
 
+  const [toasts, setToasts] = useState<{ id: string; name: string; time: number }[]>([])
+  const [autoRefresh, setAutoRefresh] = useState(true)
+  const prevPlayerIdsRef = useRef<Set<string>>(new Set())
+  const initialLoadRef = useRef(true)
+
   const slug = selectedEvent || events[0]?.slug || ""
   const { data: playersRes, isLoading: playersLoading } = useSWR(
     slug ? `/api/events/${slug}/players` : null,
     fetcher,
+    { refreshInterval: autoRefresh ? 10000 : 0 },
   )
   const allPlayers: any[] = playersRes?.data ?? []
+
+  // Detect new players and show toast notifications
+  useEffect(() => {
+    if (allPlayers.length === 0) return
+    const currentIds = new Set(allPlayers.map((p: any) => p.id))
+
+    if (initialLoadRef.current) {
+      prevPlayerIdsRef.current = currentIds
+      initialLoadRef.current = false
+      return
+    }
+
+    const newPlayers = allPlayers.filter((p: any) => !prevPlayerIdsRef.current.has(p.id))
+    if (newPlayers.length > 0) {
+      const newToasts = newPlayers.map((p: any) => ({
+        id: p.id,
+        name: p.display_name ?? "Unknown",
+        time: Date.now(),
+      }))
+      setToasts((prev) => [...newToasts, ...prev].slice(0, 5))
+    }
+    prevPlayerIdsRef.current = currentIds
+  }, [allPlayers])
+
+  // Auto-dismiss toasts after 8 seconds
+  useEffect(() => {
+    if (toasts.length === 0) return
+    const timer = setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => Date.now() - t.time < 8000))
+    }, 8000)
+    return () => clearTimeout(timer)
+  }, [toasts])
 
   const filteredPlayers = useMemo(() => {
     let list = [...allPlayers]
@@ -239,12 +279,50 @@ export default function AdminPlayerPoolPage() {
 
   return (
     <div className="space-y-6">
+      {/* New player toast notifications */}
+      {toasts.length > 0 && (
+        <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm">
+          {toasts.map((toast) => (
+            <div
+              key={toast.id}
+              className="flex items-center gap-3 bg-slate-800 border border-green-500/30 rounded-lg px-4 py-3 shadow-lg shadow-black/20 animate-in slide-in-from-right-5 fade-in duration-300"
+            >
+              <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+                <Bell className="h-4 w-4 text-green-400" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm text-white font-medium truncate">New Registration</p>
+                <p className="text-xs text-slate-400 truncate">{toast.name} joined the pool</p>
+              </div>
+              <button
+                onClick={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
+                className="text-slate-500 hover:text-white transition-colors shrink-0"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-white">Player Pool</h1>
           <p className="text-slate-400 text-sm mt-1">Manage registered players, update statuses, and prepare the pool for drafting.</p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setAutoRefresh(!autoRefresh)}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+              autoRefresh
+                ? "bg-green-500/10 text-green-400 border-green-500/30 hover:bg-green-500/20"
+                : "bg-slate-800 text-slate-500 border-slate-700 hover:bg-slate-700"
+            }`}
+            title={autoRefresh ? "Auto-refresh enabled (10s)" : "Auto-refresh disabled"}
+          >
+            <Radio className={`h-3 w-3 ${autoRefresh ? "animate-pulse" : ""}`} />
+            {autoRefresh ? "Live" : "Paused"}
+          </button>
           <Button
             variant="outline"
             size="sm"

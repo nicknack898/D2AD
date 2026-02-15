@@ -13,17 +13,19 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     async function load() {
       try {
-        const [evRes, draftRes] = await Promise.all([
+        const [evRes, draftRes, statsRes] = await Promise.all([
           fetch("/api/events"),
           fetch("/api/draft/list"),
+          fetch("/api/admin/stats"),
         ])
         const evData = await evRes.json()
         const draftData = await draftRes.json()
+        const adminStats = await statsRes.json()
         const events = evData.data ?? []
         const drafts = draftData.data ?? []
         setStats({
           events: events.length,
-          players: 0,
+          players: adminStats.total_players ?? 0,
           drafts: drafts.length,
         })
       } catch {
