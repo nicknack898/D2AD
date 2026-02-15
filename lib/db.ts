@@ -1,10 +1,20 @@
-import { neon } from "@neondatabase/serverless"
+import { neon, type NeonQueryFunction } from "@neondatabase/serverless"
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL environment variable is required")
+function getSQL(): NeonQueryFunction<false, false> {
+  if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL environment variable is required")
+  }
+  return neon(process.env.DATABASE_URL)
 }
 
-export const sql = neon(process.env.DATABASE_URL)
+export const sql = new Proxy({} as NeonQueryFunction<false, false>, {
+  apply(_target, _thisArg, args) {
+    return getSQL()(...(args as [TemplateStringsArray, ...any[]]))
+  },
+  get(_target, prop) {
+    return (getSQL() as any)[prop]
+  },
+})
 
 export interface TeamRegistration {
   id: number
