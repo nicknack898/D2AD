@@ -5,11 +5,18 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Gavel, Eye, KeyRound, Clock, CheckCircle2, Radio, Loader2, AlertCircle, Lock } from "lucide-react"
+import {
+  Gavel,
+  Eye,
+  KeyRound,
+  Clock,
+  CheckCircle2,
+  Radio,
+  Loader2,
+  AlertCircle,
+} from "lucide-react"
 import Link from "next/link"
 import useSWR from "swr"
-
-const CAPTAIN_PASSWORD = "1234"
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -26,9 +33,9 @@ export default function DraftListClient() {
   const sessions = data?.data ?? []
 
   const [code, setCode] = useState("")
-  const [captainPw, setCaptainPw] = useState("")
   const [codeLoading, setCodeLoading] = useState(false)
   const [codeError, setCodeError] = useState<string | null>(null)
+  const [codeSuccess, setCodeSuccess] = useState(false)
 
   const liveSessions = sessions.filter((s: any) => s.status === "active" || s.status === "paused")
   const upcomingSessions = sessions.filter((s: any) => s.status === "pending")
@@ -36,12 +43,9 @@ export default function DraftListClient() {
 
   const handleCodeRedeem = useCallback(async () => {
     if (!code.trim()) return
-    if (captainPw !== CAPTAIN_PASSWORD) {
-      setCodeError("Incorrect captain password")
-      return
-    }
     setCodeLoading(true)
     setCodeError(null)
+    setCodeSuccess(false)
 
     try {
       // Try to redeem code against each non-completed session
@@ -61,28 +65,29 @@ export default function DraftListClient() {
         })
 
         if (res.ok) {
-          // Code was valid for this session, navigate to captain panel
-          router.push(`/draft/${sess.id}/captain`)
+          setCodeSuccess(true)
+          setTimeout(() => {
+            router.push(`/draft/${sess.id}`)
+          }, 800)
           return
         }
 
-        const data = await res.json()
-        // If the code was already used, stop trying
+        const respData = await res.json()
         if (res.status === 409) {
-          setCodeError(data.error ?? "This code has already been used")
+          setCodeError(respData.error ?? "This code has already been used")
           setCodeLoading(false)
           return
         }
-        // If it was a 404 (wrong code for this session), try the next session
+        // 404 means wrong code for this session, try next
       }
 
       setCodeError("Invalid code. Please check and try again.")
     } catch {
       setCodeError("Network error, please try again")
     } finally {
-      setCodeLoading(false)
+      if (!codeSuccess) setCodeLoading(false)
     }
-  }, [code, captainPw, sessions, router])
+  }, [code, sessions, router, codeSuccess])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
@@ -96,7 +101,7 @@ export default function DraftListClient() {
             Draft Room
           </h1>
           <p className="text-slate-400 max-w-xl mx-auto leading-relaxed">
-            Watch live captain auctions or enter with your captain code to bid on players for your team.
+            Watch live captain auctions or enter your captain code to bid on players for your team.
           </p>
         </div>
 
@@ -104,49 +109,53 @@ export default function DraftListClient() {
         <Card className="bg-slate-800/60 border-blue-500/20 border mb-10">
           <CardContent className="py-6">
             <div className="flex items-center gap-3 mb-4">
-              <KeyRound className="h-5 w-5 text-yellow-400 shrink-0" />
+              <div className="w-9 h-9 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
+                <KeyRound className="h-4 w-4 text-yellow-400" />
+              </div>
               <div>
                 <p className="text-white font-semibold text-sm">Have a captain code?</p>
-                <p className="text-slate-400 text-xs">Enter your one-time code to join the captain panel for bidding.</p>
+                <p className="text-slate-400 text-xs">Enter your one-time code to join the draft as a captain.</p>
               </div>
             </div>
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Input
-                  type="password"
-                  placeholder="Captain password"
-                  value={captainPw}
-                  onChange={(e) => { setCaptainPw(e.target.value); setCodeError(null) }}
-                  className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500 sm:w-44"
-                />
-                <Input
-                  placeholder="Captain code (e.g. A1B2C3D4)"
-                  value={code}
-                  onChange={(e) => { setCode(e.target.value.toUpperCase()); setCodeError(null) }}
-                  onKeyDown={(e) => e.key === "Enter" && handleCodeRedeem()}
-                  className="bg-slate-900 border-slate-600 font-mono text-center text-lg tracking-widest uppercase flex-1"
-                  maxLength={20}
-                />
-              </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Input
+                placeholder="Enter your captain code (e.g. A1B2C3D4)"
+                value={code}
+                onChange={(e) => { setCode(e.target.value.toUpperCase()); setCodeError(null); setCodeSuccess(false) }}
+                onKeyDown={(e) => e.key === "Enter" && handleCodeRedeem()}
+                className="bg-slate-900 border-slate-600 text-white font-mono text-center text-lg tracking-widest uppercase flex-1 placeholder:text-slate-600 placeholder:text-sm placeholder:tracking-normal placeholder:font-sans"
+                maxLength={20}
+              />
               <Button
                 onClick={handleCodeRedeem}
-                disabled={codeLoading || !code.trim() || !captainPw}
-                className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto px-6"
+                disabled={codeLoading || !code.trim() || codeSuccess}
+                className={`px-6 shrink-0 transition-all ${
+                  codeSuccess
+                    ? "bg-green-600 hover:bg-green-600 text-white"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                }`}
               >
-                {codeLoading ? (
+                {codeSuccess ? (
+                  <><CheckCircle2 className="h-4 w-4 mr-2" /> Authenticated</>
+                ) : codeLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <>
-                    <KeyRound className="h-4 w-4 mr-2" />
-                    Enter Draft
-                  </>
+                  <><KeyRound className="h-4 w-4 mr-2" /> Enter Draft</>
                 )}
               </Button>
             </div>
+
             {codeError && (
-              <div className="flex items-center gap-2 text-red-400 text-sm mt-3">
+              <div className="flex items-center gap-2 text-red-400 text-sm mt-3 bg-red-400/5 rounded-lg px-3 py-2 border border-red-500/10">
                 <AlertCircle className="h-4 w-4 shrink-0" />
                 <span>{codeError}</span>
+              </div>
+            )}
+            {codeSuccess && (
+              <div className="flex items-center gap-2 text-green-400 text-sm mt-3 bg-green-400/5 rounded-lg px-3 py-2 border border-green-500/10">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <span>Code accepted! Redirecting to draft room...</span>
               </div>
             )}
           </CardContent>
@@ -163,7 +172,7 @@ export default function DraftListClient() {
               <Gavel className="h-12 w-12 text-slate-600 mx-auto mb-4" />
               <p className="text-slate-400 text-lg mb-2">No draft sessions yet</p>
               <p className="text-slate-500 text-sm">
-                Draft sessions are created by admins when an event is ready. Check back soon or join Discord for announcements.
+                Draft sessions are created by admins when an event is ready. Check back soon or join our Discord for announcements.
               </p>
             </CardContent>
           </Card>
@@ -231,7 +240,7 @@ function SessionCard({ session }: { session: any }) {
               <Icon className="h-3 w-3" />
               {st.label}
             </span>
-            <CardTitle className="text-white text-lg">{session.event_name || `Draft Session`}</CardTitle>
+            <CardTitle className="text-white text-lg">{session.event_name || "Draft Session"}</CardTitle>
           </div>
           <span className="text-xs text-slate-500">
             {new Date(session.created_at).toLocaleDateString()}
@@ -244,22 +253,12 @@ function SessionCard({ session }: { session: any }) {
             <span>{session.captain_count ?? "?"} captains</span>
             <span>{session.seconds_per_lot ?? 30}s per lot</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700" asChild>
-              <Link href={`/draft/${session.id}`}>
-                <Eye className="h-3.5 w-3.5 mr-1.5" />
-                Spectate
-              </Link>
-            </Button>
-            {session.status !== "completed" && (
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" asChild>
-                <Link href={`/draft/${session.id}/captain`}>
-                  <KeyRound className="h-3.5 w-3.5 mr-1.5" />
-                  Captain Entry
-                </Link>
-              </Button>
-            )}
-          </div>
+          <Button size="sm" variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700" asChild>
+            <Link href={`/draft/${session.id}`}>
+              <Eye className="h-3.5 w-3.5 mr-1.5" />
+              {session.status === "completed" ? "View Results" : isLive ? "Watch Live" : "Open Draft Room"}
+            </Link>
+          </Button>
         </div>
       </CardContent>
     </Card>

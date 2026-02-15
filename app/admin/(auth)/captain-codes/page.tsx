@@ -453,16 +453,21 @@ export default function CaptainCodesPage() {
                               disabled={actionLoading === "gen_" + sc.session.id}
                               onClick={async () => {
                                 setActionLoading("gen_" + sc.session.id)
+                                setError(null)
                                 try {
+                                  console.log("[v0] Generating codes for session:", sc.session.id)
                                   const res = await fetch(`/api/draft/${sc.session.id}/codes`, {
                                     method: "POST",
                                     headers: { "Content-Type": "application/json" },
                                     body: JSON.stringify({ _action: "generate_all" }),
                                   })
+                                  const d = await res.json()
+                                  console.log("[v0] Generate response:", res.status, d)
                                   if (res.ok) {
                                     // Refresh codes
                                     const codesRes = await fetch(`/api/draft/${sc.session.id}/codes`)
                                     const codesData = await codesRes.json()
+                                    console.log("[v0] Refreshed codes:", codesData.codes?.length)
                                     setSessionCodes((prev) =>
                                       prev.map((s) =>
                                         s.session.id === sc.session.id
@@ -471,10 +476,10 @@ export default function CaptainCodesPage() {
                                       )
                                     )
                                   } else {
-                                    const d = await res.json()
-                                    setError(d.error ?? "Failed to generate codes")
+                                    setError(d.error ?? d.details ?? "Failed to generate codes")
                                   }
-                                } catch {
+                                } catch (e) {
+                                  console.error("[v0] Generate error:", e)
                                   setError("Network error generating codes")
                                 } finally {
                                   setActionLoading(null)
@@ -512,12 +517,14 @@ export default function CaptainCodesPage() {
                                   disabled={actionLoading === "gen_" + sc.session.id}
                                   onClick={async () => {
                                     setActionLoading("gen_" + sc.session.id)
+                                    setError(null)
                                     try {
                                       const res = await fetch(`/api/draft/${sc.session.id}/codes`, {
                                         method: "POST",
                                         headers: { "Content-Type": "application/json" },
                                         body: JSON.stringify({ _action: "generate_all" }),
                                       })
+                                      const d = await res.json()
                                       if (res.ok) {
                                         const codesRes = await fetch(`/api/draft/${sc.session.id}/codes`)
                                         const codesData = await codesRes.json()
@@ -528,6 +535,8 @@ export default function CaptainCodesPage() {
                                               : s
                                           )
                                         )
+                                      } else {
+                                        setError(d.error ?? d.details ?? "Failed to generate codes")
                                       }
                                     } catch {
                                       setError("Failed to generate codes")

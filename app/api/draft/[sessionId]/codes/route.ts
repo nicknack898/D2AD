@@ -46,10 +46,23 @@ export async function POST(
         const existingCodes = (s as any).captain_codes ?? []
         if (existingCodes.length === 0) {
           const newCode = crypto.randomBytes(4).toString("hex").toUpperCase()
+          const insertPayload = {
+            seat_id: s.id,
+            code: newCode,
+            code_hash: hashCode(newCode),
+            used: false,
+            expires_at: expiresAt(),
+          }
           const { error: insertErr } = await supabase
             .from("captain_codes")
-            .insert({ seat_id: s.id, code: newCode, code_hash: hashCode(newCode), used: false, expires_at: expiresAt() })
-          if (insertErr) throw insertErr
+            .insert(insertPayload)
+          if (insertErr) {
+            console.error("[v0] captain_codes insert failed:", insertErr.message, insertErr.code, insertErr.details)
+            return NextResponse.json({
+              error: `Failed to generate code for ${s.seat_label}: ${insertErr.message}`,
+              details: insertErr.details,
+            }, { status: 500 })
+          }
           generated++
         }
       }
@@ -85,11 +98,24 @@ export async function POST(
         .eq("seat_id", seat.id)
 
       // Insert new code
+      const regenPayload = {
+        seat_id: seat.id,
+        code: newCode,
+        code_hash: hashCode(newCode),
+        used: false,
+        expires_at: expiresAt(),
+      }
       const { error: insertErr } = await supabase
         .from("captain_codes")
-        .insert({ seat_id: seat.id, code: newCode, code_hash: hashCode(newCode), used: false, expires_at: expiresAt() })
+        .insert(regenPayload)
 
-      if (insertErr) throw insertErr
+      if (insertErr) {
+        console.error("[v0] regenerate insert failed:", insertErr.message, insertErr.code, insertErr.details)
+        return NextResponse.json({
+          error: `Failed to regenerate code: ${insertErr.message}`,
+          details: insertErr.details,
+        }, { status: 500 })
+      }
 
       return NextResponse.json({ success: true, new_code: newCode })
     }

@@ -72,10 +72,20 @@ export async function POST(req: Request) {
       // Generate unique code
       const code = crypto.randomBytes(4).toString("hex").toUpperCase()
       const codeHash = crypto.createHash("sha256").update(code).digest("hex")
+      const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
       const { error: codeErr } = await supabase
         .from("captain_codes")
-        .insert({ seat_id: seat.id, code, code_hash: codeHash, used: false, expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() })
-      if (codeErr) throw codeErr
+        .insert({
+          seat_id: seat.id,
+          code,
+          code_hash: codeHash,
+          used: false,
+          expires_at: expiresAt,
+        })
+      if (codeErr) {
+        console.error("[v0] captain_codes insert in draft create failed:", codeErr.message, codeErr.details)
+        throw codeErr
+      }
       codes.push({ seat_label: label, code })
     }
 
