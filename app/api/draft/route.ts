@@ -74,7 +74,7 @@ export async function POST(req: Request) {
       const codeHash = crypto.createHash("sha256").update(code).digest("hex")
       const { error: codeErr } = await supabase
         .from("captain_codes")
-        .insert({ seat_id: seat.id, code, code_hash: codeHash, used: false })
+        .insert({ seat_id: seat.id, code, code_hash: codeHash, used: false, expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() })
       if (codeErr) throw codeErr
       codes.push({ seat_label: label, code })
     }

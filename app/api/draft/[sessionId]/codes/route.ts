@@ -6,6 +6,10 @@ function hashCode(code: string) {
   return crypto.createHash("sha256").update(code).digest("hex")
 }
 
+function expiresAt(days = 30) {
+  return new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString()
+}
+
 /**
  * POST /api/draft/[sessionId]/codes
  * Admin actions: regenerate or revoke a captain code.
@@ -44,7 +48,7 @@ export async function POST(
           const newCode = crypto.randomBytes(4).toString("hex").toUpperCase()
           const { error: insertErr } = await supabase
             .from("captain_codes")
-            .insert({ seat_id: s.id, code: newCode, code_hash: hashCode(newCode), used: false })
+            .insert({ seat_id: s.id, code: newCode, code_hash: hashCode(newCode), used: false, expires_at: expiresAt() })
           if (insertErr) throw insertErr
           generated++
         }
@@ -83,7 +87,7 @@ export async function POST(
       // Insert new code
       const { error: insertErr } = await supabase
         .from("captain_codes")
-        .insert({ seat_id: seat.id, code: newCode, code_hash: hashCode(newCode), used: false })
+        .insert({ seat_id: seat.id, code: newCode, code_hash: hashCode(newCode), used: false, expires_at: expiresAt() })
 
       if (insertErr) throw insertErr
 
