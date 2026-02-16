@@ -3,6 +3,7 @@ import { cookies } from "next/headers"
 import { createClient } from "@/lib/supabase-server"
 import { signCaptainToken } from "@/lib/captain-jwt"
 import { redeemCodeSchema } from "@/lib/validation"
+import crypto from "crypto"
 
 /**
  * POST /api/draft/[sessionId]/redeem
@@ -21,7 +22,8 @@ export async function POST(
       return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
     }
 
-    const parsed = redeemCodeSchema.safeParse({ code: json.code, session_id: sessionId })
+    const normalizedCode = String(json.code ?? "").trim().toUpperCase()
+    const parsed = redeemCodeSchema.safeParse({ code: normalizedCode, session_id: sessionId })
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Validation error", details: parsed.error.flatten().fieldErrors },
@@ -31,17 +33,34 @@ export async function POST(
 
     const supabase = await createClient()
 
-    // Look up the code
-    const { data: codeRow, error: codeErr } = await supabase
+    const codeHash = crypto.createHash("sha256").update(parsed.data.code).digest("hex")
+
+    // Look up the code by hash first (secure path), with a fallback for legacy rows
+    let { data: codeRow, error: codeErr } = await supabase
       .from("captain_codes")
       .select("*, captain_seats(id, seat_label, captain_name, draft_session_id)")
-      .eq("code", parsed.data.code)
+      .eq("code_hash", codeHash)
       .maybeSingle()
 
     if (codeErr) throw codeErr
 
     if (!codeRow) {
+      const legacyLookup = await supabase
+        .from("captain_codes")
+        .select("*, captain_seats(id, seat_label, captain_name, draft_session_id)")
+        .eq("code", parsed.data.code)
+        .maybeSingle()
+
+      if (legacyLookup.error) throw legacyLookup.error
+      codeRow = legacyLookup.data
+    }
+
+    if (!codeRow) {
       return NextResponse.json({ error: "Invalid code" }, { status: 404 })
+    }
+
+    if (codeRow.expires_at && new Date(codeRow.expires_at).getTime() < Date.now()) {
+      return NextResponse.json({ error: "This code has expired" }, { status: 410 })
     }
 
     if (codeRow.used) {

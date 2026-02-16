@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase-server"
 import { createDraftSchema } from "@/lib/validation"
+import { requireAdminApiAuth } from "@/lib/admin-auth"
 import crypto from "crypto"
 
 /**
@@ -10,6 +11,11 @@ import crypto from "crypto"
  */
 export async function POST(req: Request) {
   try {
+    const isAdmin = await requireAdminApiAuth()
+    if (!isAdmin) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const json = await req.json().catch(() => null)
     if (!json) {
       return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
