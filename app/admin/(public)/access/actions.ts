@@ -10,7 +10,7 @@ export async function accessAction(prevState: ActionState | undefined, formData:
 
   if (password === (process.env.ADMIN_PASSWORD || 'd2ad')) {
     // Issue an httpOnly cookie for 8 hours
-    ;(await cookies()).set('admin_access', '1', {
+    cookies().set('admin_access', '1', {
       httpOnly: true,
       sameSite: 'lax',
       path: '/',
