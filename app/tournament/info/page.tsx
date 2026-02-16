@@ -262,7 +262,7 @@ export default function InfoPage() {
                     <Link href="/register">Register Team</Link>
                   </Button>
                   <Button asChild variant="outline" size="lg" className="font-teko text-lg uppercase bg-transparent">
-                    <Link href="https://discord.gg/dunkinducks" target="_blank" rel="noopener noreferrer">
+                    <Link href="https://discord.gg/d2ad" target="_blank" rel="noopener noreferrer">
                       Join Discord
                     </Link>
                   </Button>

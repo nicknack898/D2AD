@@ -99,7 +99,7 @@ export default function ProfilePage() {
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="font-bebas text-3xl">PLAYER PROFILE</CardTitle>
-              <CardDescription className="text-zinc-400">Your basketball player information</CardDescription>
+              <CardDescription className="text-zinc-400">Your player profile information</CardDescription>
             </div>
             <Button
               variant="outline"

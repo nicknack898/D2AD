@@ -10,7 +10,7 @@ export default function SchedulePage() {
         <div className="container px-4 md:px-6">
           <div className="text-center">
             <h1 className="text-4xl sm:text-5xl font-bebas tracking-wide text-white mb-4">TOURNAMENT SCHEDULE</h1>
-            <p className="text-lg text-white/90">Complete timeline for the Dunkin' Ducks Ability Draft Tournament</p>
+            <p className="text-lg text-white/90">Complete timeline for the D2AD Ability Draft Tournament</p>
           </div>
         </div>
       </section>

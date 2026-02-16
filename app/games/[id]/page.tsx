@@ -140,7 +140,7 @@ export default function GameDetailsPage({ params }: { params: { id: string } }) 
         <Card className="border-zinc-800 bg-zinc-900 text-white shadow-xl">
           <CardHeader>
             <CardTitle className="font-bebas text-3xl">GAME DETAILS</CardTitle>
-            <CardDescription className="text-zinc-400">Book your spot for this basketball game</CardDescription>
+            <CardDescription className="text-zinc-400">Book your spot for this game</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {message && (
@@ -177,7 +177,7 @@ export default function GameDetailsPage({ params }: { params: { id: string } }) 
                 </div>
                 <div className="flex items-center">
                   <DollarSign className="h-5 w-5 mr-2 text-duck-orange" />
-                  <span className="text-lg">₹{game.price}</span>
+                  <span className="text-lg">${game.price}</span>
                 </div>
                 <div className="flex items-center">
                   <Users className="h-5 w-5 mr-2 text-duck-orange" />
