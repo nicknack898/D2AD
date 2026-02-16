@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { getDraftSession, getActiveLot, closeLot, openNextLot, setPhase } from "@/lib/draft-engine"
+import { requireAdminApiAuth } from "@/lib/admin-auth"
 
 /**
  * POST /api/draft/[sessionId]/advance
@@ -13,6 +14,11 @@ export async function POST(
   { params }: { params: Promise<{ sessionId: string }> },
 ) {
   try {
+    const isAdmin = await requireAdminApiAuth()
+    if (!isAdmin) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const { sessionId } = await params
     const session = await getDraftSession(sessionId)
     if (!session) {

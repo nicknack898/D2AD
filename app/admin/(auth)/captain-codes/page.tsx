@@ -112,17 +112,7 @@ export default function CaptainCodesPage() {
     // Fetch codes for this session
     try {
       console.log("[v0] Fetching codes for session:", sessionId)
-      const res = await fetch(`/api/draft/${sessionId}/codes`)
-      console.log("[v0] Codes response status:", res.status)
-      const data = await res.json()
-      console.log("[v0] Codes response data:", JSON.stringify(data))
-      setSessionCodes((prev) =>
-        prev.map((sc) =>
-          sc.session.id === sessionId
-            ? { ...sc, codes: data.codes ?? [], loading: false }
-            : sc
-        )
-      )
+      await refreshSessionCodes(sessionId)
     } catch (err) {
       console.error("[v0] Codes fetch error:", err)
       setSessionCodes((prev) =>
@@ -135,6 +125,18 @@ export default function CaptainCodesPage() {
     }
   }
 
+
+  const refreshSessionCodes = async (sessionId: string) => {
+    const res = await fetch(`/api/draft/${sessionId}/codes`)
+    const data = await res.json()
+    setSessionCodes((prev) =>
+      prev.map((sc) =>
+        sc.session.id === sessionId
+          ? { ...sc, codes: data.codes ?? [], loading: false }
+          : sc
+      )
+    )
+  }
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code)
     setCopiedCode(code)
@@ -151,8 +153,8 @@ export default function CaptainCodesPage() {
     setTimeout(() => setCopiedCode(null), 2500)
   }
 
-  const regenerateCode = async (sessionId: string, seatLabel: string, oldCode: string) => {
-    setActionLoading(oldCode)
+  const regenerateCode = async (sessionId: string, seatLabel: string) => {
+    setActionLoading(`regen_${sessionId}_${seatLabel}`)
     try {
       const res = await fetch(`/api/draft/${sessionId}/codes`, {
         method: "POST",
@@ -160,19 +162,7 @@ export default function CaptainCodesPage() {
         body: JSON.stringify({ _action: "regenerate", seat_label: seatLabel }),
       })
       if (res.ok) {
-        const data = await res.json()
-        setSessionCodes((prev) =>
-          prev.map((sc) =>
-            sc.session.id === sessionId
-              ? {
-                  ...sc,
-                  codes: sc.codes.map((c) =>
-                    c.seat_label === seatLabel ? { ...c, code: data.new_code, used: false } : c
-                  ),
-                }
-              : sc
-          )
-        )
+        await refreshSessionCodes(sessionId)
       } else {
         const data = await res.json()
         setError(data.error ?? "Failed to regenerate code")
@@ -184,9 +174,9 @@ export default function CaptainCodesPage() {
     }
   }
 
-  const revokeCode = async (sessionId: string, seatLabel: string, code: string) => {
+  const revokeCode = async (sessionId: string, seatLabel: string) => {
     if (!confirm(`Revoke the code for ${seatLabel}? This will prevent the captain from authenticating with this code.`)) return
-    setActionLoading(code)
+    setActionLoading(`revoke_${sessionId}_${seatLabel}`)
     try {
       const res = await fetch(`/api/draft/${sessionId}/codes`, {
         method: "POST",
@@ -194,24 +184,38 @@ export default function CaptainCodesPage() {
         body: JSON.stringify({ _action: "revoke", seat_label: seatLabel }),
       })
       if (res.ok) {
-        setSessionCodes((prev) =>
-          prev.map((sc) =>
-            sc.session.id === sessionId
-              ? {
-                  ...sc,
-                  codes: sc.codes.map((c) =>
-                    c.seat_label === seatLabel ? { ...c, used: true } : c
-                  ),
-                }
-              : sc
-          )
-        )
+        await refreshSessionCodes(sessionId)
       } else {
         const data = await res.json()
         setError(data.error ?? "Failed to revoke code")
       }
     } catch {
       setError("Network error revoking code")
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+
+  const deleteCode = async (sessionId: string, seatLabel: string) => {
+    if (!confirm(`Delete the current code for ${seatLabel}? You can regenerate a new code afterwards.`)) return
+
+    setActionLoading(`delete_${sessionId}_${seatLabel}`)
+    try {
+      const res = await fetch(`/api/draft/${sessionId}/codes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ _action: "delete", seat_label: seatLabel }),
+      })
+
+      if (res.ok) {
+        await refreshSessionCodes(sessionId)
+      } else {
+        const data = await res.json()
+        setError(data.error ?? "Failed to delete code")
+      }
+    } catch {
+      setError("Network error deleting code")
     } finally {
       setActionLoading(null)
     }
@@ -472,16 +476,7 @@ export default function CaptainCodesPage() {
                                   console.log("[v0] Generate response:", res.status, d)
                                   if (res.ok) {
                                     // Refresh codes
-                                    const codesRes = await fetch(`/api/draft/${sc.session.id}/codes`)
-                                    const codesData = await codesRes.json()
-                                    console.log("[v0] Refreshed codes:", codesData.codes?.length)
-                                    setSessionCodes((prev) =>
-                                      prev.map((s) =>
-                                        s.session.id === sc.session.id
-                                          ? { ...s, codes: codesData.codes ?? [] }
-                                          : s
-                                      )
-                                    )
+                                    await refreshSessionCodes(sc.session.id)
                                   } else {
                                     setError(d.error ?? d.details ?? "Failed to generate codes")
                                   }
@@ -533,15 +528,7 @@ export default function CaptainCodesPage() {
                                       })
                                       const d = await res.json()
                                       if (res.ok) {
-                                        const codesRes = await fetch(`/api/draft/${sc.session.id}/codes`)
-                                        const codesData = await codesRes.json()
-                                        setSessionCodes((prev) =>
-                                          prev.map((s) =>
-                                            s.session.id === sc.session.id
-                                              ? { ...s, codes: codesData.codes ?? [] }
-                                              : s
-                                          )
-                                        )
+                                        await refreshSessionCodes(sc.session.id)
                                       } else {
                                         setError(d.error ?? d.details ?? "Failed to generate codes")
                                       }
@@ -651,11 +638,11 @@ export default function CaptainCodesPage() {
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      onClick={() => regenerateCode(sc.session.id, c.seat_label, c.code ?? "")}
-                                      disabled={actionLoading === c.code || !c.code}
+                                      onClick={() => regenerateCode(sc.session.id, c.seat_label)}
+                                      disabled={actionLoading === `regen_${sc.session.id}_${c.seat_label}` }
                                       className="h-7 px-2 text-xs text-slate-500 hover:text-blue-400"
                                     >
-                                      {actionLoading === c.code ? (
+                                      {actionLoading === `regen_${sc.session.id}_${c.seat_label}` ? (
                                         <Loader2 className="h-3 w-3 animate-spin" />
                                       ) : (
                                         <><RotateCcw className="h-3 w-3 mr-1" /> Regenerate</>
@@ -666,13 +653,22 @@ export default function CaptainCodesPage() {
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      onClick={() => revokeCode(sc.session.id, c.seat_label, c.code ?? "")}
-                                      disabled={actionLoading === c.code || !c.code}
+                                      onClick={() => revokeCode(sc.session.id, c.seat_label)}
+                                      disabled={actionLoading === `revoke_${sc.session.id}_${c.seat_label}` || !c.code}
                                       className="h-7 px-2 text-xs text-slate-500 hover:text-red-400"
                                     >
                                       <XCircle className="h-3 w-3 mr-1" /> Revoke
                                     </Button>
                                   )}
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => deleteCode(sc.session.id, c.seat_label)}
+                                    disabled={actionLoading === `delete_${sc.session.id}_${c.seat_label}` || !c.code}
+                                    className="h-7 px-2 text-xs text-slate-500 hover:text-red-300"
+                                  >
+                                    Delete
+                                  </Button>
                                 </div>
                               </div>
                             ))}
