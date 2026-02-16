@@ -1,8 +1,7 @@
 "use client"
 
 import * as React from "react"
-// @ts-ignore - useFormState exists in react-dom for React 18 / Next 14
-import { useFormState } from "react-dom"
+import { useActionState } from "react"
 import { accessAction } from "./actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,8 +11,7 @@ import Image from "next/image"
 type ActionState = { error?: string }
 
 export default function AdminAccessPage() {
-  const [state, formAction] = useFormState(accessAction, {} as ActionState)
-  const [pending, setPending] = React.useState(false)
+  const [state, formAction, pending] = useActionState(accessAction, {} as ActionState)
 
   return (
     <main className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
@@ -33,7 +31,7 @@ export default function AdminAccessPage() {
             </div>
             <p className="text-sm text-slate-400">Enter the admin password to continue.</p>
           </div>
-          <form action={async (fd: FormData) => { setPending(true); try { formAction(fd) } finally { setPending(false) } }} className="space-y-4">
+          <form action={formAction} className="space-y-4">
             <div>
               <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-slate-300">
                 Password
