@@ -113,15 +113,15 @@ export default function CreateGamePage() {
                       <SelectValue placeholder="Select location" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="indiranagar">Sree Cauvery School, Indiranagar</SelectItem>
-                      <SelectItem value="sarjapur">Decathlon Sarjapur</SelectItem>
+                      <SelectItem value="online">Online (Dota 2)</SelectItem>
+                      <SelectItem value="custom">Custom Lobby</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="price">Price per Player (₹)</Label>
+                <Label htmlFor="price">Price per Player ($)</Label>
                 <Input id="price" type="number" defaultValue="200" />
               </div>
 

@@ -30,39 +30,28 @@ export default async function AdminSettingsPage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="tournament-name">Tournament Name</Label>
-                <Input id="tournament-name" defaultValue="Dunkin' Ducks 3x3 Basketball Tournament" />
+                <Input id="tournament-name" defaultValue="D2AD League" />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="tournament-location">Tournament Location</Label>
-                <Input id="tournament-location" defaultValue="Sree Cauvery School, Indiranagar, Bangalore" />
+                <Label htmlFor="tournament-location">Platform</Label>
+                <Input id="tournament-location" defaultValue="Online (Dota 2 - Ability Draft)" />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="day1-date">Day 1 Date</Label>
-                  <Input id="day1-date" type="date" defaultValue="2025-04-26" />
+                  <Label htmlFor="day1-date">Event Start Date</Label>
+                  <Input id="day1-date" type="date" defaultValue="" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="day2-date">Day 2 Date</Label>
-                  <Input id="day2-date" type="date" defaultValue="2025-04-27" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="day1-time">Day 1 Time</Label>
-                  <Input id="day1-time" defaultValue="8:00 AM - 9:00 AM" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="day2-time">Day 2 Time</Label>
-                  <Input id="day2-time" defaultValue="7:00 AM - 11:00 AM" />
+                  <Label htmlFor="day2-date">Event End Date</Label>
+                  <Input id="day2-date" type="date" defaultValue="" />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="contact-number">Contact Number</Label>
-                <Input id="contact-number" defaultValue="+91 8073396402" />
+                <Label htmlFor="discord-link">Discord Server</Label>
+                <Input id="discord-link" defaultValue="https://discord.gg/d2ad" />
               </div>
 
               <div className="flex items-center justify-between">

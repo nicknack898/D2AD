@@ -12,7 +12,7 @@ export default function TeamsPage() {
         <div className="container px-4 md:px-6">
           <div className="text-center">
             <h1 className="text-4xl sm:text-5xl font-bebas tracking-wide text-white mb-4">REGISTERED TEAMS</h1>
-            <p className="text-lg text-white/90">Teams competing in the Dunkin' Ducks Ability Draft Tournament</p>
+            <p className="text-lg text-white/90">Teams competing in the D2AD Ability Draft Tournament</p>
           </div>
         </div>
       </section>
@@ -148,7 +148,7 @@ export default function TeamsPage() {
                   <Link href="/register">Register Team</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="font-teko text-lg uppercase bg-transparent">
-                  <Link href="https://discord.gg/dunkinducks" target="_blank" rel="noopener noreferrer">
+                  <Link href="https://discord.gg/d2ad" target="_blank" rel="noopener noreferrer">
                     Join Discord
                   </Link>
                 </Button>
