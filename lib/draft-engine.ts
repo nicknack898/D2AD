@@ -148,7 +148,7 @@ export async function openNextLot(sessionId: string): Promise<Lot | null> {
   return { ...nextLot, status: "active", opened_at: now }
 }
 
-// --------------- Bidding ---------------
+// --------------- Bidding (atomic via RPC) ---------------
 
 export async function placeBid(
   lotId: string,
@@ -157,101 +157,45 @@ export async function placeBid(
 ): Promise<Bid> {
   const supabase = await createClient()
 
-  // 1. Verify lot is active
-  const { data: lot, error: lotErr } = await supabase
-    .from("lots")
-    .select("*")
-    .eq("id", lotId)
-    .maybeSingle()
-  if (lotErr) throw lotErr
-  if (!lot || lot.status !== "active") {
-    throw new Error("LOT_NOT_ACTIVE")
+  const { data, error } = await supabase.rpc("place_bid_atomic", {
+    p_lot_id: lotId,
+    p_seat_id: seatId,
+    p_amount: amount,
+  })
+
+  if (error) {
+    // The RPC raises exceptions that Supabase returns as error.message
+    const msg = error.message ?? ""
+    if (msg.includes("LOT_NOT_ACTIVE")) throw new Error("LOT_NOT_ACTIVE")
+    if (msg.includes("INSUFFICIENT_FUNDS")) throw new Error("INSUFFICIENT_FUNDS")
+    if (msg.includes("BID_TOO_LOW")) throw new Error("BID_TOO_LOW")
+    throw error
   }
 
-  // 2. Check wallet balance
-  const { data: wallet, error: walErr } = await supabase
-    .from("wallets")
-    .select("*")
-    .eq("seat_id", seatId)
-    .maybeSingle()
-  if (walErr) throw walErr
-  if (!wallet || wallet.balance < amount) {
-    throw new Error("INSUFFICIENT_FUNDS")
-  }
-
-  // 3. Check bid is higher than current highest
-  const { data: topBid, error: topErr } = await supabase
-    .from("bids")
-    .select("amount")
-    .eq("lot_id", lotId)
-    .order("amount", { ascending: false })
-    .limit(1)
-    .maybeSingle()
-  if (topErr) throw topErr
-  if (topBid && amount <= topBid.amount) {
-    throw new Error("BID_TOO_LOW")
-  }
-
-  // 4. Insert bid
-  const { data: bid, error: bidErr } = await supabase
-    .from("bids")
-    .insert({ lot_id: lotId, seat_id: seatId, amount })
-    .select()
-    .single()
-  if (bidErr) throw bidErr
-
-  return bid
+  return data as Bid
 }
 
-// --------------- Close lot ---------------
+// --------------- Close lot (atomic via RPC) ---------------
 
 export async function closeLot(lotId: string): Promise<{ winning_seat_id: string | null; winning_price: number | null }> {
   const supabase = await createClient()
 
-  // Get top bid
-  const { data: topBid, error: topErr } = await supabase
-    .from("bids")
-    .select("seat_id, amount")
-    .eq("lot_id", lotId)
-    .order("amount", { ascending: false })
-    .limit(1)
-    .maybeSingle()
-  if (topErr) throw topErr
+  const { data, error } = await supabase.rpc("close_lot_atomic", {
+    p_lot_id: lotId,
+  })
 
-  const now = new Date().toISOString()
-  const winningSeatId = topBid?.seat_id ?? null
-  const winningPrice = topBid?.amount ?? null
-  const status = winningSeatId ? "sold" : "unsold"
-
-  // Update lot
-  const { error: lotUpErr } = await supabase
-    .from("lots")
-    .update({
-      status,
-      winning_seat_id: winningSeatId,
-      winning_price: winningPrice,
-      closed_at: now,
-    })
-    .eq("id", lotId)
-  if (lotUpErr) throw lotUpErr
-
-  // Deduct from wallet if sold
-  if (winningSeatId && winningPrice) {
-    const { data: wallet, error: walErr } = await supabase
-      .from("wallets")
-      .select("balance")
-      .eq("seat_id", winningSeatId)
-      .single()
-    if (walErr) throw walErr
-
-    const { error: deductErr } = await supabase
-      .from("wallets")
-      .update({ balance: wallet.balance - winningPrice })
-      .eq("seat_id", winningSeatId)
-    if (deductErr) throw deductErr
+  if (error) {
+    const msg = error.message ?? ""
+    if (msg.includes("LOT_NOT_FOUND")) throw new Error("LOT_NOT_FOUND")
+    if (msg.includes("LOT_NOT_ACTIVE")) throw new Error("LOT_NOT_ACTIVE")
+    if (msg.includes("INSUFFICIENT_FUNDS")) throw new Error("INSUFFICIENT_FUNDS")
+    throw error
   }
 
-  return { winning_seat_id: winningSeatId, winning_price: winningPrice }
+  return {
+    winning_seat_id: data?.winning_seat_id ?? null,
+    winning_price: data?.winning_price ?? null,
+  }
 }
 
 // --------------- Seats & Wallets ---------------

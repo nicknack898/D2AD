@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase-server"
+import { requireAdminApi } from "@/lib/auth"
 import crypto from "crypto"
 
 function hashCode(code: string) {
@@ -19,6 +20,8 @@ export async function POST(
   { params }: { params: Promise<{ sessionId: string }> },
 ) {
   try {
+    const denied = await requireAdminApi()
+    if (denied) return denied
     const { sessionId } = await params
     const json = await req.json().catch(() => null)
     if (!json || !json._action) {
@@ -57,7 +60,7 @@ export async function POST(
             .from("captain_codes")
             .insert(insertPayload)
           if (insertErr) {
-            console.error("[v0] captain_codes insert failed:", insertErr.message, insertErr.code, insertErr.details)
+            console.error("captain_codes insert failed:", insertErr.message)
             return NextResponse.json({
               error: `Failed to generate code for ${s.seat_label}: ${insertErr.message}`,
               details: insertErr.details,
@@ -110,7 +113,7 @@ export async function POST(
         .insert(regenPayload)
 
       if (insertErr) {
-        console.error("[v0] regenerate insert failed:", insertErr.message, insertErr.code, insertErr.details)
+        console.error("regenerate insert failed:", insertErr.message)
         return NextResponse.json({
           error: `Failed to regenerate code: ${insertErr.message}`,
           details: insertErr.details,
@@ -149,19 +152,17 @@ export async function GET(
   { params }: { params: Promise<{ sessionId: string }> },
 ) {
   try {
+    const denied = await requireAdminApi()
+    if (denied) return denied
     const { sessionId } = await params
     const supabase = await createClient()
 
     // Query seats first, then join codes (reliable approach)
-    console.log("[v0] GET /codes for session:", sessionId)
-
     const { data: seats, error: sErr } = await supabase
       .from("captain_seats")
       .select("id, seat_label, captain_name, captain_codes(code, used)")
       .eq("draft_session_id", sessionId)
       .order("seat_label", { ascending: true })
-
-    console.log("[v0] Seats query result - error:", sErr, "seats count:", seats?.length, "raw:", JSON.stringify(seats)?.slice(0, 500))
 
     if (sErr) throw sErr
 
@@ -174,7 +175,6 @@ export async function GET(
       has_code: (s.captain_codes?.length ?? 0) > 0,
     }))
 
-    console.log("[v0] Returning codes:", JSON.stringify(seatCodes))
     return NextResponse.json({ codes: seatCodes })
   } catch (err) {
     console.error("Codes fetch error:", err)

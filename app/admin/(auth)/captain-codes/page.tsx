@@ -75,11 +75,8 @@ export default function CaptainCodesPage() {
       ])
       const evData = await evRes.json()
       const sessData = await sessRes.json()
-      console.log("[v0] Events response:", evRes.status, JSON.stringify(evData).slice(0, 200))
-      console.log("[v0] Sessions response:", sessRes.status, JSON.stringify(sessData).slice(0, 200))
       const evList: Event[] = evData.data ?? []
       const sessList: DraftSession[] = sessData.data ?? []
-      console.log("[v0] Events count:", evList.length, "Sessions count:", sessList.length)
 
       setEvents(evList)
       setSessionCodes(
@@ -111,11 +108,8 @@ export default function CaptainCodesPage() {
 
     // Fetch codes for this session
     try {
-      console.log("[v0] Fetching codes for session:", sessionId)
       const res = await fetch(`/api/draft/${sessionId}/codes`)
-      console.log("[v0] Codes response status:", res.status)
       const data = await res.json()
-      console.log("[v0] Codes response data:", JSON.stringify(data))
       setSessionCodes((prev) =>
         prev.map((sc) =>
           sc.session.id === sessionId
@@ -124,7 +118,7 @@ export default function CaptainCodesPage() {
         )
       )
     } catch (err) {
-      console.error("[v0] Codes fetch error:", err)
+      console.error("Codes fetch error:", err)
       setSessionCodes((prev) =>
         prev.map((sc) =>
           sc.session.id === sessionId
@@ -462,19 +456,16 @@ export default function CaptainCodesPage() {
                                 setActionLoading("gen_" + sc.session.id)
                                 setError(null)
                                 try {
-                                  console.log("[v0] Generating codes for session:", sc.session.id)
                                   const res = await fetch(`/api/draft/${sc.session.id}/codes`, {
                                     method: "POST",
                                     headers: { "Content-Type": "application/json" },
                                     body: JSON.stringify({ _action: "generate_all" }),
                                   })
                                   const d = await res.json()
-                                  console.log("[v0] Generate response:", res.status, d)
                                   if (res.ok) {
                                     // Refresh codes
                                     const codesRes = await fetch(`/api/draft/${sc.session.id}/codes`)
                                     const codesData = await codesRes.json()
-                                    console.log("[v0] Refreshed codes:", codesData.codes?.length)
                                     setSessionCodes((prev) =>
                                       prev.map((s) =>
                                         s.session.id === sc.session.id
@@ -486,7 +477,7 @@ export default function CaptainCodesPage() {
                                     setError(d.error ?? d.details ?? "Failed to generate codes")
                                   }
                                 } catch (e) {
-                                  console.error("[v0] Generate error:", e)
+                                  console.error("Generate codes error:", e)
                                   setError("Network error generating codes")
                                 } finally {
                                   setActionLoading(null)

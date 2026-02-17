@@ -133,3 +133,21 @@ export async function requireAuth() {
   }
   return true
 }
+
+/**
+ * Guard for API Route Handlers.
+ * Returns a 401 NextResponse when the caller is NOT a signed-in admin,
+ * or `null` when authenticated -- so callers can do:
+ *
+ *   const denied = await requireAdminApi()
+ *   if (denied) return denied
+ */
+export async function requireAdminApi() {
+  const ok = await isAuthenticated()
+  if (!ok) {
+    // dynamic import to avoid pulling NextResponse into server-action contexts
+    const { NextResponse } = await import("next/server")
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+  return null
+}

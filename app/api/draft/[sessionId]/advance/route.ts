@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { getDraftSession, getActiveLot, closeLot, openNextLot, setPhase } from "@/lib/draft-engine"
+import { requireAdminApi } from "@/lib/auth"
 
 /**
  * POST /api/draft/[sessionId]/advance
@@ -13,6 +14,8 @@ export async function POST(
   { params }: { params: Promise<{ sessionId: string }> },
 ) {
   try {
+    const denied = await requireAdminApi()
+    if (denied) return denied
     const { sessionId } = await params
     const session = await getDraftSession(sessionId)
     if (!session) {

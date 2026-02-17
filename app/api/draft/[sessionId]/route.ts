@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase-server"
 import { getDraftSession, getLotsForSession, getSeatsForSession } from "@/lib/draft-engine"
+import { requireAdminApi } from "@/lib/auth"
 
 /**
  * DELETE /api/draft/[sessionId]
@@ -12,6 +13,8 @@ export async function DELETE(
   { params }: { params: Promise<{ sessionId: string }> },
 ) {
   try {
+    const denied = await requireAdminApi()
+    if (denied) return denied
     const { sessionId } = await params
     const supabase = await createClient()
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase-server"
 import { createDraftSchema } from "@/lib/validation"
+import { requireAdminApi } from "@/lib/auth"
 import crypto from "crypto"
 
 /**
@@ -10,6 +11,8 @@ import crypto from "crypto"
  */
 export async function POST(req: Request) {
   try {
+    const denied = await requireAdminApi()
+    if (denied) return denied
     const json = await req.json().catch(() => null)
     if (!json) {
       return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
@@ -83,7 +86,7 @@ export async function POST(req: Request) {
           expires_at: expiresAt,
         })
       if (codeErr) {
-        console.error("[v0] captain_codes insert in draft create failed:", codeErr.message, codeErr.details)
+        console.error("captain_codes insert failed:", codeErr.message)
         throw codeErr
       }
       codes.push({ seat_label: label, code })

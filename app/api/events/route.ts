@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { createClient } from "@/lib/supabase-server"
 import { eventSchema } from "@/lib/validation"
+import { requireAdminApi } from "@/lib/auth"
 
 export async function GET(req: NextRequest) {
   try {
@@ -42,6 +43,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const denied = await requireAdminApi()
+    if (denied) return denied
+
     const supabase = await createClient()
     const json = await req.json().catch(() => null)
     if (!json) {
