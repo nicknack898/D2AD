@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { useFormState, useFormStatus } from "react-dom"
+import { useActionState } from "react"
+import { useFormStatus } from "react-dom"
 import { accessAction } from "./actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -32,7 +33,7 @@ function SubmitButton() {
 }
 
 export default function AdminAccessPage() {
-  const [state, formAction] = useFormState(accessAction, {} as ActionState)
+  const [state, formAction] = useActionState(accessAction, {} as ActionState)
 
   return (
     <main className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
