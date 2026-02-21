@@ -13,9 +13,13 @@ function expiresAt(days = 30) {
   return new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString()
 }
 
+function createCode() {
+  return crypto.randomBytes(4).toString("hex").toUpperCase()
+}
+
 /**
  * POST /api/draft/[sessionId]/codes
- * Admin actions: regenerate or revoke a captain code.
+ * Admin actions: generate, regenerate, revoke, delete a captain code.
  */
 export async function POST(
   req: Request,
@@ -36,11 +40,10 @@ export async function POST(
     const supabase = await createClient()
     const { _action, seat_label } = json
 
-    // Generate codes for ALL seats that don't have one yet
     if (_action === "generate_all") {
       const { data: seats, error: sErr } = await supabase
         .from("captain_seats")
-        .select("id, seat_label, captain_codes(id)")
+        .select("id, seat_label")
         .eq("draft_session_id", sessionId)
         .order("seat_label", { ascending: true })
 
@@ -73,16 +76,22 @@ export async function POST(
           }
           generated++
         }
+
+        generatedCodes.push({ seat_label: seat.seat_label, code: newCode })
       }
 
-      return NextResponse.json({ success: true, generated, message: `Generated ${generated} new code(s)` })
+      return NextResponse.json({
+        success: true,
+        generated: generatedCodes.length,
+        generated_codes: generatedCodes,
+        message: `Generated ${generatedCodes.length} new code(s)`,
+      })
     }
 
     if (!seat_label) {
       return NextResponse.json({ error: "seat_label is required" }, { status: 400 })
     }
 
-    // Find the seat
     const { data: seat, error: seatErr } = await supabase
       .from("captain_seats")
       .select("id, seat_label")
@@ -96,21 +105,19 @@ export async function POST(
     }
 
     if (_action === "regenerate") {
-      // Generate a new code and replace the existing one
-      const newCode = crypto.randomBytes(4).toString("hex").toUpperCase()
+      const newCode = createCode()
 
-      // Delete old code(s) for this seat
       await supabase
         .from("captain_codes")
         .delete()
         .eq("seat_id", seat.id)
 
-      // Insert new code
       const regenPayload = {
         seat_id: seat.id,
         code: newCode,
         code_hash: hashCode(newCode),
         used: false,
+        used_at: null,
         expires_at: expiresAt(),
       }
       const { error: insertErr } = await supabase
@@ -129,7 +136,6 @@ export async function POST(
     }
 
     if (_action === "revoke") {
-      // Mark the code as used so it cannot be redeemed
       const { error: updateErr } = await supabase
         .from("captain_codes")
         .update({ used: true, used_at: new Date().toISOString() })
@@ -137,8 +143,17 @@ export async function POST(
         .eq("used", false)
 
       if (updateErr) throw updateErr
-
       return NextResponse.json({ success: true, message: "Code revoked" })
+    }
+
+    if (_action === "delete") {
+      const { error: deleteErr } = await supabase
+        .from("captain_codes")
+        .delete()
+        .eq("seat_id", seat.id)
+
+      if (deleteErr) throw deleteErr
+      return NextResponse.json({ success: true, message: "Code deleted" })
     }
 
     return NextResponse.json({ error: "Unknown action" }, { status: 400 })
@@ -168,20 +183,39 @@ export async function GET(
     // Query seats first, then join codes (reliable approach)
     const { data: seats, error: sErr } = await supabase
       .from("captain_seats")
-      .select("id, seat_label, captain_name, captain_codes(code, used)")
+      .select("id, seat_label, captain_name")
       .eq("draft_session_id", sessionId)
       .order("seat_label", { ascending: true })
 
     if (sErr) throw sErr
 
-    const seatCodes = (seats ?? []).map((s: any) => ({
-      seat_id: s.id,
-      seat_label: s.seat_label,
-      captain_name: s.captain_name,
-      code: s.captain_codes?.[0]?.code ?? null,
-      used: s.captain_codes?.[0]?.used ?? false,
-      has_code: (s.captain_codes?.length ?? 0) > 0,
-    }))
+    const seatIds = (seats ?? []).map((s) => s.id)
+    let codeBySeatId = new Map<string, { code: string | null; used: boolean }>()
+
+    if (seatIds.length > 0) {
+      const { data: codes, error: cErr } = await supabase
+        .from("captain_codes")
+        .select("seat_id, code, used")
+        .in("seat_id", seatIds)
+
+      if (cErr) throw cErr
+
+      codeBySeatId = new Map(
+        (codes ?? []).map((c) => [c.seat_id, { code: c.code ? normalizeCode(c.code) : null, used: !!c.used }]),
+      )
+    }
+
+    const seatCodes = (seats ?? []).map((s) => {
+      const codeRecord = codeBySeatId.get(s.id)
+      return {
+        seat_id: s.id,
+        seat_label: s.seat_label,
+        captain_name: s.captain_name,
+        code: codeRecord?.code ?? null,
+        used: codeRecord?.used ?? false,
+        has_code: !!codeRecord?.code,
+      }
+    })
 
     return NextResponse.json({ codes: seatCodes })
   } catch (err) {
