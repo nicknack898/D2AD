@@ -3,9 +3,9 @@ import { createClient } from "@/lib/supabase-server"
 import { eventSchema } from "@/lib/validation"
 import { requireAdminApi } from "@/lib/auth"
 
-export async function GET(_req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(_req: NextRequest, { params }: { params: { slug: string } }) {
   try {
-    const { slug } = await params
+    const { slug } = params
     const supabase = await createClient()
 
     const { data, error } = await supabase
@@ -32,12 +32,12 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ slu
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+export async function PATCH(req: NextRequest, { params }: { params: { slug: string } }) {
   try {
     const denied = await requireAdminApi()
     if (denied) return denied
 
-    const { slug } = await params
+    const { slug } = params
     const supabase = await createClient()
     const json = await req.json().catch(() => null)
     if (!json) {
@@ -70,12 +70,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+export async function DELETE(_req: NextRequest, { params }: { params: { slug: string } }) {
   try {
     const denied = await requireAdminApi()
     if (denied) return denied
 
-    const { slug } = await params
+    const { slug } = params
     const supabase = await createClient()
 
     const { error } = await supabase.from("events").delete().eq("slug", slug)

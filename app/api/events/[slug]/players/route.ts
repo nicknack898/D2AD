@@ -3,12 +3,12 @@ import { createClient } from "@/lib/supabase-server"
 import { playerRegistrationSchema } from "@/lib/validation"
 import { requireAdminApi } from "@/lib/auth"
 
-export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(req: NextRequest, { params }: { params: { slug: string } }) {
   try {
     const denied = await requireAdminApi()
     if (denied) return denied
 
-    const { slug } = await params
+    const { slug } = params
     const supabase = await createClient()
 
     // First get the event by slug
@@ -46,9 +46,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
   }
 }
 
-export async function POST(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+export async function POST(req: NextRequest, { params }: { params: { slug: string } }) {
   try {
-    const { slug } = await params
+    const { slug } = params
     const supabase = await createClient()
 
     // Get the event
