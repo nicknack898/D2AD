@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 import EventDetailClient from "./event-detail-client"
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const { slug } = params
   const formatted = slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())
   return {
     title: `${formatted} | D2AD Events`,
@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-export default async function EventDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
+export default function EventDetailPage({ params }: { params: { slug: string } }) {
+  const { slug } = params
   return <EventDetailClient slug={slug} />
 }

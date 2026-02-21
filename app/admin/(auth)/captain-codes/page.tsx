@@ -75,11 +75,8 @@ export default function CaptainCodesPage() {
       ])
       const evData = await evRes.json()
       const sessData = await sessRes.json()
-      console.log("[v0] Events response:", evRes.status, JSON.stringify(evData).slice(0, 200))
-      console.log("[v0] Sessions response:", sessRes.status, JSON.stringify(sessData).slice(0, 200))
       const evList: Event[] = evData.data ?? []
       const sessList: DraftSession[] = sessData.data ?? []
-      console.log("[v0] Events count:", evList.length, "Sessions count:", sessList.length)
 
       setEvents(evList)
       setSessionCodes(
@@ -111,10 +108,17 @@ export default function CaptainCodesPage() {
 
     // Fetch codes for this session
     try {
-      console.log("[v0] Fetching codes for session:", sessionId)
-      await refreshSessionCodes(sessionId)
+      const res = await fetch(`/api/draft/${sessionId}/codes`)
+      const data = await res.json()
+      setSessionCodes((prev) =>
+        prev.map((sc) =>
+          sc.session.id === sessionId
+            ? { ...sc, codes: data.codes ?? [], loading: false }
+            : sc
+        )
+      )
     } catch (err) {
-      console.error("[v0] Codes fetch error:", err)
+      console.error("Codes fetch error:", err)
       setSessionCodes((prev) =>
         prev.map((sc) =>
           sc.session.id === sessionId
@@ -242,18 +246,18 @@ export default function CaptainCodesPage() {
 
   const phaseLabel = (phase: string) => {
     switch (phase) {
-      case "lobby": return { text: "Lobby", cls: "bg-slate-700/50 text-slate-300 border-slate-600" }
+      case "lobby": return { text: "Lobby", cls: "bg-muted/50 text-foreground/80 border-border" }
       case "picking": return { text: "Live", cls: "bg-green-500/10 text-green-400 border-green-500/30" }
       case "paused": return { text: "Paused", cls: "bg-yellow-500/10 text-yellow-400 border-yellow-500/30" }
-      case "finished": return { text: "Completed", cls: "bg-slate-700/30 text-slate-500 border-slate-700" }
-      default: return { text: phase, cls: "bg-slate-700/50 text-slate-400 border-slate-600" }
+      case "finished": return { text: "Completed", cls: "bg-muted/30 text-muted-foreground/60 border-border" }
+      default: return { text: phase, cls: "bg-muted/50 text-muted-foreground border-border" }
     }
   }
 
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[400px]">
-        <div className="flex items-center gap-3 text-slate-400">
+        <div className="flex items-center gap-3 text-muted-foreground">
           <Loader2 className="h-5 w-5 animate-spin" />
           <span className="text-sm">Loading captain codes...</span>
         </div>
@@ -270,8 +274,8 @@ export default function CaptainCodesPage() {
             <KeyRound className="h-5 w-5 text-blue-400" />
           </div>
           <div>
-            <h1 className="font-bebas text-3xl tracking-wide text-slate-100">Captain Codes</h1>
-            <p className="text-sm text-slate-500 leading-relaxed">
+            <h1 className="font-bebas text-3xl tracking-wide text-foreground">Captain Codes</h1>
+            <p className="text-sm text-muted-foreground/60 leading-relaxed">
               Manage one-time authentication codes for draft captains.
             </p>
           </div>
@@ -280,38 +284,38 @@ export default function CaptainCodesPage() {
 
       {/* Stats strip */}
       <div className="grid grid-cols-3 gap-4 mb-8">
-        <Card className="bg-slate-800/40 border-slate-700/50">
+        <Card className="bg-card/40 border-border/50">
           <CardContent className="py-4 px-5 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-slate-700/50 flex items-center justify-center">
-              <KeyRound className="h-4 w-4 text-slate-400" />
+            <div className="w-9 h-9 rounded-lg bg-muted/50 flex items-center justify-center">
+              <KeyRound className="h-4 w-4 text-muted-foreground" />
             </div>
             <div>
-              <p className="text-2xl font-semibold text-slate-100 tabular-nums">{totalSessions}</p>
-              <p className="text-xs text-slate-500">Total Sessions</p>
+              <p className="text-2xl font-semibold text-foreground tabular-nums">{totalSessions}</p>
+              <p className="text-xs text-muted-foreground/60">Total Sessions</p>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-slate-800/40 border-slate-700/50">
+        <Card className="bg-card/40 border-border/50">
           <CardContent className="py-4 px-5 flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-green-500/10 flex items-center justify-center">
               <ShieldCheck className="h-4 w-4 text-green-400" />
             </div>
             <div>
-              <p className="text-2xl font-semibold text-slate-100 tabular-nums">{activeSessions}</p>
-              <p className="text-xs text-slate-500">Active</p>
+              <p className="text-2xl font-semibold text-foreground tabular-nums">{activeSessions}</p>
+              <p className="text-xs text-muted-foreground/60">Active</p>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-slate-800/40 border-slate-700/50">
+        <Card className="bg-card/40 border-border/50">
           <CardContent className="py-4 px-5 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-slate-700/50 flex items-center justify-center">
-              <Users className="h-4 w-4 text-slate-400" />
+            <div className="w-9 h-9 rounded-lg bg-muted/50 flex items-center justify-center">
+              <Users className="h-4 w-4 text-muted-foreground" />
             </div>
             <div>
-              <p className="text-2xl font-semibold text-slate-100 tabular-nums">
+              <p className="text-2xl font-semibold text-foreground tabular-nums">
                 {sessionCodes.reduce((acc, sc) => acc + sc.codes.length, 0) || "--"}
               </p>
-              <p className="text-xs text-slate-500">Total Codes</p>
+              <p className="text-xs text-muted-foreground/60">Total Codes</p>
             </div>
           </CardContent>
         </Card>
@@ -331,12 +335,12 @@ export default function CaptainCodesPage() {
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
           <Input
             placeholder="Search by event name, session ID, or code..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-slate-800/60 border-slate-700 text-slate-200 placeholder:text-slate-500 h-9 text-sm"
+            className="pl-9 bg-card/60 border-border text-foreground placeholder:text-muted-foreground/60 h-9 text-sm"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -346,8 +350,8 @@ export default function CaptainCodesPage() {
               onClick={() => setFilterStatus(f)}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 filterStatus === f
-                  ? "bg-slate-700 text-slate-100 border border-slate-600"
-                  : "text-slate-500 hover:text-slate-300 border border-transparent"
+                  ? "bg-muted text-foreground border border-border"
+                  : "text-muted-foreground/60 hover:text-foreground/80 border border-transparent"
               }`}
             >
               {f === "all" ? "All" : f === "active" ? "Active" : "Completed"}
@@ -357,7 +361,7 @@ export default function CaptainCodesPage() {
             variant="outline"
             size="sm"
             onClick={fetchAll}
-            className="border-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-800 h-8"
+            className="border-border text-muted-foreground hover:text-foreground hover:bg-card h-8"
           >
             <RefreshCw className="h-3.5 w-3.5" />
           </Button>
@@ -366,13 +370,13 @@ export default function CaptainCodesPage() {
 
       {/* Sessions list */}
       {filtered.length === 0 ? (
-        <Card className="bg-slate-800/30 border-slate-700/50">
+        <Card className="bg-card/30 border-border/50">
           <CardContent className="py-16 flex flex-col items-center justify-center text-center">
-            <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center mb-4">
-              <KeyRound className="h-6 w-6 text-slate-600" />
+            <div className="w-12 h-12 rounded-full bg-card flex items-center justify-center mb-4">
+              <KeyRound className="h-6 w-6 text-muted-foreground/40" />
             </div>
-            <p className="text-slate-400 text-sm mb-1">No draft sessions found</p>
-            <p className="text-slate-600 text-xs">
+            <p className="text-muted-foreground text-sm mb-1">No draft sessions found</p>
+            <p className="text-muted-foreground/40 text-xs">
               Create a draft session from the{" "}
               <Link href="/admin/drafts" className="text-blue-400 hover:underline">
                 Draft Room
@@ -394,8 +398,8 @@ export default function CaptainCodesPage() {
                 key={sc.session.id}
                 className={`border transition-colors ${
                   sc.expanded
-                    ? "bg-slate-800/60 border-blue-500/20"
-                    : "bg-slate-800/30 border-slate-700/50 hover:border-slate-600/50"
+                    ? "bg-card/60 border-blue-500/20"
+                    : "bg-card/30 border-border/50 hover:border-border/50"
                 }`}
               >
                 <CardContent className="p-0">
@@ -404,7 +408,7 @@ export default function CaptainCodesPage() {
                     onClick={() => toggleExpand(sc.session.id)}
                     className="w-full flex items-center gap-4 px-5 py-4 text-left"
                   >
-                    <div className="shrink-0 text-slate-500">
+                    <div className="shrink-0 text-muted-foreground/60">
                       {sc.expanded ? (
                         <ChevronDown className="h-4 w-4 text-blue-400" />
                       ) : (
@@ -414,19 +418,19 @@ export default function CaptainCodesPage() {
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <h3 className="text-sm font-medium text-slate-200 truncate">
+                        <h3 className="text-sm font-medium text-foreground truncate">
                           {sc.event?.name ?? "Unknown Event"}
                         </h3>
                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium border ${pl.cls}`}>
                           {pl.text}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-500 font-mono">
+                      <p className="text-xs text-muted-foreground/60 font-mono">
                         {sc.session.id.slice(0, 12)}...
                       </p>
                     </div>
 
-                    <div className="hidden sm:flex items-center gap-4 text-xs text-slate-500 shrink-0">
+                    <div className="hidden sm:flex items-center gap-4 text-xs text-muted-foreground/60 shrink-0">
                       {totalCodes > 0 && (
                         <span className="flex items-center gap-1">
                           <ShieldCheck className="h-3 w-3" />
@@ -444,15 +448,15 @@ export default function CaptainCodesPage() {
 
                   {/* Expanded codes panel */}
                   {sc.expanded && (
-                    <div className="border-t border-slate-700/50 px-5 py-5">
+                    <div className="border-t border-border/50 px-5 py-5">
                       {sc.loading ? (
-                        <div className="flex items-center gap-2 text-slate-400 text-sm py-4 justify-center">
+                        <div className="flex items-center gap-2 text-muted-foreground text-sm py-4 justify-center">
                           <Loader2 className="h-4 w-4 animate-spin" />
                           Loading codes...
                         </div>
                       ) : sc.codes.length === 0 || sc.codes.every((c) => !c.code) ? (
                         <div className="flex flex-col items-center gap-3 py-6">
-                          <p className="text-sm text-slate-500">
+                          <p className="text-sm text-muted-foreground/60">
                             {sc.codes.length === 0
                               ? "No captain seats found for this session."
                               : "Seats exist but no codes have been generated yet."}
@@ -460,28 +464,34 @@ export default function CaptainCodesPage() {
                           {sc.codes.length > 0 && (
                             <Button
                               size="sm"
-                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                              className="bg-blue-600 hover:bg-blue-700 text-foreground"
                               disabled={actionLoading === "gen_" + sc.session.id}
                               onClick={async () => {
                                 setActionLoading("gen_" + sc.session.id)
                                 setError(null)
                                 try {
-                                  console.log("[v0] Generating codes for session:", sc.session.id)
                                   const res = await fetch(`/api/draft/${sc.session.id}/codes`, {
                                     method: "POST",
                                     headers: { "Content-Type": "application/json" },
                                     body: JSON.stringify({ _action: "generate_all" }),
                                   })
                                   const d = await res.json()
-                                  console.log("[v0] Generate response:", res.status, d)
                                   if (res.ok) {
                                     // Refresh codes
-                                    await refreshSessionCodes(sc.session.id)
+                                    const codesRes = await fetch(`/api/draft/${sc.session.id}/codes`)
+                                    const codesData = await codesRes.json()
+                                    setSessionCodes((prev) =>
+                                      prev.map((s) =>
+                                        s.session.id === sc.session.id
+                                          ? { ...s, codes: codesData.codes ?? [] }
+                                          : s
+                                      )
+                                    )
                                   } else {
                                     setError(d.error ?? d.details ?? "Failed to generate codes")
                                   }
                                 } catch (e) {
-                                  console.error("[v0] Generate error:", e)
+                                  console.error("Generate codes error:", e)
                                   setError("Network error generating codes")
                                 } finally {
                                   setActionLoading(null)
@@ -502,7 +512,7 @@ export default function CaptainCodesPage() {
                           {/* Toolbar for codes */}
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
-                              <span className="text-xs text-slate-500">
+                              <span className="text-xs text-muted-foreground/60">
                                 {sc.codes.length} code{sc.codes.length !== 1 ? "s" : ""}
                                 {usedCount > 0 && (
                                   <span className="text-yellow-500/80 ml-1">
@@ -515,7 +525,7 @@ export default function CaptainCodesPage() {
                               {sc.codes.some((c) => !c.code) && (
                                 <Button
                                   size="sm"
-                                  className="bg-blue-600 hover:bg-blue-700 text-white h-7 text-xs"
+                                  className="bg-blue-600 hover:bg-blue-700 text-foreground h-7 text-xs"
                                   disabled={actionLoading === "gen_" + sc.session.id}
                                   onClick={async () => {
                                     setActionLoading("gen_" + sc.session.id)
@@ -550,7 +560,7 @@ export default function CaptainCodesPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-slate-500 hover:text-slate-200 h-7 text-xs"
+                                className="text-muted-foreground/60 hover:text-foreground h-7 text-xs"
                                 onClick={() => copyAllCodes(sc)}
                               >
                                 {copiedCode === "__all__" + sc.session.id ? (
@@ -562,7 +572,7 @@ export default function CaptainCodesPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-slate-500 hover:text-slate-200 h-7 text-xs"
+                                className="text-muted-foreground/60 hover:text-foreground h-7 text-xs"
                                 asChild
                               >
                                 <Link href={`/draft/${sc.session.id}`} target="_blank">
@@ -579,8 +589,8 @@ export default function CaptainCodesPage() {
                                 key={(c.code ?? "") + c.seat_label}
                                 className={`group relative rounded-lg border p-4 transition-all ${
                                   c.used
-                                    ? "bg-slate-900/40 border-slate-700/40"
-                                    : "bg-slate-900/60 border-slate-700 hover:border-slate-600"
+                                    ? "bg-background/40 border-border/40"
+                                    : "bg-background/60 border-border hover:border-border"
                                 }`}
                               >
                                 {/* Status dot */}
@@ -591,7 +601,7 @@ export default function CaptainCodesPage() {
                                         c.used ? "bg-yellow-500/50" : "bg-green-500"
                                       }`}
                                     />
-                                    <span className="text-xs font-medium text-slate-400">
+                                    <span className="text-xs font-medium text-muted-foreground">
                                       {c.seat_label}
                                     </span>
                                   </div>
@@ -608,13 +618,13 @@ export default function CaptainCodesPage() {
 
                                 {/* Code display */}
                                 <div className={`font-mono text-lg tracking-[0.2em] mb-3 ${
-                                  !c.code ? "text-slate-600 italic text-sm" : c.used ? "text-slate-600" : "text-slate-100"
+                                  !c.code ? "text-muted-foreground/40 italic text-sm" : c.used ? "text-muted-foreground/40" : "text-foreground"
                                 }`}>
                                   {c.code ?? "No code"}
                                 </div>
 
                                 {c.captain_name && c.captain_name !== c.seat_label && (
-                                  <p className="text-xs text-slate-500 mb-3 truncate">
+                                  <p className="text-xs text-muted-foreground/60 mb-3 truncate">
                                     {c.captain_name}
                                   </p>
                                 )}
@@ -625,7 +635,7 @@ export default function CaptainCodesPage() {
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => c.code && copyCode(c.code)}
-                                    className="h-7 px-2 text-xs text-slate-500 hover:text-slate-200"
+                                    className="h-7 px-2 text-xs text-muted-foreground/60 hover:text-foreground"
                                     disabled={c.used || !c.code}
                                   >
                                     {copiedCode === c.code ? (
@@ -638,9 +648,9 @@ export default function CaptainCodesPage() {
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      onClick={() => regenerateCode(sc.session.id, c.seat_label)}
-                                      disabled={actionLoading === `regen_${sc.session.id}_${c.seat_label}` }
-                                      className="h-7 px-2 text-xs text-slate-500 hover:text-blue-400"
+                                      onClick={() => regenerateCode(sc.session.id, c.seat_label, c.code ?? "")}
+                                      disabled={actionLoading === c.code || !c.code}
+                                      className="h-7 px-2 text-xs text-muted-foreground/60 hover:text-blue-400"
                                     >
                                       {actionLoading === `regen_${sc.session.id}_${c.seat_label}` ? (
                                         <Loader2 className="h-3 w-3 animate-spin" />
@@ -653,9 +663,9 @@ export default function CaptainCodesPage() {
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      onClick={() => revokeCode(sc.session.id, c.seat_label)}
-                                      disabled={actionLoading === `revoke_${sc.session.id}_${c.seat_label}` || !c.code}
-                                      className="h-7 px-2 text-xs text-slate-500 hover:text-red-400"
+                                      onClick={() => revokeCode(sc.session.id, c.seat_label, c.code ?? "")}
+                                      disabled={actionLoading === c.code || !c.code}
+                                      className="h-7 px-2 text-xs text-muted-foreground/60 hover:text-red-400"
                                     >
                                       <XCircle className="h-3 w-3 mr-1" /> Revoke
                                     </Button>
@@ -685,9 +695,9 @@ export default function CaptainCodesPage() {
       )}
 
       {/* Footer guidance */}
-      <div className="mt-8 px-5 py-4 bg-slate-800/20 border border-slate-700/30 rounded-lg">
-        <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">How Captain Codes Work</h4>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-500 leading-relaxed">
+      <div className="mt-8 px-5 py-4 bg-card/20 border border-border/30 rounded-lg">
+        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">How Captain Codes Work</h4>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-muted-foreground/60 leading-relaxed">
           <div className="flex gap-2">
             <span className="text-blue-400 font-mono font-bold shrink-0">01</span>
             <p>Codes are generated automatically when you create a draft session. Each captain seat gets a unique one-time code.</p>

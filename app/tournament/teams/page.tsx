@@ -11,14 +11,14 @@ export default function TeamsPage() {
       <section className="bg-duck-dark py-12">
         <div className="container px-4 md:px-6">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl font-bebas tracking-wide text-white mb-4">REGISTERED TEAMS</h1>
-            <p className="text-lg text-white/90">Teams competing in the D2AD Ability Draft Tournament</p>
+            <h1 className="text-4xl sm:text-5xl font-bebas tracking-wide text-foreground mb-4">REGISTERED TEAMS</h1>
+            <p className="text-lg text-foreground/90">Teams competing in the D2AD Ability Draft Tournament</p>
           </div>
         </div>
       </section>
 
       {/* Registration Status */}
-      <section className="py-12 bg-white">
+      <section className="py-12 bg-card">
         <div className="container px-4 md:px-6">
           <div className="max-w-4xl mx-auto">
             <Card className="mb-8 border-[#aa5a35]">
@@ -120,9 +120,9 @@ export default function TeamsPage() {
             </Card>
 
             {/* Registration Requirements */}
-            <div className="mt-8 bg-blue-50 p-6 rounded-lg border border-blue-200">
-              <h3 className="font-semibold text-blue-900 mb-3">Team Registration Requirements:</h3>
-              <ul className="text-sm text-blue-800 space-y-2">
+            <div className="mt-8 bg-muted p-6 border border-border">
+              <h3 className="font-semibold text-foreground mb-3">Team Registration Requirements:</h3>
+              <ul className="text-sm text-muted-foreground space-y-2">
                 <li>• Team must have exactly 5 players</li>
                 <li>• All players need valid Steam accounts</li>
                 <li>• Team captain must provide Discord contact</li>
@@ -133,7 +133,7 @@ export default function TeamsPage() {
             </div>
 
             {/* Call to Action */}
-            <div className="mt-8 text-center bg-gray-50 p-8 rounded-lg">
+            <div className="mt-8 text-center bg-muted p-8">
               <h3 className="text-2xl font-bebas tracking-wide mb-4">READY TO COMPETE?</h3>
               <p className="text-muted-foreground mb-6">
                 Gather your team of 5 players and register for the tournament. Don't have a full team? Join our Discord

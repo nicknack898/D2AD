@@ -95,27 +95,27 @@ export default function TournamentManagePage() {
             </div>
 
             {/* Phase 2: Bracket Generation */}
-            <div className="flex items-center gap-4 p-4 rounded-lg border border-gray-200">
-              <div className="flex items-center justify-center w-8 h-8 bg-gray-400 text-white rounded-full text-sm font-bold">
+            <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
+              <div className="flex items-center justify-center w-8 h-8 bg-muted-foreground text-background rounded-full text-sm font-bold">
                 2
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-700">Bracket Generation</h3>
-                <p className="text-sm text-gray-600">Automatic single-elimination bracket creation</p>
-                <p className="text-xs text-gray-500 mt-1">Triggers after registration closes</p>
+                <h3 className="font-semibold text-foreground">Bracket Generation</h3>
+                <p className="text-sm text-muted-foreground">Automatic single-elimination bracket creation</p>
+                <p className="text-xs text-muted-foreground/60 mt-1">Triggers after registration closes</p>
               </div>
               <Badge variant="outline">Pending</Badge>
             </div>
 
             {/* Phase 3: Tournament */}
-            <div className="flex items-center gap-4 p-4 rounded-lg border border-gray-200">
-              <div className="flex items-center justify-center w-8 h-8 bg-gray-400 text-white rounded-full text-sm font-bold">
+            <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
+              <div className="flex items-center justify-center w-8 h-8 bg-muted-foreground text-background rounded-full text-sm font-bold">
                 3
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-700">Tournament Day</h3>
-                <p className="text-sm text-gray-600">Live tournament with Discord coordination</p>
-                <p className="text-xs text-gray-500 mt-1">{tournamentDate}</p>
+                <h3 className="font-semibold text-foreground">Tournament Day</h3>
+                <p className="text-sm text-muted-foreground">Live tournament with Discord coordination</p>
+                <p className="text-xs text-muted-foreground/60 mt-1">{tournamentDate}</p>
               </div>
               <Badge variant="outline">Upcoming</Badge>
             </div>

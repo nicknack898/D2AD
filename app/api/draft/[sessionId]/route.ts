@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase-server"
 import { getDraftSession, getLotsForSession, getSeatsForSession } from "@/lib/draft-engine"
-import { requireAdminApiAuth } from "@/lib/admin-auth"
+import { requireAdminApi } from "@/lib/auth"
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 /**
  * DELETE /api/draft/[sessionId]
@@ -10,15 +12,15 @@ import { requireAdminApiAuth } from "@/lib/admin-auth"
  */
 export async function DELETE(
   _req: Request,
-  { params }: { params: Promise<{ sessionId: string }> },
+  { params }: { params: { sessionId: string } },
 ) {
   try {
-    const isAdmin = await requireAdminApiAuth()
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    const denied = await requireAdminApi()
+    if (denied) return denied
+    const { sessionId } = params
+    if (!UUID_RE.test(sessionId)) {
+      return NextResponse.json({ error: "Invalid session ID" }, { status: 400 })
     }
-
-    const { sessionId } = await params
     const supabase = await createClient()
 
     // Get seats to delete related codes and wallets
@@ -67,10 +69,13 @@ export async function DELETE(
  */
 export async function GET(
   _req: Request,
-  { params }: { params: Promise<{ sessionId: string }> },
+  { params }: { params: { sessionId: string } },
 ) {
   try {
-    const { sessionId } = await params
+    const { sessionId } = params
+    if (!UUID_RE.test(sessionId)) {
+      return NextResponse.json({ error: "Invalid session ID" }, { status: 400 })
+    }
     const session = await getDraftSession(sessionId)
     if (!session) {
       return NextResponse.json({ error: "Draft session not found" }, { status: 404 })

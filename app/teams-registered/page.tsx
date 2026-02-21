@@ -32,7 +32,7 @@ export default function TeamsRegisteredPage() {
     <div className="container py-10">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-4 text-[#aa5a35]">{"Registered Teams"}</h1>
-        <p className="text-gray-600 mb-6">
+        <p className="text-muted-foreground/60 mb-6">
           {
             "View all teams registered for the Dota 2 Ability Draft events. When an event is announced, this page will reflect live registrations."
           }
@@ -44,7 +44,7 @@ export default function TeamsRegisteredPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">{"Total Teams"}</p>
+                  <p className="text-sm text-muted-foreground/60">{"Total Teams"}</p>
                   <p className="text-2xl font-bold text-[#aa5a35]">{totalTeams}</p>
                 </div>
                 <Users className="h-8 w-8 text-[#aa5a35]" />
@@ -56,7 +56,7 @@ export default function TeamsRegisteredPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">{"Confirmed"}</p>
+                  <p className="text-sm text-muted-foreground/60">{"Confirmed"}</p>
                   <p className="text-2xl font-bold text-green-600">{confirmedTeams}</p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-green-600" />
@@ -68,7 +68,7 @@ export default function TeamsRegisteredPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">{"Under Review"}</p>
+                  <p className="text-sm text-muted-foreground/60">{"Under Review"}</p>
                   <p className="text-2xl font-bold text-yellow-600">{underReviewTeams}</p>
                 </div>
                 <Clock className="h-8 w-8 text-yellow-600" />
@@ -80,7 +80,7 @@ export default function TeamsRegisteredPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">{"Available Spots"}</p>
+                  <p className="text-sm text-muted-foreground/60">{"Available Spots"}</p>
                   <p className="text-2xl font-bold text-blue-600">{availableSpots}</p>
                 </div>
                 <Trophy className="h-8 w-8 text-blue-600" />
@@ -113,7 +113,7 @@ export default function TeamsRegisteredPage() {
 
         {/* Search Bar */}
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
             placeholder="Search teams by name or captain..."
             value={searchTerm}
@@ -128,19 +128,19 @@ export default function TeamsRegisteredPage() {
       {filteredTeams.length === 0 ? (
         <Card>
           <CardContent className="p-12 text-center">
-            <Users className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">{"No Teams Registered Yet"}</h3>
-            <p className="text-gray-500 mb-6">
+            <Users className="h-16 w-16 text-muted-foreground/40 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-muted-foreground/60 mb-2">{"No Teams Registered Yet"}</h3>
+            <p className="text-muted-foreground mb-6">
               {"Teams will appear here once registration opens for the next event."}
             </p>
 
             {/* Process Info */}
-            <div className="bg-blue-50 p-6 rounded-lg border border-blue-200 mb-6 text-left max-w-2xl mx-auto">
+            <div className="bg-muted p-6 border border-border mb-6 text-left max-w-2xl mx-auto">
               <div className="flex items-center gap-2 mb-4">
-                <InfoIcon className="h-5 w-5 text-blue-600" />
-                <h4 className="font-semibold text-blue-800">{"How Registration Works"}</h4>
+                <InfoIcon className="h-5 w-5 text-duck-orange" />
+                <h4 className="font-semibold text-foreground">{"How Registration Works"}</h4>
               </div>
-              <ol className="text-sm text-blue-700 space-y-2">
+              <ol className="text-sm text-muted-foreground space-y-2">
                 <li>
                   {"1. "}
                   <strong>{"Register:"}</strong>
@@ -204,7 +204,7 @@ export default function TeamsRegisteredPage() {
                           ? "bg-green-100 text-green-800"
                           : team.status === "under_review"
                           ? "bg-yellow-100 text-yellow-800"
-                          : "bg-gray-100 text-gray-800"
+                          : "bg-muted text-foreground"
                       }
                     >
                       {team.status === "confirmed" && <CheckCircle className="h-3 w-3 mr-1" />}
@@ -221,7 +221,7 @@ export default function TeamsRegisteredPage() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="text-sm text-gray-700">
+              <CardContent className="text-sm text-foreground">
                 {"Roster and details will appear here once teams are confirmed."}
               </CardContent>
             </Card>
@@ -238,7 +238,7 @@ export default function TeamsRegisteredPage() {
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <h4 className="font-semibold mb-2">{"Event Details"}</h4>
-              <ul className="text-sm text-gray-600 space-y-1">
+              <ul className="text-sm text-muted-foreground/60 space-y-1">
                 <li>
                   {"• "}
                   <strong>{"Format:"}</strong>
@@ -268,7 +268,7 @@ export default function TeamsRegisteredPage() {
             </div>
             <div>
               <h4 className="font-semibold mb-2">{"Coordination"}</h4>
-              <ul className="text-sm text-gray-600 space-y-1">
+              <ul className="text-sm text-muted-foreground/60 space-y-1">
                 <li>{"• Tournament announcements and updates"}</li>
                 <li>{"• Team coordination and match scheduling"}</li>
                 <li>{"• Live lobby updates and results"}</li>

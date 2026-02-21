@@ -34,8 +34,8 @@ export default function RulesPage() {
         <section className="bg-duck-dark py-12">
           <div className="container px-4 md:px-6">
             <div className="text-center">
-              <h1 className="text-4xl sm:text-5xl font-bebas tracking-wide text-white mb-4">TOURNAMENT RULES</h1>
-              <p className="text-lg text-white/90">
+              <h1 className="text-4xl sm:text-5xl font-bebas tracking-wide text-foreground mb-4">TOURNAMENT RULES</h1>
+              <p className="text-lg text-foreground/90">
                 Official rules and regulations for the D2AD Ability Draft Tournament
               </p>
             </div>
@@ -43,7 +43,7 @@ export default function RulesPage() {
         </section>
 
         {/* Rules Content */}
-        <section className="py-12 bg-white">
+        <section className="py-12 bg-card">
           <div className="container px-4 md:px-6">
             <div className="max-w-4xl mx-auto space-y-8">
               {/* Team Requirements */}
@@ -236,16 +236,16 @@ export default function RulesPage() {
               </Card>
 
               {/* Important Notice */}
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+              <div className="bg-muted border border-border p-6">
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="h-6 w-6 text-yellow-600 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle className="h-6 w-6 text-duck-orange flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold text-yellow-800 mb-2">Important Notice</h3>
-                    <p className="text-sm text-yellow-700 mb-3">
+                    <h3 className="font-semibold text-foreground mb-2">Important Notice</h3>
+                    <p className="text-sm text-muted-foreground mb-3">
                       Tournament organizers reserve the right to modify rules as needed to ensure fair play and smooth
                       tournament operation. Any rule changes will be announced on Discord with reasonable notice.
                     </p>
-                    <p className="text-sm text-yellow-700">
+                    <p className="text-sm text-muted-foreground">
                       By participating in the tournament, teams agree to abide by these rules and accept the decisions
                       of tournament organizers as final.
                     </p>
@@ -254,9 +254,9 @@ export default function RulesPage() {
               </div>
 
               {/* Contact Info */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-                <h3 className="font-semibold text-blue-900 mb-2">Questions About Rules?</h3>
-                <p className="text-sm text-blue-800">
+              <div className="bg-muted border border-border p-6 text-center">
+                <h3 className="font-semibold text-foreground mb-2">Questions About Rules?</h3>
+                <p className="text-sm text-muted-foreground">
                   Contact tournament organizers on Discord for clarification on any rules or regulations.
                 </p>
               </div>

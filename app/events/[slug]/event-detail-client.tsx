@@ -58,7 +58,7 @@ const statusLabels: Record<string, { label: string; color: string }> = {
   registration_open: { label: "Registration Open", color: "bg-green-500/20 text-green-400 border-green-500/30" },
   registration_closed: { label: "Registration Closed", color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
   in_progress: { label: "In Progress", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-  completed: { label: "Completed", color: "bg-slate-500/20 text-slate-400 border-slate-500/30" },
+  completed: { label: "Completed", color: "bg-muted text-muted-foreground border-border" },
   draft: { label: "Coming Soon", color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
   cancelled: { label: "Cancelled", color: "bg-red-500/20 text-red-400 border-red-500/30" },
 }
@@ -213,7 +213,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
       </div>
     )
@@ -221,10 +221,10 @@ export default function EventDetailClient({ slug }: { slug: string }) {
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl text-white mb-4">Event not found</h1>
-          <Button variant="outline" className="text-slate-300 border-slate-600" asChild>
+          <h1 className="text-2xl text-foreground mb-4">Event not found</h1>
+          <Button variant="outline" className="text-foreground/80 border-border" asChild>
             <Link href="/events">
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to Events
             </Link>
@@ -239,12 +239,12 @@ export default function EventDetailClient({ slug }: { slug: string }) {
   const regDeadline = event.registration_closes_at ? timeUntil(event.registration_closes_at) : null
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-background">
       <div className="max-w-5xl mx-auto px-4 py-8">
         {/* Back link */}
         <Link
           href="/events"
-          className="inline-flex items-center text-slate-400 hover:text-white text-sm mb-6 transition-colors"
+          className="inline-flex items-center text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors"
         >
           <ArrowLeft className="mr-1 h-4 w-4" /> All Events
         </Link>
@@ -252,19 +252,19 @@ export default function EventDetailClient({ slug }: { slug: string }) {
         {/* Event header */}
         <div className="mb-8">
           <div className="flex flex-wrap items-center gap-3 mb-3">
-            <span className={`text-xs px-2.5 py-1 rounded-full border ${st.color}`}>
+            <span className={`text-xs px-2.5 py-1 rounded-none border ${st.color}`}>
               {st.label}
             </span>
             {isOpen && regDeadline && (
-              <span className="text-xs px-2.5 py-1 rounded-full border border-yellow-500/30 bg-yellow-500/10 text-yellow-400">
+              <span className="text-xs px-2.5 py-1 rounded-none border border-yellow-500/30 bg-yellow-500/10 text-yellow-400">
                 {regDeadline}
               </span>
             )}
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-white font-bebas tracking-wide mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground font-bebas tracking-wide mb-4">
             {event.name}
           </h1>
-          <div className="flex flex-wrap gap-6 text-sm text-slate-400">
+          <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
             {event.starts_at && (
               <span className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4" /> {formatDate(event.starts_at)}
@@ -283,17 +283,17 @@ export default function EventDetailClient({ slug }: { slug: string }) {
 
         {/* Prominent Registration CTA */}
         {isOpen && (
-          <div className="mb-8 bg-gradient-to-r from-green-500/10 via-blue-500/5 to-green-500/10 border border-green-500/20 rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="mb-8 bg-gradient-to-r from-green-500/10 via-blue-500/5 to-green-500/10 border border-green-500/20 rounded-none p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-none bg-green-500/20 flex items-center justify-center shrink-0">
                 <Users className="h-5 w-5 text-green-400" />
               </div>
               <div>
-                <p className="text-white font-semibold">Ready to play?</p>
-                <p className="text-slate-400 text-sm">Join {players.length} other players in the pool for this event.</p>
+                <p className="text-foreground font-semibold">Ready to play?</p>
+                <p className="text-muted-foreground text-sm">Join {players.length} other players in the pool for this event.</p>
               </div>
             </div>
-            <Button className="bg-green-600 hover:bg-green-700 text-white px-6 shrink-0" asChild>
+            <Button className="bg-green-600 hover:bg-green-700 text-foreground px-6 shrink-0" asChild>
               <Link href={`/events/${slug}/register`}>
                 Register Now <ChevronRight className="ml-1 h-4 w-4" />
               </Link>
@@ -306,36 +306,36 @@ export default function EventDetailClient({ slug }: { slug: string }) {
           <div className="lg:col-span-2 space-y-8">
             {/* Description */}
             {event.description && (
-              <Card className="bg-slate-800/50 border-slate-700">
+              <Card className="bg-card/50 border-border">
                 <CardHeader>
-                  <CardTitle className="text-white">About This Event</CardTitle>
+                  <CardTitle className="text-foreground">About This Event</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">{event.description}</p>
+                  <p className="text-foreground/80 leading-relaxed whitespace-pre-wrap">{event.description}</p>
                 </CardContent>
               </Card>
             )}
 
             {/* Player Pool */}
-            <Card className="bg-slate-800/50 border-slate-700">
+            <Card className="bg-card/50 border-border">
               <CardHeader>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <CardTitle className="text-white">Registered Players ({players.length})</CardTitle>
+                  <CardTitle className="text-foreground">Registered Players ({players.length})</CardTitle>
                   {players.length > 0 && (
                     <div className="flex items-center gap-2">
                       <div className="relative">
-                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/60" />
                         <Input
                           placeholder="Search..."
                           value={playerSearch}
                           onChange={(e) => setPlayerSearch(e.target.value)}
-                          className="bg-slate-700/50 border-slate-600 text-white pl-8 h-8 text-xs w-40"
+                          className="bg-muted/50 border-border text-foreground pl-8 h-8 text-xs w-40"
                         />
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-slate-400 hover:text-white h-8 px-2"
+                        className="text-muted-foreground hover:text-foreground h-8 px-2"
                         onClick={() => setPlayerSort(playerSort === "name" ? "rating" : "name")}
                       >
                         <ArrowUpDown className="h-3.5 w-3.5 mr-1" />
@@ -347,25 +347,25 @@ export default function EventDetailClient({ slug }: { slug: string }) {
               </CardHeader>
               <CardContent>
                 {players.length === 0 ? (
-                  <p className="text-slate-500 text-sm">No players registered yet. Be the first!</p>
+                  <p className="text-muted-foreground/60 text-sm">No players registered yet. Be the first!</p>
                 ) : filteredPlayers.length === 0 ? (
-                  <p className="text-slate-500 text-sm">No players match your search.</p>
+                  <p className="text-muted-foreground/60 text-sm">No players match your search.</p>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {filteredPlayers.map((p: any) => (
                       <div
                         key={p.id}
-                        className="flex items-center gap-3 bg-slate-700/30 rounded-lg px-3 py-2.5 hover:bg-slate-700/50 transition-colors"
+                        className="flex items-center gap-3 bg-muted/30 rounded-none px-3 py-2.5 hover:bg-muted/50 transition-colors"
                       >
-                        <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-bold shrink-0">
+                        <div className="w-8 h-8 rounded-none bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-bold shrink-0">
                           {p.display_name?.charAt(0)?.toUpperCase() ?? "?"}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-white text-sm font-medium truncate">{p.display_name}</p>
-                          <p className="text-slate-500 text-xs truncate">{p.discord_id}</p>
+                          <p className="text-foreground text-sm font-medium truncate">{p.display_name}</p>
+                          <p className="text-muted-foreground/60 text-xs truncate">{p.discord_id}</p>
                         </div>
                         {p.rating != null && (
-                          <span className="text-xs text-slate-400 shrink-0 tabular-nums">
+                          <span className="text-xs text-muted-foreground shrink-0 tabular-nums">
                             {p.rating.toLocaleString()} MMR
                           </span>
                         )}
@@ -383,13 +383,13 @@ export default function EventDetailClient({ slug }: { slug: string }) {
               <>
                 {/* Step: Form */}
                 {step === "form" && (
-                  <Card className="bg-slate-800/50 border-green-500/30">
+                  <Card className="bg-card/50 border-green-500/30">
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-white text-lg flex items-center gap-2">
+                      <CardTitle className="text-foreground text-lg flex items-center gap-2">
                         <User className="h-5 w-5 text-green-400" />
                         Quick Register
                       </CardTitle>
-                      <p className="text-slate-400 text-xs">
+                      <p className="text-muted-foreground text-xs">
                         Fill in your details below, or use the{" "}
                         <Link href={`/events/${slug}/register`} className="text-blue-400 hover:underline">
                           full registration page
@@ -401,17 +401,17 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                       <div className="space-y-4">
                         {/* Discord ID */}
                         <div>
-                          <label className="text-sm text-slate-300 mb-1 block">
+                          <label className="text-sm text-foreground/80 mb-1 block">
                             Discord Username <span className="text-red-400">*</span>
                           </label>
                           <div className="relative">
-                            <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                            <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
                             <Input
                               placeholder="e.g. player#1234"
                               value={form.discord_id}
                               onChange={(e) => handleFieldChange("discord_id", e.target.value)}
                               onBlur={() => handleBlur("discord_id")}
-                              className={`bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 pl-9 ${
+                              className={`bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/60 pl-9 ${
                                 errors.discord_id && touched.has("discord_id") ? "border-red-500/50" : ""
                               }`}
                             />
@@ -425,17 +425,17 @@ export default function EventDetailClient({ slug }: { slug: string }) {
 
                         {/* Display Name */}
                         <div>
-                          <label className="text-sm text-slate-300 mb-1 block">
+                          <label className="text-sm text-foreground/80 mb-1 block">
                             In-Game Name <span className="text-red-400">*</span>
                           </label>
                           <div className="relative">
-                            <Gamepad2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                            <Gamepad2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
                             <Input
                               placeholder="Your Dota 2 display name"
                               value={form.display_name}
                               onChange={(e) => handleFieldChange("display_name", e.target.value)}
                               onBlur={() => handleBlur("display_name")}
-                              className={`bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 pl-9 ${
+                              className={`bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/60 pl-9 ${
                                 errors.display_name && touched.has("display_name") ? "border-red-500/50" : ""
                               }`}
                             />
@@ -449,15 +449,15 @@ export default function EventDetailClient({ slug }: { slug: string }) {
 
                         {/* Steam ID */}
                         <div>
-                          <label className="text-sm text-slate-300 mb-1 block">
-                            Steam ID <span className="text-slate-500 text-xs">(optional)</span>
+                          <label className="text-sm text-foreground/80 mb-1 block">
+                            Steam ID <span className="text-muted-foreground/60 text-xs">(optional)</span>
                           </label>
                           <Input
                             placeholder="e.g. 76561198012345678"
                             value={form.steam_id}
                             onChange={(e) => handleFieldChange("steam_id", e.target.value)}
                             onBlur={() => handleBlur("steam_id")}
-                            className={`bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 ${
+                            className={`bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/60 ${
                               errors.steam_id && touched.has("steam_id") ? "border-red-500/50" : ""
                             }`}
                           />
@@ -471,14 +471,14 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                         {/* MMR + Source */}
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <label className="text-sm text-slate-300 mb-1 block">Estimated MMR</label>
+                            <label className="text-sm text-foreground/80 mb-1 block">Estimated MMR</label>
                             <Input
                               type="number"
                               placeholder="e.g. 3500"
                               value={form.rating}
                               onChange={(e) => handleFieldChange("rating", e.target.value)}
                               onBlur={() => handleBlur("rating")}
-                              className={`bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 ${
+                              className={`bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/60 ${
                                 errors.rating && touched.has("rating") ? "border-red-500/50" : ""
                               }`}
                             />
@@ -489,14 +489,14 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                             )}
                           </div>
                           <div>
-                            <label className="text-sm text-slate-300 mb-1 block">Source</label>
+                            <label className="text-sm text-foreground/80 mb-1 block">Source</label>
                             <Select value={form.rating_source} onValueChange={(v) => handleFieldChange("rating_source", v)}>
-                              <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white h-10">
+                              <SelectTrigger className="bg-muted/50 border-border text-foreground h-10">
                                 <SelectValue placeholder="Select" />
                               </SelectTrigger>
-                              <SelectContent className="bg-slate-800 border-slate-700">
+                              <SelectContent className="bg-card border-border">
                                 {RATING_SOURCES.map((s) => (
-                                  <SelectItem key={s.value} value={s.value} className="text-slate-200">
+                                  <SelectItem key={s.value} value={s.value} className="text-foreground">
                                     {s.label}
                                   </SelectItem>
                                 ))}
@@ -507,15 +507,15 @@ export default function EventDetailClient({ slug }: { slug: string }) {
 
                         {/* Notes */}
                         <div>
-                          <label className="text-sm text-slate-300 mb-1 block">
-                            Notes <span className="text-slate-500 text-xs">(optional)</span>
+                          <label className="text-sm text-foreground/80 mb-1 block">
+                            Notes <span className="text-muted-foreground/60 text-xs">(optional)</span>
                           </label>
                           <Textarea
                             placeholder="Anything captains should know (roles, availability, etc.)..."
                             value={form.notes}
                             onChange={(e) => handleFieldChange("notes", e.target.value)}
                             onBlur={() => handleBlur("notes")}
-                            className={`bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 resize-none ${
+                            className={`bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/60 resize-none ${
                               errors.notes && touched.has("notes") ? "border-red-500/50" : ""
                             }`}
                             rows={3}
@@ -528,12 +528,12 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                             ) : (
                               <span />
                             )}
-                            <span className="text-xs text-slate-500">{form.notes.length}/500</span>
+                            <span className="text-xs text-muted-foreground/60">{form.notes.length}/500</span>
                           </div>
                         </div>
 
                         {submitError && (
-                          <div className="flex items-start gap-2 text-sm p-3 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20">
+                          <div className="flex items-start gap-2 text-sm p-3 rounded-none bg-red-500/10 text-red-400 border border-red-500/20">
                             <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
                             {submitError}
                           </div>
@@ -542,7 +542,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                         <Button
                           type="button"
                           onClick={handleReviewClick}
-                          className="w-full bg-green-600 hover:bg-green-700 text-white"
+                          className="w-full bg-green-600 hover:bg-green-700 text-foreground"
                         >
                           Review Registration <ChevronRight className="ml-1 h-4 w-4" />
                         </Button>
@@ -553,13 +553,13 @@ export default function EventDetailClient({ slug }: { slug: string }) {
 
                 {/* Step: Confirm */}
                 {step === "confirm" && (
-                  <Card className="bg-slate-800/50 border-blue-500/30">
+                  <Card className="bg-card/50 border-blue-500/30">
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-white text-lg">Confirm Registration</CardTitle>
-                      <p className="text-slate-400 text-xs">Please review your details before submitting.</p>
+                      <CardTitle className="text-foreground text-lg">Confirm Registration</CardTitle>
+                      <p className="text-muted-foreground text-xs">Please review your details before submitting.</p>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="bg-slate-900/50 rounded-lg p-4 space-y-3">
+                      <div className="bg-background/50 rounded-none p-4 space-y-3">
                         <ConfirmRow label="Discord" value={form.discord_id} />
                         <ConfirmRow label="In-Game Name" value={form.display_name} />
                         {form.steam_id && <ConfirmRow label="Steam ID" value={form.steam_id} />}
@@ -573,7 +573,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                       </div>
 
                       {submitError && (
-                        <div className="flex items-start gap-2 text-sm p-3 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20">
+                        <div className="flex items-start gap-2 text-sm p-3 rounded-none bg-red-500/10 text-red-400 border border-red-500/20">
                           <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
                           {submitError}
                         </div>
@@ -584,7 +584,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                           type="button"
                           variant="outline"
                           onClick={() => setStep("form")}
-                          className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                          className="flex-1 border-border text-foreground/80 hover:bg-muted"
                         >
                           <ChevronLeft className="mr-1 h-4 w-4" /> Edit
                         </Button>
@@ -592,7 +592,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                           type="button"
                           onClick={handleSubmit}
                           disabled={submitting}
-                          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                          className="flex-1 bg-blue-600 hover:bg-blue-700 text-foreground"
                         >
                           {submitting ? (
                             <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</>
@@ -607,14 +607,14 @@ export default function EventDetailClient({ slug }: { slug: string }) {
 
                 {/* Step: Success */}
                 {step === "success" && (
-                  <Card className="bg-slate-800/50 border-green-500/30">
+                  <Card className="bg-card/50 border-green-500/30">
                     <CardContent className="py-8 text-center space-y-4">
-                      <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto">
+                      <div className="w-16 h-16 rounded-none bg-green-500/20 flex items-center justify-center mx-auto">
                         <CheckCircle2 className="h-8 w-8 text-green-400" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-semibold text-white mb-1">You're Registered!</h3>
-                        <p className="text-slate-400 text-sm leading-relaxed">
+                        <h3 className="text-xl font-semibold text-foreground mb-1">You're Registered!</h3>
+                        <p className="text-muted-foreground text-sm leading-relaxed">
                           You've been added to the player pool for this event. 
                           Captains will be able to see your profile during the draft.
                           Check Discord for updates.
@@ -622,7 +622,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                       </div>
                       <div className="flex flex-col gap-2">
                         <Button
-                          className="bg-[#5865F2] hover:bg-[#4752C4] text-white w-full"
+                          className="bg-[#5865F2] hover:bg-[#4752C4] text-foreground w-full"
                           asChild
                         >
                           <Link href="https://discord.gg/d2ad" target="_blank" rel="noopener noreferrer">
@@ -632,14 +632,14 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                         </Button>
                         <Button
                           variant="outline"
-                          className="border-slate-600 text-slate-300 hover:bg-slate-700 w-full"
+                          className="border-border text-foreground/80 hover:bg-muted w-full"
                           onClick={handleRegisterAnother}
                         >
                           Register Another Player
                         </Button>
                         <Button
                           variant="ghost"
-                          className="text-slate-400 hover:text-white w-full text-xs"
+                          className="text-muted-foreground hover:text-foreground w-full text-xs"
                           asChild
                         >
                           <Link href={`/events/${slug}/register`}>Use Full Registration Page</Link>
@@ -650,14 +650,14 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                 )}
               </>
             ) : (
-              <Card className="bg-slate-800/50 border-slate-700">
+              <Card className="bg-card/50 border-border">
                 <CardContent className="py-8 text-center">
-                  <p className="text-slate-400 mb-4">
+                  <p className="text-muted-foreground mb-4">
                     {event.status === "draft"
                       ? "Registration has not opened yet for this event."
                       : "Registration is currently closed."}
                   </p>
-                  <Button className="bg-[#5865F2] hover:bg-[#4752C4] text-white" asChild>
+                  <Button className="bg-[#5865F2] hover:bg-[#4752C4] text-foreground" asChild>
                     <Link href="https://discord.gg/d2ad" target="_blank" rel="noopener noreferrer">
                       <MessageCircle className="mr-2 h-4 w-4" />
                       Get notified on Discord
@@ -676,8 +676,8 @@ export default function EventDetailClient({ slug }: { slug: string }) {
 function ConfirmRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between items-start gap-4">
-      <span className="text-xs text-slate-500 uppercase tracking-wide shrink-0">{label}</span>
-      <span className="text-sm text-slate-200 text-right break-words">{value}</span>
+      <span className="text-xs text-muted-foreground/60 uppercase tracking-wide shrink-0">{label}</span>
+      <span className="text-sm text-foreground text-right break-words">{value}</span>
     </div>
   )
 }

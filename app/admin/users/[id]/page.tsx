@@ -184,7 +184,7 @@ const user = {
   ],
 }
 
-export default async function UserDetailPage({ params }) {
+export default async function UserDetailPage({ params }: { params: { id: string } }) {
   // Check if user is authenticated
   await requireAuth()
 
@@ -222,49 +222,49 @@ export default async function UserDetailPage({ params }) {
 
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-gray-500" />
+                  <Mail className="h-4 w-4 text-muted-foreground" />
                   <span>{user.email}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-gray-500" />
+                  <Phone className="h-4 w-4 text-muted-foreground" />
                   <span>{user.phone}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-gray-500" />
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span>Registered on {user.registeredOn}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-gray-500" />
+                  <MapPin className="h-4 w-4 text-muted-foreground" />
                   <span>{user.address}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-gray-500" />
+                  <Clock className="h-4 w-4 text-muted-foreground" />
                   <span>Last active {user.lastActive}</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mt-6">
-                <div className="bg-gray-50 p-3 rounded-md text-center">
-                  <p className="text-sm text-gray-500">Games Registered</p>
+                <div className="bg-muted p-3 rounded-md text-center">
+                  <p className="text-sm text-muted-foreground">Games Registered</p>
                   <p className="text-xl font-bold">{user.gamesRegistered}</p>
                 </div>
-                <div className="bg-gray-50 p-3 rounded-md text-center">
-                  <p className="text-sm text-gray-500">Total Spent</p>
+                <div className="bg-muted p-3 rounded-md text-center">
+                  <p className="text-sm text-muted-foreground">Total Spent</p>
                   <p className="text-xl font-bold">{user.totalSpent}</p>
                 </div>
               </div>
 
               <div className="mt-6 space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Preferred Location</span>
+                  <span className="text-sm text-muted-foreground">Preferred Location</span>
                   <span>{user.preferredLocation}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Skill Level</span>
+                  <span className="text-sm text-muted-foreground">Skill Level</span>
                   <span>{user.skillLevel}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Emergency Contact</span>
+                  <span className="text-sm text-muted-foreground">Emergency Contact</span>
                   <span className="text-sm">{user.emergencyContact}</span>
                 </div>
               </div>
@@ -325,7 +325,7 @@ export default async function UserDetailPage({ params }) {
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h3 className="font-medium">{game.title}</h3>
-                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
                               <Calendar className="h-3 w-3" />
                               <span>{game.date}</span>
                               <Clock className="h-3 w-3 ml-2" />
@@ -337,7 +337,7 @@ export default async function UserDetailPage({ params }) {
                             <PaymentStatusBadge status={game.paymentStatus} />
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                           <MapPin className="h-3 w-3" />
                           <span>{game.location}</span>
                         </div>
@@ -411,7 +411,7 @@ export default async function UserDetailPage({ params }) {
                         </div>
                         <div>
                           <p className="font-medium">{activity.action}</p>
-                          <p className="text-sm text-gray-500">{activity.date}</p>
+                          <p className="text-sm text-muted-foreground">{activity.date}</p>
                         </div>
                       </div>
                     ))}
@@ -479,6 +479,6 @@ function ActivityIcon({ type }) {
     case "account":
       return <User className="h-5 w-5 text-[#aa5a35]" />
     default:
-      return <Activity className="h-5 w-5 text-gray-500" />
+      return <Activity className="h-5 w-5 text-muted-foreground" />
   }
 }

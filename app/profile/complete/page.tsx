@@ -167,19 +167,19 @@ export default function CompleteProfilePage() {
 
   if (authLoading || isLoading) {
     return (
-      <div className="flex min-h-[calc(100vh-64px)] items-center justify-center bg-zinc-950">
+      <div className="flex min-h-[calc(100vh-64px)] items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-duck-orange" />
       </div>
     )
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-64px)] flex-col bg-zinc-950 px-4 py-12">
+    <div className="flex min-h-[calc(100vh-64px)] flex-col bg-background px-4 py-12">
       <div className="container mx-auto max-w-3xl">
-        <Card className="border-zinc-800 bg-zinc-900 text-white shadow-xl">
+        <Card className="border-border bg-card text-card-foreground shadow-xl">
           <CardHeader>
             <CardTitle className="font-bebas text-3xl">COMPLETE YOUR PROFILE</CardTitle>
-            <CardDescription className="text-zinc-400">
+            <CardDescription className="text-muted-foreground">
               Please complete your player profile to book games
             </CardDescription>
           </CardHeader>
@@ -206,7 +206,7 @@ export default function CompleteProfilePage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="name" className="text-white">
+                    <Label htmlFor="name" className="text-foreground">
                       Full Name <span className="text-red-500">*</span>
                     </Label>
                     <Input
@@ -214,13 +214,13 @@ export default function CompleteProfilePage() {
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      className="bg-zinc-800 border-zinc-700 text-white"
+                      className="bg-muted border-border text-foreground"
                       required
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-white">
+                    <Label htmlFor="email" className="text-foreground">
                       Email <span className="text-red-500">*</span>
                     </Label>
                     <Input
@@ -229,16 +229,16 @@ export default function CompleteProfilePage() {
                       type="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="bg-zinc-800 border-zinc-700 text-white"
+                      className="bg-muted border-border text-foreground"
                       disabled
                     />
-                    <p className="text-xs text-zinc-500">Email is linked to your Google account</p>
+                    <p className="text-xs text-muted-foreground">Email is linked to your Google account</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-white">
+                    <Label htmlFor="phone" className="text-foreground">
                       Phone Number <span className="text-red-500">*</span>
                     </Label>
                     <Input
@@ -246,20 +246,20 @@ export default function CompleteProfilePage() {
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="bg-zinc-800 border-zinc-700 text-white"
+                      className="bg-muted border-border text-foreground"
                       required
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="area" className="text-white">
+                    <Label htmlFor="area" className="text-foreground">
                       Area <span className="text-red-500">*</span>
                     </Label>
                     <Select value={formData.area} onValueChange={handleAreaChange} required>
-                      <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
+                      <SelectTrigger className="bg-muted border-border text-foreground">
                         <SelectValue placeholder="Select your area" />
                       </SelectTrigger>
-                      <SelectContent className="bg-zinc-800 border-zinc-700 text-white">
+                      <SelectContent className="bg-muted border-border text-foreground">
                         {areas.map((area) => (
                           <SelectItem key={area} value={area}>
                             {area}
@@ -272,7 +272,7 @@ export default function CompleteProfilePage() {
 
                 {formData.area === "Other" && (
                   <div className="space-y-2">
-                    <Label htmlFor="areaOther" className="text-white">
+                    <Label htmlFor="areaOther" className="text-foreground">
                       Specify Area <span className="text-red-500">*</span>
                     </Label>
                     <Input
@@ -280,14 +280,14 @@ export default function CompleteProfilePage() {
                       name="areaOther"
                       value={formData.areaOther}
                       onChange={handleInputChange}
-                      className="bg-zinc-800 border-zinc-700 text-white"
+                      className="bg-muted border-border text-foreground"
                       required
                     />
                   </div>
                 )}
 
                 <div className="space-y-3">
-                  <Label className="text-white">
+                  <Label className="text-foreground">
                     Game Time Preference <span className="text-red-500">*</span>
                   </Label>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
@@ -307,7 +307,7 @@ export default function CompleteProfilePage() {
                 </div>
 
                 <div className="space-y-3">
-                  <Label className="text-white">
+                  <Label className="text-foreground">
                     Game Day Preference <span className="text-red-500">*</span>
                   </Label>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-4">
@@ -327,7 +327,7 @@ export default function CompleteProfilePage() {
                 </div>
 
                 <div className="space-y-3">
-                  <Label className="text-white">
+                  <Label className="text-foreground">
                     Skill Level <span className="text-red-500">*</span>
                   </Label>
                   <RadioGroup value={formData.skillLevel} onValueChange={handleSkillLevelChange} className="space-y-3">

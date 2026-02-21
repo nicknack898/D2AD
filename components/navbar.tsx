@@ -9,96 +9,109 @@ import { Gavel, Shield, Menu, X } from "lucide-react"
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
-  }
-
   return (
-    <nav className="bg-slate-900/95 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <nav className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="flex justify-between items-center h-14">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3">
-            <Image src="/ability-draft-logo.png" alt="D2AD Logo" width={40} height={40} className="rounded-lg" />
-            <span className="text-xl font-bold text-white">D2AD</span>
+          <Link href="/" className="flex items-center gap-2.5">
+            <Image src="/ability-draft-logo.png" alt="D2AD Logo" width={28} height={28} className="rounded" />
+            <span className="font-bebas text-lg tracking-wider text-foreground">D2AD</span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/events" className="text-slate-300 hover:text-white transition-colors duration-200 text-sm font-medium">
+            <Link
+              href="/events"
+              className="font-mono text-xs tracking-wider uppercase text-muted-foreground hover:text-foreground transition-colors"
+            >
               Events
             </Link>
-            <Link href="/draft" className="text-slate-300 hover:text-white transition-colors duration-200 text-sm font-medium flex items-center gap-1.5">
-              <Gavel className="h-3.5 w-3.5" />
-              Draft Room
+            <Link
+              href="/draft"
+              className="font-mono text-xs tracking-wider uppercase text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+            >
+              <Gavel className="h-3 w-3" />
+              Draft
             </Link>
-            <Link href="https://discord.gg/d2ad" target="_blank" rel="noopener noreferrer" className="text-slate-300 hover:text-white transition-colors duration-200 text-sm font-medium">
+            <Link
+              href="https://discord.gg/d2ad"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-xs tracking-wider uppercase text-muted-foreground hover:text-foreground transition-colors"
+            >
               Discord
             </Link>
-            <Link href="/admin" className="text-slate-500 hover:text-slate-300 transition-colors duration-200 text-sm flex items-center gap-1">
-              <Shield className="h-3 w-3" />
+            <Link
+              href="/admin"
+              className="font-mono text-[10px] tracking-wider uppercase text-muted-foreground/60 hover:text-muted-foreground transition-colors flex items-center gap-1"
+            >
+              <Shield className="h-2.5 w-2.5" />
               Admin
             </Link>
             <Button
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg text-sm"
+              size="sm"
+              className="bg-foreground text-background hover:bg-foreground/90 font-mono text-xs tracking-wider uppercase rounded-none h-8 px-4"
               asChild
             >
-              <Link href="/events">
-                Register
-              </Link>
+              <Link href="/events">Register</Link>
             </Button>
           </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden">
-            <Button variant="ghost" size="sm" onClick={toggleMenu} className="text-slate-300 hover:text-white">
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-muted-foreground hover:text-foreground transition-colors p-2"
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            >
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-slate-800/95 rounded-lg mt-2 border border-slate-700">
+          <div className="md:hidden border-t border-border">
+            <div className="py-4 flex flex-col gap-1">
               <Link
                 href="/events"
-                className="block px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-md transition-colors duration-200"
+                className="font-mono text-xs tracking-wider uppercase text-muted-foreground hover:text-foreground px-2 py-3 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Events
               </Link>
               <Link
                 href="/draft"
-                className="flex items-center gap-2 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-md transition-colors duration-200"
+                className="font-mono text-xs tracking-wider uppercase text-muted-foreground hover:text-foreground px-2 py-3 transition-colors flex items-center gap-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                <Gavel className="h-4 w-4" />
+                <Gavel className="h-3 w-3" />
                 Draft Room
               </Link>
               <Link
                 href="https://discord.gg/d2ad"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-md transition-colors duration-200"
+                className="font-mono text-xs tracking-wider uppercase text-muted-foreground hover:text-foreground px-2 py-3 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Discord
               </Link>
               <Link
                 href="/admin"
-                className="flex items-center gap-2 px-3 py-2 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded-md transition-colors duration-200 text-sm"
+                className="font-mono text-[10px] tracking-wider uppercase text-muted-foreground/60 hover:text-muted-foreground px-2 py-3 transition-colors flex items-center gap-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                <Shield className="h-3.5 w-3.5" />
+                <Shield className="h-3 w-3" />
                 Admin
               </Link>
-              <div className="px-3 py-2">
+              <div className="pt-2 px-2">
                 <Button
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg"
+                  className="w-full bg-foreground text-background hover:bg-foreground/90 font-mono text-xs tracking-wider uppercase rounded-none h-10"
                   asChild
                 >
-                  <Link href="/events">
+                  <Link href="/events" onClick={() => setIsMenuOpen(false)}>
                     Register
                   </Link>
                 </Button>

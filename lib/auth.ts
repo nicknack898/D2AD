@@ -1,6 +1,7 @@
 "use server"
 
 import { cookies, headers } from "next/headers"
+import { NextResponse } from "next/server"
 import crypto from "crypto"
 
 const ADMIN_ACCESS_ENABLED = true
@@ -132,4 +133,20 @@ export async function requireAuth() {
     return false
   }
   return true
+}
+
+/**
+ * Guard for API Route Handlers.
+ * Returns a 401 NextResponse when the caller is NOT a signed-in admin,
+ * or `null` when authenticated -- so callers can do:
+ *
+ *   const denied = await requireAdminApi()
+ *   if (denied) return denied
+ */
+export async function requireAdminApi() {
+  const ok = await isAuthenticated()
+  if (!ok) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+  return null
 }

@@ -452,18 +452,18 @@ export default function AdminPlayerPoolPage() {
           {toasts.map((toast) => (
             <div
               key={toast.id}
-              className="flex items-center gap-3 bg-slate-800 border border-green-500/30 rounded-lg px-4 py-3 shadow-lg shadow-black/20 animate-in slide-in-from-right-5 fade-in duration-300"
+              className="flex items-center gap-3 bg-card border border-green-500/30 rounded-lg px-4 py-3 shadow-lg shadow-black/20 animate-in slide-in-from-right-5 fade-in duration-300"
             >
               <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
                 <Bell className="h-4 w-4 text-green-400" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm text-white font-medium truncate">New Registration</p>
-                <p className="text-xs text-slate-400 truncate">{toast.name} joined the pool</p>
+                <p className="text-sm text-foreground font-medium truncate">New Registration</p>
+                <p className="text-xs text-muted-foreground truncate">{toast.name} joined the pool</p>
               </div>
               <button
                 onClick={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
-                className="text-slate-500 hover:text-white transition-colors shrink-0"
+                className="text-muted-foreground/60 hover:text-foreground transition-colors shrink-0"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -474,8 +474,8 @@ export default function AdminPlayerPoolPage() {
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">Player Pool</h1>
-          <p className="text-slate-400 text-sm mt-1">Manage registered players, update statuses, and prepare the pool for drafting.</p>
+          <h1 className="text-3xl font-bold text-foreground">Player Pool</h1>
+          <p className="text-muted-foreground text-sm mt-1">Manage registered players, update statuses, and prepare the pool for drafting.</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -483,7 +483,7 @@ export default function AdminPlayerPoolPage() {
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
               autoRefresh
                 ? "bg-green-500/10 text-green-400 border-green-500/30 hover:bg-green-500/20"
-                : "bg-slate-800 text-slate-500 border-slate-700 hover:bg-slate-700"
+                : "bg-card text-muted-foreground/60 border-border hover:bg-muted"
             }`}
             title={autoRefresh ? "Auto-refresh enabled (10s)" : "Auto-refresh disabled"}
           >
@@ -493,7 +493,7 @@ export default function AdminPlayerPoolPage() {
           <Button
             variant="outline"
             size="sm"
-            className="border-slate-600 text-slate-300 hover:bg-slate-700"
+            className="border-border text-foreground/80 hover:bg-muted"
             onClick={() => mutate(`/api/events/${slug}/players`)}
           >
             <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Refresh
@@ -518,7 +518,7 @@ export default function AdminPlayerPoolPage() {
             <Button
               variant="outline"
               size="sm"
-              className="border-slate-600 text-slate-300 hover:bg-slate-700"
+              className="border-border text-foreground/80 hover:bg-muted"
               onClick={exportCSV}
             >
               <Download className="h-3.5 w-3.5 mr-1.5" /> Export CSV
@@ -529,59 +529,59 @@ export default function AdminPlayerPoolPage() {
 
       {/* Manual Add Player Form */}
       {showAddForm && slug && (
-        <Card className="bg-slate-800/60 border-blue-500/20">
+        <Card className="bg-card/60 border-blue-500/20">
           <CardContent className="py-5">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <UserPlus className="h-4 w-4 text-blue-400" /> Add Player Manually
               </h3>
-              <Button variant="ghost" size="sm" className="text-slate-400 h-7 w-7 p-0" onClick={() => setShowAddForm(false)}>
+              <Button variant="ghost" size="sm" className="text-muted-foreground h-7 w-7 p-0" onClick={() => setShowAddForm(false)}>
                 <X className="h-4 w-4" />
               </Button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
               <div>
-                <label className="text-xs text-slate-400 mb-1 block">Display Name *</label>
+                <label className="text-xs text-muted-foreground mb-1 block">Display Name *</label>
                 <Input
                   placeholder="In-game name"
                   value={addForm.display_name}
                   onChange={(e) => setAddForm({ ...addForm, display_name: e.target.value })}
-                  className="bg-slate-900 border-slate-600 text-white text-sm h-9"
+                  className="bg-background border-border text-foreground text-sm h-9"
                 />
               </div>
               <div>
-                <label className="text-xs text-slate-400 mb-1 block">Discord ID *</label>
+                <label className="text-xs text-muted-foreground mb-1 block">Discord ID *</label>
                 <Input
                   placeholder="player#1234"
                   value={addForm.discord_id}
                   onChange={(e) => setAddForm({ ...addForm, discord_id: e.target.value })}
-                  className="bg-slate-900 border-slate-600 text-white text-sm h-9"
+                  className="bg-background border-border text-foreground text-sm h-9"
                 />
               </div>
               <div>
-                <label className="text-xs text-slate-400 mb-1 block">Steam ID</label>
+                <label className="text-xs text-muted-foreground mb-1 block">Steam ID</label>
                 <Input
                   placeholder="76561198..."
                   value={addForm.steam_id}
                   onChange={(e) => setAddForm({ ...addForm, steam_id: e.target.value })}
-                  className="bg-slate-900 border-slate-600 text-white text-sm h-9"
+                  className="bg-background border-border text-foreground text-sm h-9"
                 />
               </div>
               <div>
-                <label className="text-xs text-slate-400 mb-1 block">MMR</label>
+                <label className="text-xs text-muted-foreground mb-1 block">MMR</label>
                 <Input
                   type="number"
                   placeholder="e.g. 3500"
                   value={addForm.rating}
                   onChange={(e) => setAddForm({ ...addForm, rating: e.target.value })}
-                  className="bg-slate-900 border-slate-600 text-white text-sm h-9"
+                  className="bg-background border-border text-foreground text-sm h-9"
                 />
               </div>
               <div className="flex items-end">
                 <Button
                   onClick={handleAddPlayer}
                   disabled={addLoading || !addForm.display_name || !addForm.discord_id}
-                  className="bg-blue-600 hover:bg-blue-700 text-white h-9 w-full"
+                  className="bg-blue-600 hover:bg-blue-700 text-foreground h-9 w-full"
                   size="sm"
                 >
                   {addLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><Check className="h-3.5 w-3.5 mr-1" /> Add</>}
@@ -593,7 +593,7 @@ export default function AdminPlayerPoolPage() {
                 placeholder="Notes (optional)"
                 value={addForm.notes}
                 onChange={(e) => setAddForm({ ...addForm, notes: e.target.value })}
-                className="bg-slate-900 border-slate-600 text-white text-sm h-9"
+                className="bg-background border-border text-foreground text-sm h-9"
               />
             </div>
           </CardContent>
@@ -602,20 +602,20 @@ export default function AdminPlayerPoolPage() {
 
       {/* CSV Import Panel */}
       {showImport && slug && (
-        <Card className="bg-slate-800/60 border-yellow-500/20">
+        <Card className="bg-card/60 border-yellow-500/20">
           <CardContent className="py-5 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <FileSpreadsheet className="h-4 w-4 text-yellow-400" /> Bulk Import Players
               </h3>
-              <Button variant="ghost" size="sm" className="text-slate-400 h-7 w-7 p-0" onClick={() => setShowImport(false)}>
+              <Button variant="ghost" size="sm" className="text-muted-foreground h-7 w-7 p-0" onClick={() => setShowImport(false)}>
                 <X className="h-4 w-4" />
               </Button>
             </div>
 
-            <div className="bg-slate-900/60 rounded-lg px-4 py-3 text-xs text-slate-400 border border-slate-700">
-              <p className="font-medium text-slate-300 mb-1">CSV Format</p>
-              <p className="font-mono text-slate-500">display_name, discord_id, steam_id, rating, notes</p>
+            <div className="bg-background/60 rounded-lg px-4 py-3 text-xs text-muted-foreground border border-border">
+              <p className="font-medium text-foreground/80 mb-1">CSV Format</p>
+              <p className="font-mono text-muted-foreground/60">display_name, discord_id, steam_id, rating, notes</p>
               <p className="mt-1">First row is auto-skipped if it contains column headers. Max 200 players per import.</p>
             </div>
 
@@ -625,13 +625,13 @@ export default function AdminPlayerPoolPage() {
                   placeholder={"PlayerOne, player1#1234, 76561198..., 3500, loves mid\nPlayerTwo, player2#5678, , 2800, pos 5 main"}
                   value={csvText}
                   onChange={(e) => handleCSVChange(e.target.value)}
-                  className="bg-slate-900 border-slate-600 text-white text-xs font-mono resize-none h-28 placeholder:text-slate-600"
+                  className="bg-background border-border text-foreground text-xs font-mono resize-none h-28 placeholder:text-muted-foreground/40"
                 />
               </div>
               <div className="flex flex-col gap-2 justify-center">
                 <label className="cursor-pointer">
                   <input type="file" accept=".csv,.txt" onChange={handleFileUpload} className="sr-only" />
-                  <div className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-dashed border-slate-600 text-slate-400 hover:border-slate-500 hover:text-white transition-colors text-xs">
+                  <div className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-dashed border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground transition-colors text-xs">
                     <Upload className="h-3.5 w-3.5" /> Upload File
                   </div>
                 </label>
@@ -641,37 +641,37 @@ export default function AdminPlayerPoolPage() {
             {/* Preview */}
             {csvParsed.length > 0 && (
               <div className="space-y-2">
-                <p className="text-xs text-slate-400">{csvParsed.length} player{csvParsed.length !== 1 ? "s" : ""} detected</p>
-                <div className="max-h-40 overflow-auto rounded-lg border border-slate-700">
+                <p className="text-xs text-muted-foreground">{csvParsed.length} player{csvParsed.length !== 1 ? "s" : ""} detected</p>
+                <div className="max-h-40 overflow-auto rounded-lg border border-border">
                   <table className="w-full text-xs">
-                    <thead className="bg-slate-800 sticky top-0">
-                      <tr className="text-slate-500">
+                    <thead className="bg-card sticky top-0">
+                      <tr className="text-muted-foreground/60">
                         <th className="text-left px-3 py-1.5 font-medium">Name</th>
                         <th className="text-left px-3 py-1.5 font-medium">Discord</th>
                         <th className="text-left px-3 py-1.5 font-medium">Steam</th>
                         <th className="text-right px-3 py-1.5 font-medium">MMR</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-700/50">
+                    <tbody className="divide-y divide-border">
                       {csvParsed.slice(0, 20).map((p, i) => (
                         <tr key={i} className={`${!p.display_name || !p.discord_id ? "bg-red-500/5" : ""}`}>
-                          <td className="px-3 py-1.5 text-white">{p.display_name || <span className="text-red-400">missing</span>}</td>
-                          <td className="px-3 py-1.5 text-slate-400">{p.discord_id || <span className="text-red-400">missing</span>}</td>
-                          <td className="px-3 py-1.5 text-slate-500">{p.steam_id || "-"}</td>
-                          <td className="px-3 py-1.5 text-right text-slate-400 tabular-nums">{p.rating || "-"}</td>
+                          <td className="px-3 py-1.5 text-foreground">{p.display_name || <span className="text-red-400">missing</span>}</td>
+                          <td className="px-3 py-1.5 text-muted-foreground">{p.discord_id || <span className="text-red-400">missing</span>}</td>
+                          <td className="px-3 py-1.5 text-muted-foreground/60">{p.steam_id || "-"}</td>
+                          <td className="px-3 py-1.5 text-right text-muted-foreground tabular-nums">{p.rating || "-"}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                   {csvParsed.length > 20 && (
-                    <p className="text-xs text-slate-500 px-3 py-1.5 bg-slate-800">... and {csvParsed.length - 20} more</p>
+                    <p className="text-xs text-muted-foreground/60 px-3 py-1.5 bg-card">... and {csvParsed.length - 20} more</p>
                   )}
                 </div>
 
                 <Button
                   onClick={handleBulkImport}
                   disabled={importLoading || csvParsed.length === 0}
-                  className="bg-yellow-600 hover:bg-yellow-700 text-white w-full"
+                  className="bg-yellow-600 hover:bg-yellow-700 text-foreground w-full"
                   size="sm"
                 >
                   {importLoading ? (
@@ -712,12 +712,12 @@ export default function AdminPlayerPoolPage() {
       {/* Filters bar */}
       <div className="flex flex-wrap gap-3 items-end">
         <div className="w-56">
-          <label className="text-xs text-slate-400 mb-1 block">Event</label>
+          <label className="text-xs text-muted-foreground mb-1 block">Event</label>
           <Select value={slug} onValueChange={(v) => { setSelectedEvent(v); setSelectedIds(new Set()) }}>
-            <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
+            <SelectTrigger className="bg-muted/50 border-border text-foreground">
               <SelectValue placeholder="Select event" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700 text-white">
+            <SelectContent className="bg-card border-border text-foreground">
               {events.map((ev: any) => (
                 <SelectItem key={ev.slug} value={ev.slug}>{ev.name}</SelectItem>
               ))}
@@ -726,12 +726,12 @@ export default function AdminPlayerPoolPage() {
         </div>
 
         <div className="w-40">
-          <label className="text-xs text-slate-400 mb-1 block">Status</label>
+          <label className="text-xs text-muted-foreground mb-1 block">Status</label>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
+            <SelectTrigger className="bg-muted/50 border-border text-foreground">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700 text-white">
+            <SelectContent className="bg-card border-border text-foreground">
               {STATUS_OPTIONS.map((s) => (
                 <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
               ))}
@@ -740,14 +740,14 @@ export default function AdminPlayerPoolPage() {
         </div>
 
         <div className="flex-1 min-w-[200px]">
-          <label className="text-xs text-slate-400 mb-1 block">Search</label>
+          <label className="text-xs text-muted-foreground mb-1 block">Search</label>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
             <Input
               placeholder="Search name, Discord, Steam ID, notes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-slate-700/50 border-slate-600 text-white pl-10"
+              className="bg-muted/50 border-border text-foreground pl-10"
             />
           </div>
         </div>
@@ -792,7 +792,7 @@ export default function AdminPlayerPoolPage() {
             <Button
               size="sm"
               variant="outline"
-              className="border-slate-500/30 text-slate-400 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 h-7 text-xs"
+              className="border-border text-muted-foreground hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 h-7 text-xs"
               onClick={handleBulkRemove}
               disabled={bulkLoading}
             >
@@ -802,7 +802,7 @@ export default function AdminPlayerPoolPage() {
             <Button
               size="sm"
               variant="ghost"
-              className="text-slate-400 hover:text-white h-7 text-xs"
+              className="text-muted-foreground hover:text-foreground h-7 text-xs"
               onClick={() => setSelectedIds(new Set())}
             >
               Clear
@@ -824,17 +824,17 @@ export default function AdminPlayerPoolPage() {
           <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
         </div>
       ) : !slug ? (
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="bg-card/50 border-border">
           <CardContent className="py-12 text-center">
-            <Users className="h-12 w-12 text-slate-600 mx-auto mb-3" />
-            <p className="text-slate-400">Select an event to view registered players.</p>
+            <Users className="h-12 w-12 text-muted-foreground/40 mx-auto mb-3" />
+            <p className="text-muted-foreground">Select an event to view registered players.</p>
           </CardContent>
         </Card>
       ) : filteredPlayers.length === 0 ? (
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="bg-card/50 border-border">
           <CardContent className="py-12 text-center">
-            <UserPlus className="h-12 w-12 text-slate-600 mx-auto mb-3" />
-            <p className="text-slate-400">
+            <UserPlus className="h-12 w-12 text-muted-foreground/40 mx-auto mb-3" />
+            <p className="text-muted-foreground">
               {searchQuery || statusFilter !== "all"
                 ? "No players match your filters."
                 : "No players registered for this event yet."}
@@ -844,9 +844,9 @@ export default function AdminPlayerPoolPage() {
       ) : (
         <div className="space-y-1">
           {/* Table header */}
-          <div className="grid grid-cols-12 gap-3 px-4 py-2 text-xs text-slate-500 font-medium uppercase items-center">
+          <div className="grid grid-cols-12 gap-3 px-4 py-2 text-xs text-muted-foreground/60 font-medium uppercase items-center">
             <div className="col-span-1 flex items-center">
-              <button onClick={toggleSelectAll} className="text-slate-500 hover:text-white transition-colors">
+              <button onClick={toggleSelectAll} className="text-muted-foreground/60 hover:text-foreground transition-colors">
                 {allSelected ? (
                   <CheckSquare className="h-4 w-4" />
                 ) : someSelected ? (
@@ -871,28 +871,28 @@ export default function AdminPlayerPoolPage() {
               <Card
                 key={player.id}
                 className={`border transition-colors ${
-                  isSelected ? "bg-blue-500/5 border-blue-500/20" : "bg-slate-800/50 border-slate-700"
+                  isSelected ? "bg-blue-500/5 border-blue-500/20" : "bg-card/50 border-border"
                 }`}
               >
                 <CardContent className="grid grid-cols-12 gap-3 items-center py-3">
                   {/* Checkbox */}
                   <div className="col-span-1">
-                    <button onClick={() => toggleSelect(player.id)} className="text-slate-500 hover:text-white transition-colors">
+                    <button onClick={() => toggleSelect(player.id)} className="text-muted-foreground/60 hover:text-foreground transition-colors">
                       {isSelected ? <CheckSquare className="h-4 w-4 text-blue-400" /> : <Square className="h-4 w-4" />}
                     </button>
                   </div>
 
                   {/* Player name */}
                   <div className="col-span-3">
-                    <p className="text-white text-sm font-medium truncate">{player.display_name}</p>
+                    <p className="text-foreground text-sm font-medium truncate">{player.display_name}</p>
                     {player.steam_id && (
-                      <p className="text-slate-500 text-xs truncate">Steam: {player.steam_id}</p>
+                      <p className="text-muted-foreground/60 text-xs truncate">Steam: {player.steam_id}</p>
                     )}
                   </div>
 
                   {/* Discord */}
                   <div className="col-span-2">
-                    <p className="text-slate-400 text-sm truncate">{player.discord_id}</p>
+                    <p className="text-muted-foreground text-sm truncate">{player.discord_id}</p>
                   </div>
 
                   {/* MMR */}
@@ -902,10 +902,10 @@ export default function AdminPlayerPoolPage() {
                         type="number"
                         value={editRating}
                         onChange={(e) => setEditRating(e.target.value)}
-                        className="bg-slate-900 border-slate-600 text-white text-xs h-7 w-16 mx-auto text-center"
+                        className="bg-background border-border text-foreground text-xs h-7 w-16 mx-auto text-center"
                       />
                     ) : (
-                      <span className="text-slate-300 text-sm tabular-nums">{player.rating ?? "-"}</span>
+                      <span className="text-foreground/80 text-sm tabular-nums">{player.rating ?? "-"}</span>
                     )}
                   </div>
 
@@ -934,7 +934,7 @@ export default function AdminPlayerPoolPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-slate-400 hover:text-white h-7 w-7 p-0"
+                          className="text-muted-foreground hover:text-foreground h-7 w-7 p-0"
                           onClick={() => setEditingId(null)}
                           title="Cancel"
                         >
@@ -946,7 +946,7 @@ export default function AdminPlayerPoolPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-slate-400 hover:text-white h-7 w-7 p-0"
+                          className="text-muted-foreground hover:text-foreground h-7 w-7 p-0"
                           onClick={() => startEditing(player)}
                           title="Edit"
                         >
@@ -977,7 +977,7 @@ export default function AdminPlayerPoolPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-slate-500 hover:text-red-400 h-7 w-7 p-0"
+                          className="text-muted-foreground/60 hover:text-red-400 h-7 w-7 p-0"
                           onClick={() => {
                             if (confirm(`Remove ${player.display_name} from the pool?`)) {
                               removePlayer(player.id)
@@ -994,13 +994,13 @@ export default function AdminPlayerPoolPage() {
 
                 {/* Expandable notes row (when editing) */}
                 {isEditing && (
-                  <div className="px-6 pb-3 border-t border-slate-700/50 pt-2">
-                    <label className="text-xs text-slate-400 mb-1 block">Notes</label>
+                  <div className="px-6 pb-3 border-t border-border/50 pt-2">
+                    <label className="text-xs text-muted-foreground mb-1 block">Notes</label>
                     <Input
                       value={editNotes}
                       onChange={(e) => setEditNotes(e.target.value)}
                       placeholder="Admin notes..."
-                      className="bg-slate-900 border-slate-600 text-white text-sm h-8"
+                      className="bg-background border-border text-foreground text-sm h-8"
                     />
                   </div>
                 )}
@@ -1008,7 +1008,7 @@ export default function AdminPlayerPoolPage() {
             )
           })}
 
-          <p className="text-xs text-slate-500 text-center pt-2">
+          <p className="text-xs text-muted-foreground/60 text-center pt-2">
             Showing {filteredPlayers.length} of {allPlayers.length} players
           </p>
         </div>
@@ -1050,7 +1050,7 @@ function SortHeader({
     <div className={`col-span-${col} ${center ? "text-center" : ""}`}>
       <button
         onClick={() => onClick(sortKey)}
-        className={`inline-flex items-center gap-1 hover:text-white transition-colors ${active ? "text-blue-400" : ""}`}
+        className={`inline-flex items-center gap-1 hover:text-foreground transition-colors ${active ? "text-blue-400" : ""}`}
       >
         {label}
         <ArrowUpDown className={`h-3 w-3 ${active ? "text-blue-400" : "opacity-50"}`} />

@@ -131,22 +131,22 @@ export default function AdminEventsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Events</h1>
-          <p className="text-slate-400 text-sm mt-1">Create and manage league events.</p>
+          <h1 className="text-3xl font-bold text-foreground">Events</h1>
+          <p className="text-muted-foreground text-sm mt-1">Create and manage league events.</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={openCreate}>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-foreground" onClick={openCreate}>
               <Plus className="mr-2 h-4 w-4" /> New Event
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-lg">
+          <DialogContent className="bg-card border-border text-foreground max-w-lg">
             <DialogHeader>
               <DialogTitle>{editingSlug ? "Edit Event" : "Create Event"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="text-sm text-slate-300 mb-1 block">Name *</label>
+                <label className="text-sm text-foreground/80 mb-1 block">Name *</label>
                 <Input
                   required
                   value={form.name}
@@ -157,35 +157,35 @@ export default function AdminEventsPage() {
                       slug: editingSlug ? form.slug : slugify(e.target.value),
                     })
                   }
-                  className="bg-slate-700/50 border-slate-600 text-white"
+                  className="bg-muted/50 border-border text-foreground"
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-300 mb-1 block">Slug *</label>
+                <label className="text-sm text-foreground/80 mb-1 block">Slug *</label>
                 <Input
                   required
                   value={form.slug}
                   onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                  className="bg-slate-700/50 border-slate-600 text-white"
+                  className="bg-muted/50 border-border text-foreground"
                   disabled={!!editingSlug}
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-300 mb-1 block">Description</label>
+                <label className="text-sm text-foreground/80 mb-1 block">Description</label>
                 <Textarea
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className="bg-slate-700/50 border-slate-600 text-white resize-none"
+                  className="bg-muted/50 border-border text-foreground resize-none"
                   rows={3}
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-300 mb-1 block">Status</label>
+                <label className="text-sm text-foreground/80 mb-1 block">Status</label>
                 <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
-                  <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
+                  <SelectTrigger className="bg-muted/50 border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                  <SelectContent className="bg-card border-border text-foreground">
                     {STATUS_OPTIONS.map((opt) => (
                       <SelectItem key={opt.value} value={opt.value}>
                         {opt.label}
@@ -196,35 +196,35 @@ export default function AdminEventsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-slate-300 mb-1 block">Reg Opens</label>
+                  <label className="text-sm text-foreground/80 mb-1 block">Reg Opens</label>
                   <Input
                     type="datetime-local"
                     value={form.registration_opens_at}
                     onChange={(e) => setForm({ ...form, registration_opens_at: e.target.value })}
-                    className="bg-slate-700/50 border-slate-600 text-white"
+                    className="bg-muted/50 border-border text-foreground"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-slate-300 mb-1 block">Reg Closes</label>
+                  <label className="text-sm text-foreground/80 mb-1 block">Reg Closes</label>
                   <Input
                     type="datetime-local"
                     value={form.registration_closes_at}
                     onChange={(e) => setForm({ ...form, registration_closes_at: e.target.value })}
-                    className="bg-slate-700/50 border-slate-600 text-white"
+                    className="bg-muted/50 border-border text-foreground"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-sm text-slate-300 mb-1 block">Starts At</label>
+                <label className="text-sm text-foreground/80 mb-1 block">Starts At</label>
                 <Input
                   type="datetime-local"
                   value={form.starts_at}
                   onChange={(e) => setForm({ ...form, starts_at: e.target.value })}
-                  className="bg-slate-700/50 border-slate-600 text-white"
+                  className="bg-muted/50 border-border text-foreground"
                 />
               </div>
               {error && <p className="text-red-400 text-sm">{error}</p>}
-              <Button type="submit" disabled={saving} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+              <Button type="submit" disabled={saving} className="w-full bg-blue-600 hover:bg-blue-700 text-foreground">
                 {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 {editingSlug ? "Update Event" : "Create Event"}
               </Button>
@@ -238,48 +238,48 @@ export default function AdminEventsPage() {
           <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
         </div>
       ) : events.length === 0 ? (
-        <Card className="bg-slate-800/50 border-slate-700">
+        <Card className="bg-card/50 border-border">
           <CardContent className="py-12 text-center">
-            <p className="text-slate-400">No events yet. Create your first event to get started.</p>
+            <p className="text-muted-foreground">No events yet. Create your first event to get started.</p>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-3">
           {events.map((event: any) => (
-            <Card key={event.id} className="bg-slate-800/50 border-slate-700">
+            <Card key={event.id} className="bg-card/50 border-border">
               <CardContent className="flex items-center gap-4 py-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-1">
-                    <h3 className="text-white font-semibold truncate">{event.name}</h3>
+                    <h3 className="text-foreground font-semibold truncate">{event.name}</h3>
                     <span
                       className={`text-xs px-2 py-0.5 rounded-full border shrink-0 ${
                         event.status === "registration_open"
                           ? "bg-green-500/20 text-green-400 border-green-500/30"
                           : event.status === "in_progress"
                             ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
-                            : "bg-slate-500/20 text-slate-400 border-slate-500/30"
+                            : "bg-muted text-muted-foreground border-border"
                       }`}
                     >
                       {STATUS_OPTIONS.find((o) => o.value === event.status)?.label ?? event.status}
                     </span>
                   </div>
-                  <p className="text-slate-500 text-xs">/{event.slug}</p>
+                  <p className="text-muted-foreground/60 text-xs">/{event.slug}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <Link href={`/admin/player-pool?event=${event.slug}`}>
-                    <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                       <Users className="h-4 w-4" />
                     </Button>
                   </Link>
                   <Link href={`/events/${event.slug}`} target="_blank">
-                    <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                       <ExternalLink className="h-4 w-4" />
                     </Button>
                   </Link>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-slate-400 hover:text-white"
+                    className="text-muted-foreground hover:text-foreground"
                     onClick={() => openEdit(event)}
                   >
                     <Pencil className="h-4 w-4" />

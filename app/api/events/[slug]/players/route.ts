@@ -1,10 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { createClient } from "@/lib/supabase-server"
 import { playerRegistrationSchema } from "@/lib/validation"
+import { requireAdminApi } from "@/lib/auth"
 
-export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(req: NextRequest, { params }: { params: { slug: string } }) {
   try {
-    const { slug } = await params
+    const denied = await requireAdminApi()
+    if (denied) return denied
+
+    const { slug } = params
     const supabase = await createClient()
 
     // First get the event by slug
@@ -42,9 +46,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
   }
 }
 
-export async function POST(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+export async function POST(req: NextRequest, { params }: { params: { slug: string } }) {
   try {
-    const { slug } = await params
+    const { slug } = params
     const supabase = await createClient()
 
     // Get the event
@@ -61,6 +65,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     const json = await req.json().catch(() => null)
     if (!json) {
       return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+    }
+
+    // --- Admin actions require authentication ---
+    const adminActions = ["update_status", "update_player", "remove_player", "add_player", "bulk_import"]
+    if (json._action && adminActions.includes(json._action)) {
+      const denied = await requireAdminApi()
+      if (denied) return denied
     }
 
     // Admin action: update player status

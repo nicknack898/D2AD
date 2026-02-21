@@ -55,16 +55,16 @@ export default function FAQsPage() {
         <section className="bg-duck-dark py-12">
           <div className="container px-4 md:px-6">
             <div className="text-center">
-              <h1 className="text-4xl sm:text-5xl font-bebas tracking-wide text-white mb-4">
+              <h1 className="text-4xl sm:text-5xl font-bebas tracking-wide text-foreground mb-4">
                 FREQUENTLY ASKED QUESTIONS
               </h1>
-              <p className="text-lg text-white/90">Common questions about the D2AD Ability Draft Tournament</p>
+              <p className="text-lg text-foreground/90">Common questions about the D2AD Ability Draft Tournament</p>
             </div>
           </div>
         </section>
 
         {/* FAQ Content */}
-        <section className="py-12 bg-white">
+        <section className="py-12 bg-card">
           <div className="container px-4 md:px-6">
             <div className="max-w-4xl mx-auto">
               <Card>
@@ -276,17 +276,17 @@ export default function FAQsPage() {
               </Card>
 
               {/* Still Have Questions */}
-              <div className="mt-8 text-center bg-blue-50 p-8 rounded-lg border border-blue-200">
-                <MessageCircle className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-                <h3 className="text-xl font-bebas tracking-wide text-blue-900 mb-3">STILL HAVE QUESTIONS?</h3>
-                <p className="text-blue-800 mb-6">
+              <div className="mt-8 text-center bg-muted p-8 border border-border">
+                <MessageCircle className="h-12 w-12 text-[#5865F2] mx-auto mb-4" />
+                <h3 className="text-xl font-bebas tracking-wide text-foreground mb-3">STILL HAVE QUESTIONS?</h3>
+                <p className="text-muted-foreground mb-6">
                   Can't find the answer you're looking for? Join our Discord server and ask the community or tournament
                   organizers directly.
                 </p>
                 <Button
                   asChild
                   size="lg"
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-teko text-lg uppercase"
+                  className="bg-[#5865F2] hover:bg-[#4752C4] text-white font-teko text-lg uppercase"
                 >
                   <Link href="https://discord.gg/W6fCSMzzPz" target="_blank" rel="noopener noreferrer">
                     Join Discord Server

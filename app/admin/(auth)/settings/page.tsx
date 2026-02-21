@@ -57,7 +57,7 @@ export default async function AdminSettingsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="registration-status">Registration Status</Label>
-                  <p className="text-sm text-gray-500">Enable or disable tournament registration</p>
+                  <p className="text-sm text-muted-foreground/60">Enable or disable tournament registration</p>
                 </div>
                 <Switch id="registration-status" defaultChecked={false} />
               </div>
@@ -116,7 +116,7 @@ export default async function AdminSettingsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="email-notifications">Email Notifications</Label>
-                  <p className="text-sm text-gray-500">Receive notifications via email</p>
+                  <p className="text-sm text-muted-foreground/60">Receive notifications via email</p>
                 </div>
                 <Switch id="email-notifications" defaultChecked={true} />
               </div>
@@ -124,7 +124,7 @@ export default async function AdminSettingsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="new-registration">New Registration Alerts</Label>
-                  <p className="text-sm text-gray-500">Get notified when a new team registers</p>
+                  <p className="text-sm text-muted-foreground/60">Get notified when a new team registers</p>
                 </div>
                 <Switch id="new-registration" defaultChecked={true} />
               </div>
@@ -132,7 +132,7 @@ export default async function AdminSettingsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="schedule-changes">Schedule Change Alerts</Label>
-                  <p className="text-sm text-gray-500">Get notified when the schedule is updated</p>
+                  <p className="text-sm text-muted-foreground/60">Get notified when the schedule is updated</p>
                 </div>
                 <Switch id="schedule-changes" defaultChecked={true} />
               </div>
@@ -140,7 +140,7 @@ export default async function AdminSettingsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="game-bookings">Game Booking Alerts</Label>
-                  <p className="text-sm text-gray-500">Get notified when someone books a game</p>
+                  <p className="text-sm text-muted-foreground/60">Get notified when someone books a game</p>
                 </div>
                 <Switch id="game-bookings" defaultChecked={true} />
               </div>

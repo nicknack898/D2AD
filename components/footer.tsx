@@ -1,66 +1,68 @@
 import Link from "next/link"
 import Image from "next/image"
-import { MessageCircle, Heart } from "lucide-react"
+import { MessageCircle } from "lucide-react"
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 border-t border-slate-700">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Brand Section */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <Image src="/ability-draft-logo.png" alt="D2AD Logo" width={40} height={40} className="rounded-lg" />
-              <span className="text-xl font-bold text-white">D2AD</span>
+    <footer className="border-t border-border bg-background">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          {/* Brand */}
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2.5">
+              <Image src="/ability-draft-logo.png" alt="D2AD Logo" width={24} height={24} className="rounded" />
+              <span className="font-bebas text-lg tracking-wider text-foreground">D2AD</span>
             </div>
-            <p className="text-slate-400 max-w-sm">
-              The grassroots platform for competitive Dota 2 Ability Draft. Events, drafts, and community.
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+              The grassroots platform for competitive Dota 2 Ability Draft.
             </p>
           </div>
 
-          {/* Platform Links */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Platform</h3>
-            <div className="space-y-2">
-              <Link href="/events" className="block text-slate-400 hover:text-white transition-colors duration-200">
+          {/* Links */}
+          <div className="flex flex-col gap-3">
+            <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground">Platform</p>
+            <div className="flex flex-col gap-2">
+              <Link href="/events" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Events
               </Link>
-              <Link href="/draft" className="block text-slate-400 hover:text-white transition-colors duration-200">
+              <Link href="/draft" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Draft Room
               </Link>
               <Link
                 href="https://discord.gg/d2ad"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center text-slate-400 hover:text-white transition-colors duration-200"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
               >
-                <MessageCircle className="mr-2 h-4 w-4" />
+                <MessageCircle className="h-3 w-3" />
                 Discord
               </Link>
             </div>
           </div>
 
-          {/* Join Section */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Get Involved</h3>
-            <p className="text-slate-400">Sign up for events, get drafted by captains, and compete.</p>
+          {/* CTA */}
+          <div className="flex flex-col gap-3">
+            <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground">Get Involved</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Sign up for events, get drafted, and compete.
+            </p>
             <Link
               href="/events"
-              className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors"
+              className="inline-flex items-center font-mono text-xs tracking-wider uppercase text-foreground hover:text-muted-foreground transition-colors"
             >
-              Browse Events
+              Browse Events &rarr;
             </Link>
           </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="mt-8 pt-8 border-t border-slate-700">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-slate-400 text-sm">
-              © 2025 D2AD. Built with <Heart className="inline h-4 w-4 text-red-500" /> by the community.
-            </p>
-            <p className="text-slate-500 text-sm">Grassroots Ability Draft</p>
-          </div>
+        {/* Bottom */}
+        <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-2">
+          <p className="font-mono text-[10px] tracking-wider uppercase text-muted-foreground/60">
+            &copy; 2025 D2AD. Built by the community.
+          </p>
+          <p className="font-mono text-[10px] tracking-wider uppercase text-muted-foreground/40">
+            Grassroots Ability Draft
+          </p>
         </div>
       </div>
     </footer>

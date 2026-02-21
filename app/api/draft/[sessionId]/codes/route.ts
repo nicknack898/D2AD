@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase-server"
-import { requireAdminApiAuth } from "@/lib/admin-auth"
+import { requireAdminApi } from "@/lib/auth"
 import crypto from "crypto"
 
-function normalizeCode(raw: string) {
-  return raw.trim().toUpperCase()
-}
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 function hashCode(code: string) {
   return crypto.createHash("sha256").update(code).digest("hex")
@@ -25,15 +23,15 @@ function createCode() {
  */
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ sessionId: string }> },
+  { params }: { params: { sessionId: string } },
 ) {
   try {
-    const isAdmin = await requireAdminApiAuth()
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    const denied = await requireAdminApi()
+    if (denied) return denied
+    const { sessionId } = params
+    if (!UUID_RE.test(sessionId)) {
+      return NextResponse.json({ error: "Invalid session ID" }, { status: 400 })
     }
-
-    const { sessionId } = await params
     const json = await req.json().catch(() => null)
     if (!json || !json._action) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 })
@@ -54,39 +52,29 @@ export async function POST(
         return NextResponse.json({ error: "No seats found for this session" }, { status: 404 })
       }
 
-      const seatIds = seats.map((s) => s.id)
-      const { data: existingCodes, error: cErr } = await supabase
-        .from("captain_codes")
-        .select("seat_id")
-        .in("seat_id", seatIds)
-
-      if (cErr) throw cErr
-
-      const existingSeatIds = new Set((existingCodes ?? []).map((c) => c.seat_id))
-      const generatedCodes: Array<{ seat_label: string; code: string }> = []
-
-      for (const seat of seats) {
-        if (existingSeatIds.has(seat.id)) continue
-
-        const newCode = createCode()
-        const insertPayload = {
-          seat_id: seat.id,
-          code: newCode,
-          code_hash: hashCode(newCode),
-          used: false,
-          used_at: null,
-          expires_at: expiresAt(),
-        }
-
-        const { error: insertErr } = await supabase
-          .from("captain_codes")
-          .insert(insertPayload)
-
-        if (insertErr) {
-          return NextResponse.json({
-            error: `Failed to generate code for ${seat.seat_label}: ${insertErr.message}`,
-            details: insertErr.details,
-          }, { status: 500 })
+      let generated = 0
+      for (const s of seats) {
+        const existingCodes = (s as any).captain_codes ?? []
+        if (existingCodes.length === 0) {
+          const newCode = crypto.randomBytes(4).toString("hex").toUpperCase()
+          const insertPayload = {
+            seat_id: s.id,
+            code: newCode,
+            code_hash: hashCode(newCode),
+            used: false,
+            expires_at: expiresAt(),
+          }
+          const { error: insertErr } = await supabase
+            .from("captain_codes")
+            .insert(insertPayload)
+          if (insertErr) {
+            console.error("captain_codes insert failed:", insertErr.message)
+            return NextResponse.json({
+              error: `Failed to generate code for ${s.seat_label}: ${insertErr.message}`,
+              details: insertErr.details,
+            }, { status: 500 })
+          }
+          generated++
         }
 
         generatedCodes.push({ seat_label: seat.seat_label, code: newCode })
@@ -137,6 +125,7 @@ export async function POST(
         .insert(regenPayload)
 
       if (insertErr) {
+        console.error("regenerate insert failed:", insertErr.message)
         return NextResponse.json({
           error: `Failed to regenerate code: ${insertErr.message}`,
           details: insertErr.details,
@@ -180,17 +169,18 @@ export async function POST(
  */
 export async function GET(
   _req: Request,
-  { params }: { params: Promise<{ sessionId: string }> },
+  { params }: { params: { sessionId: string } },
 ) {
   try {
-    const isAdmin = await requireAdminApiAuth()
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    const denied = await requireAdminApi()
+    if (denied) return denied
+    const { sessionId } = params
+    if (!UUID_RE.test(sessionId)) {
+      return NextResponse.json({ error: "Invalid session ID" }, { status: 400 })
     }
-
-    const { sessionId } = await params
     const supabase = await createClient()
 
+    // Query seats first, then join codes (reliable approach)
     const { data: seats, error: sErr } = await supabase
       .from("captain_seats")
       .select("id, seat_label, captain_name")

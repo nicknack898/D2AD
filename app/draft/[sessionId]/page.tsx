@@ -6,11 +6,11 @@ export const metadata: Metadata = {
   description: "Live auction Draft Room -- watch captains bid on players in real time.",
 }
 
-export default async function DraftRoomPage({
+export default function DraftRoomPage({
   params,
 }: {
-  params: Promise<{ sessionId: string }>
+  params: { sessionId: string }
 }) {
-  const { sessionId } = await params
+  const { sessionId } = params
   return <DraftRoomClient sessionId={sessionId} />
 }

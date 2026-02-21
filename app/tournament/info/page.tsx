@@ -11,8 +11,8 @@ export default function InfoPage() {
       <section className="bg-duck-dark py-12">
         <div className="container px-4 md:px-6">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl font-bebas tracking-wide text-white mb-4">TOURNAMENT INFO</h1>
-            <p className="text-lg text-white/90">
+            <h1 className="text-4xl sm:text-5xl font-bebas tracking-wide text-foreground mb-4">TOURNAMENT INFO</h1>
+            <p className="text-lg text-foreground/90">
               Everything you need to know about Ability Draft and our tournament format
             </p>
           </div>
@@ -20,7 +20,7 @@ export default function InfoPage() {
       </section>
 
       {/* Content */}
-      <section className="py-12 bg-white">
+      <section className="py-12 bg-card">
         <div className="container px-4 md:px-6">
           <div className="max-w-4xl mx-auto space-y-8">
             {/* What is Ability Draft */}
@@ -124,7 +124,7 @@ export default function InfoPage() {
               <CardContent className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="font-semibold mb-3 text-green-700">Good Practices</h3>
+                    <h3 className="font-semibold mb-3 text-green-500">Good Practices</h3>
                     <ul className="text-sm space-y-2 text-muted-foreground">
                       <li>
                         • <strong>Plan synergies:</strong> Look for abilities that work well together
@@ -144,7 +144,7 @@ export default function InfoPage() {
                     </ul>
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-3 text-red-700">Common Mistakes</h3>
+                    <h3 className="font-semibold mb-3 text-red-500">Common Mistakes</h3>
                     <ul className="text-sm space-y-2 text-muted-foreground">
                       <li>
                         • <strong>Tunnel vision:</strong> Don't focus only on one ability combo
@@ -165,9 +165,9 @@ export default function InfoPage() {
                   </div>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-blue-900 mb-2">Pro Tip:</h4>
-                  <p className="text-sm text-blue-800">
+                <div className="bg-muted p-4 border border-border">
+                  <h4 className="font-semibold text-foreground mb-2">Pro Tip:</h4>
+                  <p className="text-sm text-muted-foreground">
                     Popular ability combinations get picked quickly. Have backup plans and be ready to adapt your
                     strategy based on what's available. Sometimes the most creative combinations are the most effective!
                   </p>
@@ -271,7 +271,7 @@ export default function InfoPage() {
             </Card>
 
             {/* Additional Resources */}
-            <div className="bg-gray-50 p-6 rounded-lg">
+            <div className="bg-muted p-6">
               <h3 className="font-semibold mb-3">Additional Resources</h3>
               <div className="grid md:grid-cols-2 gap-4 text-sm">
                 <div>

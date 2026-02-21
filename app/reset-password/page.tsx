@@ -42,12 +42,12 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center bg-zinc-950 px-4 py-12">
+    <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-md">
-        <Card className="border-zinc-800 bg-zinc-900 text-white shadow-xl">
+        <Card className="border-border bg-card text-card-foreground shadow-xl">
           <CardHeader className="space-y-1">
             <CardTitle className="font-bebas text-3xl text-center">RESET PASSWORD</CardTitle>
-            <CardDescription className="text-zinc-400">
+            <CardDescription className="text-muted-foreground">
               Enter your email address and we'll send you a link to reset your password
             </CardDescription>
           </CardHeader>
@@ -74,7 +74,7 @@ export default function ResetPasswordPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-zinc-800 border-zinc-700 text-white"
+                  className="bg-muted border-border text-foreground"
                 />
               </div>
               <Button

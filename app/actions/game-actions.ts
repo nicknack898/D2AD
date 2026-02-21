@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { getUpcomingGames, getGameById, getBookingsByGameId } from "@/lib/supabase"
-import { supabaseServer } from "@/lib/supabase-server"
+import { createClient as createServerClient } from "@/lib/supabase-server"
 import { bookingInputSchema } from "@/lib/validation"
 
 // Read-only helper – uses anon client under RLS
@@ -48,9 +48,7 @@ export async function bookGameSlot(
       return { success: false, message: "Invalid input", issues: parsed.error.flatten() }
     }
 
-    if (!supabaseServer) {
-      return { success: false, message: "Database connection unavailable. Please try again later." }
-    }
+    const supabaseServer = await createServerClient()
 
     // Load game to check max capacity
     const { data: game, error: gameErr } = await supabaseServer

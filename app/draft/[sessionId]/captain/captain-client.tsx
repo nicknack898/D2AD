@@ -50,27 +50,27 @@ function CaptainPasswordGate({ onSuccess }: { onSuccess: () => void }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <div className="bg-slate-800 border border-slate-700 rounded-lg p-8">
+        <div className="bg-card border border-border rounded-none p-8">
           <div className="text-center mb-6">
             <Image
               src="/ability-draft-logo.png"
               alt="D2AD Logo"
               width={48}
               height={48}
-              className="mx-auto mb-4 rounded-lg"
+              className="mx-auto mb-4 rounded-none"
             />
             <div className="flex items-center justify-center gap-2 mb-2">
               <Lock className="h-5 w-5 text-yellow-400" />
-              <h1 className="font-bebas text-2xl tracking-wide text-slate-100">Captain Access</h1>
+              <h1 className="font-bebas text-2xl tracking-wide text-foreground">Captain Access</h1>
             </div>
-            <p className="text-sm text-slate-400">Enter the captain password to continue.</p>
+            <p className="text-sm text-muted-foreground">Enter the captain password to continue.</p>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="captain-pw" className="mb-1.5 block text-sm font-medium text-slate-300">
+              <label htmlFor="captain-pw" className="mb-1.5 block text-sm font-medium text-foreground/80">
                 Password
               </label>
               <Input
@@ -80,7 +80,7 @@ function CaptainPasswordGate({ onSuccess }: { onSuccess: () => void }) {
                 value={password}
                 onChange={(e) => { setPassword(e.target.value); setError(null) }}
                 onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-                className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
+                className="bg-background border-border text-foreground placeholder:text-muted-foreground/60"
                 autoFocus
               />
               {error && (
@@ -93,7 +93,7 @@ function CaptainPasswordGate({ onSuccess }: { onSuccess: () => void }) {
             <Button
               onClick={handleSubmit}
               disabled={!password}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-foreground"
             >
               Continue
             </Button>
@@ -142,13 +142,13 @@ function RedeemCodeView({
   }, [code, sessionId, onSuccess])
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="bg-slate-800 border border-slate-700 rounded-lg p-8">
+        <div className="bg-card border border-border rounded-none p-8">
           <div className="text-center mb-6">
             <KeyRound className="h-10 w-10 text-blue-400 mx-auto mb-3" />
-            <h1 className="font-bebas text-3xl tracking-wide text-slate-100">Captain Login</h1>
-            <p className="text-slate-400 text-sm mt-1">Enter your captain code to join the draft</p>
+            <h1 className="font-bebas text-3xl tracking-wide text-foreground">Captain Login</h1>
+            <p className="text-muted-foreground text-sm mt-1">Enter your captain code to join the draft</p>
           </div>
 
           <div className="space-y-4">
@@ -157,7 +157,7 @@ function RedeemCodeView({
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               onKeyDown={(e) => e.key === "Enter" && handleRedeem()}
-              className="bg-slate-900 border-slate-600 text-center text-lg font-mono tracking-widest uppercase"
+              className="bg-background border-border text-center text-lg font-mono tracking-widest uppercase"
               maxLength={20}
               autoFocus
             />
@@ -172,7 +172,7 @@ function RedeemCodeView({
             <Button
               onClick={handleRedeem}
               disabled={loading || !code.trim()}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-foreground"
             >
               {loading ? (
                 <>
@@ -243,7 +243,7 @@ function CaptainDashboard({
 
   if (isLoading || !state) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
       </div>
     )
@@ -252,15 +252,15 @@ function CaptainDashboard({
   const phase = state.session.phase
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Captain Header */}
-      <header className="bg-slate-800 border-b border-slate-700 px-4 py-3">
+      <header className="bg-card border-b border-border px-4 py-3">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Gavel className="h-5 w-5 text-blue-400" />
             <div>
               <h1 className="font-bebas text-xl tracking-wide">Captain Panel</h1>
-              <p className="text-xs text-slate-400">{seat.captain_name} -- {seat.seat_label}</p>
+              <p className="text-xs text-muted-foreground">{seat.captain_name} -- {seat.seat_label}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -273,20 +273,20 @@ function CaptainDashboard({
       <main className="max-w-4xl mx-auto px-4 py-6 flex flex-col gap-6">
         {/* Lobby */}
         {phase === "lobby" && (
-          <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 text-center">
+          <div className="bg-card/50 border border-border rounded-none p-8 text-center">
             <CheckCircle2 className="h-10 w-10 text-green-400 mx-auto mb-3" />
             <h2 className="font-bebas text-2xl tracking-wide mb-2">You are In</h2>
-            <p className="text-slate-400">Waiting for the admin to start the draft. Stay on this page.</p>
+            <p className="text-muted-foreground">Waiting for the admin to start the draft. Stay on this page.</p>
           </div>
         )}
 
         {/* Active Bidding */}
         {(phase === "picking" || phase === "paused") && activeLot && (
-          <div className={`rounded-lg border-2 p-6 ${phase === "paused" ? "border-yellow-500/50 bg-yellow-500/5" : "border-blue-500/50 bg-blue-500/5"}`}>
-            <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">
+          <div className={`rounded-none border-2 p-6 ${phase === "paused" ? "border-yellow-500/50 bg-yellow-500/5" : "border-blue-500/50 bg-blue-500/5"}`}>
+            <p className="text-xs text-muted-foreground/60 uppercase tracking-wider mb-1">
               Lot #{activeLot.lot_order} {phase === "paused" && "-- PAUSED"}
             </p>
-            <h2 className="font-bebas text-3xl tracking-wide text-slate-100 mb-4">
+            <h2 className="font-bebas text-3xl tracking-wide text-foreground mb-4">
               {activeLot.player.display_name}
             </h2>
 
@@ -298,14 +298,14 @@ function CaptainDashboard({
                   value={bidAmount}
                   onChange={(e) => setBidAmount(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleBid()}
-                  className="bg-slate-900 border-slate-600 font-mono text-lg flex-1"
+                  className="bg-background border-border font-mono text-lg flex-1"
                   min={1}
                   max={mySeat?.balance ?? 0}
                 />
                 <Button
                   onClick={handleBid}
                   disabled={bidLoading || !bidAmount || phase !== "picking"}
-                  className="bg-green-600 hover:bg-green-700 text-white px-8"
+                  className="bg-green-600 hover:bg-green-700 text-foreground px-8"
                 >
                   {bidLoading ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -336,22 +336,22 @@ function CaptainDashboard({
 
         {/* My Roster */}
         <div>
-          <h3 className="font-teko text-xl tracking-wide text-slate-300 mb-3 flex items-center gap-2">
+          <h3 className="font-teko text-xl tracking-wide text-foreground/80 mb-3 flex items-center gap-2">
             <Users className="h-4 w-4" /> My Roster ({myRoster.length})
           </h3>
           {myRoster.length > 0 ? (
-            <div className="bg-slate-800/50 border border-slate-700 rounded-lg overflow-hidden">
+            <div className="bg-card/50 border border-border rounded-none overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-700 text-slate-400">
+                  <tr className="border-b border-border text-muted-foreground">
                     <th className="text-left px-4 py-2 font-medium">Player</th>
                     <th className="text-right px-4 py-2 font-medium">Price Paid</th>
                   </tr>
                 </thead>
                 <tbody>
                   {myRoster.map((lot) => (
-                    <tr key={lot.id} className="border-b border-slate-700/50 last:border-0">
-                      <td className="px-4 py-2 text-slate-200">{lot.player.display_name}</td>
+                    <tr key={lot.id} className="border-b border-border/50 last:border-0">
+                      <td className="px-4 py-2 text-foreground">{lot.player.display_name}</td>
                       <td className="px-4 py-2 text-right font-mono text-green-400">
                         {lot.winning_price}
                       </td>
@@ -361,7 +361,7 @@ function CaptainDashboard({
               </table>
             </div>
           ) : (
-            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-center text-slate-500 text-sm">
+            <div className="bg-card/50 border border-border rounded-none p-4 text-center text-muted-foreground/60 text-sm">
               No players drafted yet
             </div>
           )}
@@ -369,15 +369,15 @@ function CaptainDashboard({
 
         {/* All Captains */}
         <div>
-          <h3 className="font-teko text-xl tracking-wide text-slate-300 mb-3">All Captains</h3>
+          <h3 className="font-teko text-xl tracking-wide text-foreground/80 mb-3">All Captains</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {state.seats.map((s) => (
               <div
                 key={s.id}
-                className={`bg-slate-800 border rounded-lg p-3 ${s.id === seat.id ? "border-blue-500" : "border-slate-700"}`}
+                className={`bg-card border rounded-none p-3 ${s.id === seat.id ? "border-blue-500" : "border-border"}`}
               >
-                <p className="font-teko text-base text-slate-300 truncate">{s.captain_name}</p>
-                <p className="font-mono text-lg text-slate-100">{s.balance}</p>
+                <p className="font-teko text-base text-foreground/80 truncate">{s.captain_name}</p>
+                <p className="font-mono text-lg text-foreground">{s.balance}</p>
               </div>
             ))}
           </div>
@@ -385,10 +385,10 @@ function CaptainDashboard({
 
         {/* Finished */}
         {phase === "finished" && (
-          <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 text-center">
+          <div className="bg-card/50 border border-border rounded-none p-8 text-center">
             <Trophy className="h-10 w-10 text-yellow-400 mx-auto mb-3" />
             <h2 className="font-bebas text-2xl tracking-wide mb-2">Draft Complete</h2>
-            <p className="text-slate-400">Your roster is final. Good luck!</p>
+            <p className="text-muted-foreground">Your roster is final. Good luck!</p>
           </div>
         )}
       </main>

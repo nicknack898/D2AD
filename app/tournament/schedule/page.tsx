@@ -9,14 +9,14 @@ export default function SchedulePage() {
       <section className="bg-duck-dark py-12">
         <div className="container px-4 md:px-6">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl font-bebas tracking-wide text-white mb-4">TOURNAMENT SCHEDULE</h1>
-            <p className="text-lg text-white/90">Complete timeline for the D2AD Ability Draft Tournament</p>
+            <h1 className="text-4xl sm:text-5xl font-bebas tracking-wide text-foreground mb-4">TOURNAMENT SCHEDULE</h1>
+            <p className="text-lg text-foreground/90">Complete timeline for the D2AD Ability Draft Tournament</p>
           </div>
         </div>
       </section>
 
       {/* Schedule Content */}
-      <section className="py-12 bg-white">
+      <section className="py-12 bg-card">
         <div className="container px-4 md:px-6">
           <div className="max-w-4xl mx-auto">
             {/* Tournament Date Notice */}
@@ -134,9 +134,9 @@ export default function SchedulePage() {
                 </div>
 
                 {/* Important Notes */}
-                <div className="mt-8 bg-blue-50 p-6 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-blue-900 mb-3">Important Schedule Notes:</h4>
-                  <ul className="text-sm text-blue-800 space-y-2">
+                <div className="mt-8 bg-muted p-6 border border-border">
+                  <h4 className="font-semibold text-foreground mb-3">Important Schedule Notes:</h4>
+                  <ul className="text-sm text-muted-foreground space-y-2">
                     <li>• All times are approximate and may vary based on match duration</li>
                     <li>• Teams must be ready 15 minutes before their scheduled match time</li>
                     <li>• Late teams may forfeit their match (5-minute grace period)</li>
@@ -147,7 +147,7 @@ export default function SchedulePage() {
                 </div>
 
                 {/* Time Zone Info */}
-                <div className="mt-6 bg-gray-50 p-4 rounded-lg">
+                <div className="mt-6 bg-muted p-4">
                   <h4 className="font-semibold mb-2">Time Zone Reference:</h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
                     <div>

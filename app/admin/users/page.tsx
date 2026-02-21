@@ -153,7 +153,7 @@ export default async function AdminUsersPage() {
 
           <div className="flex gap-2 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input placeholder="Search users..." className="pl-10" />
             </div>
             <Button variant="outline" className="flex items-center gap-2">
@@ -217,7 +217,7 @@ export default async function AdminUsersPage() {
                         </td>
                         <td className="p-4 align-middle">
                           <div className="flex items-center gap-2">
-                            <Mail className="h-4 w-4 text-gray-500" />
+                            <Mail className="h-4 w-4 text-muted-foreground" />
                             <span>{user.email}</span>
                           </div>
                         </td>
@@ -226,7 +226,7 @@ export default async function AdminUsersPage() {
                         </td>
                         <td className="p-4 align-middle">
                           <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4 text-gray-500" />
+                            <Calendar className="h-4 w-4 text-muted-foreground" />
                             <span>{user.registeredOn}</span>
                           </div>
                         </td>
@@ -282,7 +282,7 @@ export default async function AdminUsersPage() {
             </div>
 
             <div className="flex items-center justify-between mt-4">
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-muted-foreground">
                 Showing <strong>1-8</strong> of <strong>24</strong> users
               </div>
               <div className="flex items-center gap-2">

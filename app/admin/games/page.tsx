@@ -111,29 +111,29 @@ export default function GamesPage() {
               </Badge>
             </div>
 
-            <div className="flex items-center gap-4 p-4 rounded-lg border border-gray-200">
-              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+            <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
+              <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-700">Team Verification</h3>
-                <p className="text-sm text-gray-600">Windrun.io rating verification and team approval</p>
+                <h3 className="font-semibold text-foreground">Team Verification</h3>
+                <p className="text-sm text-muted-foreground">Windrun.io rating verification and team approval</p>
               </div>
               <Badge variant="outline">Pending</Badge>
             </div>
 
-            <div className="flex items-center gap-4 p-4 rounded-lg border border-gray-200">
-              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+            <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
+              <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-700">Bracket Generation</h3>
-                <p className="text-sm text-gray-600">Automatic bracket creation based on team ratings</p>
+                <h3 className="font-semibold text-foreground">Bracket Generation</h3>
+                <p className="text-sm text-muted-foreground">Automatic bracket creation based on team ratings</p>
               </div>
               <Badge variant="outline">Upcoming</Badge>
             </div>
 
-            <div className="flex items-center gap-4 p-4 rounded-lg border border-gray-200">
-              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+            <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
+              <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-700">Tournament Day</h3>
-                <p className="text-sm text-gray-600">Live tournament with Discord coordination</p>
+                <h3 className="font-semibold text-foreground">Tournament Day</h3>
+                <p className="text-sm text-muted-foreground">Live tournament with Discord coordination</p>
               </div>
               <Badge variant="outline">Upcoming</Badge>
             </div>
@@ -149,35 +149,35 @@ export default function GamesPage() {
         </CardHeader>
         <CardContent>
           <div className="text-center py-12">
-            <Gamepad2 className="mx-auto h-16 w-16 text-gray-300 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">No Games Scheduled Yet</h3>
-            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+            <Gamepad2 className="mx-auto h-16 w-16 text-foreground/80 mb-4" />
+            <h3 className="text-xl font-semibold text-muted-foreground mb-2">No Games Scheduled Yet</h3>
+            <p className="text-muted-foreground/60 mb-6 max-w-md mx-auto">
               Games will be automatically scheduled after team registration closes and all teams are verified through
               windrun.io.
             </p>
 
-            <div className="bg-gray-50 p-6 rounded-lg border max-w-2xl mx-auto">
-              <h4 className="font-semibold text-gray-700 mb-3">Tournament Format:</h4>
+            <div className="bg-card p-6 rounded-lg border max-w-2xl mx-auto">
+              <h4 className="font-semibold text-foreground mb-3">Tournament Format:</h4>
               <div className="text-left space-y-2">
                 <div className="flex items-center gap-2">
-                  <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                  <span className="text-sm text-gray-600">5v5 Dota 2 Ability Draft matches</span>
+                  <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
+                  <span className="text-sm text-muted-foreground">5v5 Dota 2 Ability Draft matches</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                  <span className="text-sm text-gray-600">Single-day tournament format</span>
+                  <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
+                  <span className="text-sm text-muted-foreground">Single-day tournament format</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                  <span className="text-sm text-gray-600">Bracket format determined by team count</span>
+                  <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
+                  <span className="text-sm text-muted-foreground">Bracket format determined by team count</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                  <span className="text-sm text-gray-600">All coordination through Discord</span>
+                  <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
+                  <span className="text-sm text-muted-foreground">All coordination through Discord</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                  <span className="text-sm text-gray-600">Windrun.io rating-based team balancing</span>
+                  <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
+                  <span className="text-sm text-muted-foreground">Windrun.io rating-based team balancing</span>
                 </div>
               </div>
             </div>
