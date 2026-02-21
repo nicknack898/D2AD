@@ -1,13 +1,15 @@
 "use client"
 
-import { useFormState, useFormStatus } from "react-dom"
+import { useEffect, useState } from "react"
+import { useFormStatus } from "react-dom"
+import { useRouter } from "next/navigation"
 import { accessAction } from "./actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Shield, AlertCircle, Loader2 } from "lucide-react"
 import Image from "next/image"
 
-type ActionState = { error?: string }
+type ActionState = { error?: string; success?: boolean }
 
 function SubmitButton() {
   const { pending } = useFormStatus()
@@ -31,7 +33,22 @@ function SubmitButton() {
 }
 
 export default function AdminAccessPage() {
-  const [state, formAction] = useFormState(accessAction, {} as ActionState)
+  const router = useRouter()
+  const [state, setState] = useState<ActionState>({})
+  const [isPending, setIsPending] = useState(false)
+
+  useEffect(() => {
+    if (state.success) {
+      router.push("/admin")
+    }
+  }, [state.success, router])
+
+  async function handleSubmit(formData: FormData) {
+    setIsPending(true)
+    const result = await accessAction(undefined, formData)
+    setState(result)
+    setIsPending(false)
+  }
 
   return (
     <main className="min-h-screen bg-background flex items-center justify-center px-4">
@@ -53,7 +70,7 @@ export default function AdminAccessPage() {
               Enter the admin password to continue
             </p>
           </div>
-          <form action={formAction} className="space-y-4">
+          <form action={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="password" className="mb-1.5 block font-mono text-xs tracking-wider uppercase text-muted-foreground">
                 Password

@@ -74,7 +74,7 @@ export async function POST(
     // Hash the submitted code and look up by hash (timing-safe)
     const codeHash = crypto.createHash("sha256").update(parsed.data.code).digest("hex")
 
-    const { data: codeRow, error: codeErr } = await supabase
+    let { data: codeRow, error: codeErr } = await supabase
       .from("captain_codes")
       .select("*, captain_seats(id, seat_label, captain_name, draft_session_id)")
       .eq("code_hash", codeHash)

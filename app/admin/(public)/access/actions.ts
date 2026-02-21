@@ -1,11 +1,10 @@
 'use server'
 
 import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
 
-type ActionState = { error?: string }
+type ActionState = { error?: string; success?: boolean }
 
-export async function accessAction(prevState: ActionState | undefined, formData: FormData): Promise<ActionState | void> {
+export async function accessAction(prevState: ActionState | undefined, formData: FormData): Promise<ActionState> {
   const password = (formData.get('password') || '').toString().trim()
 
   if (password === (process.env.ADMIN_PASSWORD || 'd2ad')) {
@@ -16,7 +15,7 @@ export async function accessAction(prevState: ActionState | undefined, formData:
       path: '/',
       maxAge: 60 * 60 * 8,
     })
-    redirect('/admin')
+    return { success: true }
   }
 
   return { error: 'Incorrect password. Please try again.' }
