@@ -53,9 +53,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 px-4 py-12">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-md">
-        <Card className="border-slate-700 bg-slate-800/50 backdrop-blur-sm text-white shadow-2xl">
+        <Card className="border-border bg-card text-foreground shadow-2xl">
           <CardHeader className="space-y-4 text-center">
             <div className="flex justify-center">
               <Image
@@ -67,7 +67,7 @@ export default function LoginPage() {
               />
             </div>
             <CardTitle className="font-bebas text-3xl text-center">ABILITY DRAFT</CardTitle>
-            <CardDescription className="text-slate-300">
+            <CardDescription className="text-muted-foreground">
               Sign in to join the tournament and compete
             </CardDescription>
           </CardHeader>
@@ -83,10 +83,10 @@ export default function LoginPage() {
               <Button
                 onClick={() => handleOAuth("google")}
                 disabled={isLoading}
-                className="w-full bg-white hover:bg-gray-100 text-gray-800 font-medium py-3 px-4 flex items-center justify-center gap-3"
+                className="w-full bg-foreground hover:bg-foreground/90 text-background font-medium py-3 px-4 flex items-center justify-center gap-3"
                 aria-label="Sign in with Google"
               >
-                {isLoading ? <Loader2 className="h-5 w-5 animate-spin text-gray-600" /> : null}
+                {isLoading ? <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /> : null}
                 {!isLoading && (
                   <>
                     <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
@@ -113,10 +113,10 @@ export default function LoginPage() {
             </div>
 
             <div className="mt-6 space-y-3">
-              <div className="text-center text-slate-300 text-sm">Or sign in via magic link</div>
+              <div className="text-center text-muted-foreground text-sm">Or sign in via magic link</div>
               <div className="flex gap-2">
                 <input
-                  className="flex-1 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-white/20"
+                  className="flex-1 rounded-none border border-border bg-muted px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-foreground/20"
                   placeholder="you@example.com"
                   type="email"
                   value={email}

@@ -4,6 +4,8 @@ import { verifyCaptainToken } from "@/lib/captain-jwt"
 import { placeBid, getActiveLot } from "@/lib/draft-engine"
 import { placeBidSchema } from "@/lib/validation"
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 /**
  * POST /api/draft/[sessionId]/bid
  * Body: { lot_id, amount }
@@ -11,11 +13,14 @@ import { placeBidSchema } from "@/lib/validation"
  */
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ sessionId: string }> },
+  { params }: { params: { sessionId: string } },
 ) {
   try {
-    const { sessionId } = await params
-    const cookieStore = await cookies()
+    const { sessionId } = params
+    if (!UUID_RE.test(sessionId)) {
+      return NextResponse.json({ error: "Invalid session ID" }, { status: 400 })
+    }
+    const cookieStore = cookies()
     const token = cookieStore.get("captain_token")?.value
     if (!token) {
       return NextResponse.json({ error: "Not authenticated as captain" }, { status: 401 })

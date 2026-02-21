@@ -6,60 +6,23 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
 import { LayoutDashboard, Users, Gavel, Calendar, Settings, UserCheck, LogOut, KeyRound } from "lucide-react"
 import Image from "next/image"
 
 const sidebarNavItems = [
-  {
-    title: "Dashboard",
-    href: "/admin",
-    icon: LayoutDashboard,
-    badgeKey: null as string | null,
-  },
-  {
-    title: "Events",
-    href: "/admin/events",
-    icon: Calendar,
-    badgeKey: null as string | null,
-  },
-  {
-    title: "Player Pool",
-    href: "/admin/player-pool",
-    icon: UserCheck,
-    badgeKey: "pending_players" as string | null,
-  },
-  {
-    title: "Draft Room",
-    href: "/admin/drafts",
-    icon: Gavel,
-    badgeKey: null as string | null,
-  },
-  {
-    title: "Captain Codes",
-    href: "/admin/captain-codes",
-    icon: KeyRound,
-    badgeKey: null as string | null,
-  },
-  {
-    title: "Teams",
-    href: "/admin/teams",
-    icon: Users,
-    badgeKey: null as string | null,
-  },
-  {
-    title: "Settings",
-    href: "/admin/settings",
-    icon: Settings,
-    badgeKey: null as string | null,
-  },
+  { title: "Dashboard", href: "/admin", icon: LayoutDashboard, badgeKey: null as string | null },
+  { title: "Events", href: "/admin/events", icon: Calendar, badgeKey: null as string | null },
+  { title: "Player Pool", href: "/admin/player-pool", icon: UserCheck, badgeKey: "pending_players" as string | null },
+  { title: "Draft Room", href: "/admin/drafts", icon: Gavel, badgeKey: null as string | null },
+  { title: "Captain Codes", href: "/admin/captain-codes", icon: KeyRound, badgeKey: null as string | null },
+  { title: "Teams", href: "/admin/teams", icon: Users, badgeKey: null as string | null },
+  { title: "Settings", href: "/admin/settings", icon: Settings, badgeKey: null as string | null },
 ]
 
 export default function AdminSidebar() {
   const pathname = usePathname()
   const [pendingCount, setPendingCount] = useState(0)
 
-  // Poll for pending player count every 15 seconds
   useEffect(() => {
     let mounted = true
     async function fetchPending() {
@@ -68,9 +31,7 @@ export default function AdminSidebar() {
         if (!res.ok) return
         const json = await res.json()
         if (mounted) setPendingCount(json.pending_players ?? 0)
-      } catch {
-        // silent
-      }
+      } catch { /* silent */ }
     }
     fetchPending()
     const interval = setInterval(fetchPending, 15000)
@@ -83,19 +44,19 @@ export default function AdminSidebar() {
   }
 
   return (
-    <div className="flex h-full w-64 flex-col bg-slate-900 text-white">
+    <div className="flex h-full w-64 flex-col border-r border-border bg-card text-card-foreground">
       {/* Header */}
-      <div className="flex h-16 items-center gap-3 border-b border-slate-700 px-6">
-        <Image src="/ability-draft-logo.png" alt="Ability Draft Logo" width={32} height={32} className="w-8 h-8" />
+      <div className="flex h-14 items-center gap-3 border-b border-border px-6">
+        <Image src="/ability-draft-logo.png" alt="D2AD Logo" width={28} height={28} className="opacity-90" />
         <div>
-          <h2 className="text-lg font-semibold">D2AD Admin</h2>
-          <p className="text-xs text-slate-400">League Management</p>
+          <h2 className="font-bebas text-lg tracking-wider text-foreground">D2AD</h2>
+          <p className="font-mono text-[9px] tracking-wider uppercase text-muted-foreground">Admin</p>
         </div>
       </div>
 
       {/* Navigation */}
       <ScrollArea className="flex-1 px-3 py-4">
-        <div className="space-y-2">
+        <div className="space-y-1">
           {sidebarNavItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href
@@ -104,18 +65,18 @@ export default function AdminSidebar() {
             return (
               <Link key={item.href} href={item.href}>
                 <Button
-                  variant={isActive ? "secondary" : "ghost"}
+                  variant="ghost"
                   className={cn(
-                    "w-full justify-start gap-3 text-left relative",
+                    "w-full justify-start gap-3 text-left relative rounded-none h-9 font-mono text-xs tracking-wider",
                     isActive
-                      ? "bg-slate-700 text-white hover:bg-slate-600"
-                      : "text-slate-300 hover:bg-slate-800 hover:text-white",
+                      ? "bg-muted text-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
                   )}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-3.5 w-3.5" />
                   {item.title}
                   {badge != null && (
-                    <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-yellow-500/20 px-1.5 text-[10px] font-bold text-yellow-400 border border-yellow-500/30">
+                    <span className="ml-auto flex h-4 min-w-4 items-center justify-center font-mono text-[9px] text-emerald-400 border border-emerald-400/30 px-1">
                       {badge}
                     </span>
                   )}
@@ -126,19 +87,17 @@ export default function AdminSidebar() {
         </div>
       </ScrollArea>
 
-      <Separator className="bg-slate-700" />
-
       {/* Footer */}
-      <div className="p-4">
+      <div className="border-t border-border p-3">
         <Button
           variant="ghost"
-          className="w-full justify-start gap-3 text-slate-300 hover:bg-slate-800 hover:text-white"
+          className="w-full justify-start gap-3 text-muted-foreground hover:bg-muted hover:text-foreground rounded-none h-9 font-mono text-xs tracking-wider"
           onClick={async () => {
             await fetch("/api/admin/logout", { method: "POST" })
             window.location.href = "/admin/access"
           }}
         >
-          <LogOut className="h-4 w-4" />
+          <LogOut className="h-3.5 w-3.5" />
           Logout
         </Button>
       </div>

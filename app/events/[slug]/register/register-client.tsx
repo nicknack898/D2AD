@@ -179,7 +179,7 @@ export default function RegisterClient({ slug }: { slug: string }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
       </div>
     )
@@ -187,10 +187,10 @@ export default function RegisterClient({ slug }: { slug: string }) {
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center">
-          <h1 className="text-2xl text-white mb-4">Event not found</h1>
-          <Button variant="outline" className="text-slate-300 border-slate-600" asChild>
+          <h1 className="text-2xl text-foreground mb-4">Event not found</h1>
+          <Button variant="outline" className="text-foreground/80 border-border" asChild>
             <Link href="/events"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Events</Link>
           </Button>
         </div>
@@ -203,21 +203,21 @@ export default function RegisterClient({ slug }: { slug: string }) {
 
   if (!isOpen) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
-        <Card className="bg-slate-800 border-slate-700 max-w-md w-full">
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <Card className="bg-card border-border max-w-md w-full">
           <CardContent className="py-10 text-center space-y-4">
-            <Shield className="h-12 w-12 text-slate-500 mx-auto" />
-            <h1 className="text-xl font-semibold text-white">Registration Closed</h1>
-            <p className="text-slate-400 text-sm">
+            <Shield className="h-12 w-12 text-muted-foreground/60 mx-auto" />
+            <h1 className="text-xl font-semibold text-foreground">Registration Closed</h1>
+            <p className="text-muted-foreground text-sm">
               {event.status === "draft"
                 ? "Registration has not opened yet for this event."
                 : "Registration is currently closed for this event."}
             </p>
             <div className="flex flex-col gap-2 pt-2">
-              <Button variant="outline" className="border-slate-600 text-slate-300" asChild>
+              <Button variant="outline" className="border-border text-foreground/80" asChild>
                 <Link href={`/events/${slug}`}><ArrowLeft className="mr-2 h-4 w-4" /> Event Details</Link>
               </Button>
-              <Button className="bg-[#5865F2] hover:bg-[#4752C4] text-white" asChild>
+              <Button className="bg-[#5865F2] hover:bg-[#4752C4] text-foreground" asChild>
                 <Link href="https://discord.gg/d2ad" target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="mr-2 h-4 w-4" /> Get Notified on Discord
                 </Link>
@@ -232,46 +232,46 @@ export default function RegisterClient({ slug }: { slug: string }) {
   // Success screen
   if (success) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center space-y-6">
           <div className="relative">
-            <div className="w-24 h-24 rounded-full bg-green-500/20 flex items-center justify-center mx-auto animate-in zoom-in-50 duration-500">
+            <div className="w-24 h-24 rounded-none bg-green-500/20 flex items-center justify-center mx-auto animate-in zoom-in-50 duration-500">
               <CheckCircle2 className="h-12 w-12 text-green-400" />
             </div>
           </div>
           <div className="space-y-2 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
-            <h1 className="text-3xl font-bold text-white font-bebas tracking-wide">{"You're In!"}</h1>
-            <p className="text-slate-400 leading-relaxed">
+            <h1 className="text-3xl font-bold text-foreground font-bebas tracking-wide">{"You're In!"}</h1>
+            <p className="text-muted-foreground leading-relaxed">
               {"You've been added to the player pool for"}{" "}
-              <span className="text-white font-medium">{event.name}</span>.
+              <span className="text-foreground font-medium">{event.name}</span>.
               Captains will be able to see your profile during the draft.
             </p>
           </div>
-          <Card className="bg-slate-800/50 border-slate-700 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
+          <Card className="bg-card/50 border-border animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
             <CardContent className="py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold">
+                  <div className="w-10 h-10 rounded-none bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold">
                     {form.display_name.charAt(0).toUpperCase()}
                   </div>
                   <div className="text-left">
-                    <p className="text-white font-medium text-sm">{form.display_name}</p>
-                    <p className="text-slate-500 text-xs">{form.discord_id}</p>
+                    <p className="text-foreground font-medium text-sm">{form.display_name}</p>
+                    <p className="text-muted-foreground/60 text-xs">{form.discord_id}</p>
                   </div>
                 </div>
                 {form.rating && (
-                  <span className="text-sm text-slate-400 tabular-nums">{parseInt(form.rating).toLocaleString()} MMR</span>
+                  <span className="text-sm text-muted-foreground tabular-nums">{parseInt(form.rating).toLocaleString()} MMR</span>
                 )}
               </div>
             </CardContent>
           </Card>
           <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-500">
-            <Button className="bg-[#5865F2] hover:bg-[#4752C4] text-white w-full" asChild>
+            <Button className="bg-[#5865F2] hover:bg-[#4752C4] text-foreground w-full" asChild>
               <Link href="https://discord.gg/d2ad" target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="mr-2 h-4 w-4" /> Join Discord for Updates
               </Link>
             </Button>
-            <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-800 w-full" asChild>
+            <Button variant="outline" className="border-border text-foreground/80 hover:bg-card w-full" asChild>
               <Link href={`/events/${slug}`}>View Event Details</Link>
             </Button>
           </div>
@@ -281,17 +281,17 @@ export default function RegisterClient({ slug }: { slug: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-background">
       {/* Compact header */}
-      <div className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-sm sticky top-0 z-40">
+      <div className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-40">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link
             href={`/events/${slug}`}
-            className="inline-flex items-center text-slate-400 hover:text-white text-sm transition-colors"
+            className="inline-flex items-center text-muted-foreground hover:text-foreground text-sm transition-colors"
           >
             <ArrowLeft className="mr-1.5 h-4 w-4" /> {event.name}
           </Link>
-          <div className="flex items-center gap-3 text-xs text-slate-500">
+          <div className="flex items-center gap-3 text-xs text-muted-foreground/60">
             {regDeadline && (
               <span className="flex items-center gap-1 text-yellow-400">
                 <Clock className="h-3 w-3" /> {regDeadline}
@@ -307,14 +307,14 @@ export default function RegisterClient({ slug }: { slug: string }) {
       <div className="max-w-2xl mx-auto px-4 py-8" ref={formRef}>
         {/* Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-medium mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-none bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-medium mb-4">
             <Sparkles className="h-3 w-3" /> Registration Open
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white font-bebas tracking-wide mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground font-bebas tracking-wide mb-2">
             Join the Player Pool
           </h1>
-          <p className="text-slate-400 text-sm max-w-md mx-auto leading-relaxed">
-            Register for <span className="text-white">{event.name}</span> and get drafted by a captain.
+          <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
+            Register for <span className="text-foreground">{event.name}</span> and get drafted by a captain.
           </p>
         </div>
 
@@ -327,25 +327,25 @@ export default function RegisterClient({ slug }: { slug: string }) {
                   if (i < step) setStep(i)
                 }}
                 disabled={i > step}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-none text-xs font-medium transition-all ${
                   i === step
                     ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                     : i < step
                       ? "bg-green-500/10 text-green-400 border border-green-500/20 cursor-pointer hover:bg-green-500/20"
-                      : "bg-slate-800 text-slate-500 border border-slate-700"
+                      : "bg-card text-muted-foreground/60 border border-border"
                 }`}
               >
                 {i < step ? (
                   <CheckCircle2 className="h-3 w-3" />
                 ) : (
-                  <span className="w-4 h-4 rounded-full bg-current/20 flex items-center justify-center text-[10px]">
+                  <span className="w-4 h-4 rounded-none bg-current/20 flex items-center justify-center text-[10px]">
                     {i + 1}
                   </span>
                 )}
                 <span className="hidden sm:inline">{s.label}</span>
               </button>
               {i < STEPS.length - 1 && (
-                <div className={`w-8 h-px mx-1 ${i < step ? "bg-green-500/30" : "bg-slate-700"}`} />
+                <div className={`w-8 h-px mx-1 ${i < step ? "bg-green-500/30" : "bg-muted"}`} />
               )}
             </div>
           ))}
@@ -353,11 +353,11 @@ export default function RegisterClient({ slug }: { slug: string }) {
 
         {/* Step 1: Identity */}
         {step === 0 && (
-          <Card className="bg-slate-800/50 border-slate-700">
+          <Card className="bg-card/50 border-border">
             <CardContent className="py-6 space-y-5">
               <div>
-                <h2 className="text-lg font-semibold text-white mb-1">Who are you?</h2>
-                <p className="text-slate-400 text-sm">
+                <h2 className="text-lg font-semibold text-foreground mb-1">Who are you?</h2>
+                <p className="text-muted-foreground text-sm">
                   Enter your Discord username and in-game name so captains can find you.
                 </p>
               </div>
@@ -386,7 +386,7 @@ export default function RegisterClient({ slug }: { slug: string }) {
                 />
               </div>
 
-              <Button onClick={nextStep} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+              <Button onClick={nextStep} className="w-full bg-blue-600 hover:bg-blue-700 text-foreground">
                 Continue <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </CardContent>
@@ -395,11 +395,11 @@ export default function RegisterClient({ slug }: { slug: string }) {
 
         {/* Step 2: Details */}
         {step === 1 && (
-          <Card className="bg-slate-800/50 border-slate-700">
+          <Card className="bg-card/50 border-border">
             <CardContent className="py-6 space-y-5">
               <div>
-                <h2 className="text-lg font-semibold text-white mb-1">Player Details</h2>
-                <p className="text-slate-400 text-sm">
+                <h2 className="text-lg font-semibold text-foreground mb-1">Player Details</h2>
+                <p className="text-muted-foreground text-sm">
                   Optional info to help captains during the draft. All fields are optional.
                 </p>
               </div>
@@ -426,14 +426,14 @@ export default function RegisterClient({ slug }: { slug: string }) {
                     error={touched.has("rating") ? errors.rating : undefined}
                   />
                   <div>
-                    <label className="text-sm text-slate-300 mb-1.5 block">Source</label>
+                    <label className="text-sm text-foreground/80 mb-1.5 block">Source</label>
                     <Select value={form.rating_source} onValueChange={(v) => handleFieldChange("rating_source", v)}>
-                      <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white h-10">
+                      <SelectTrigger className="bg-muted/50 border-border text-foreground h-10">
                         <SelectValue placeholder="Select" />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-800 border-slate-700">
+                      <SelectContent className="bg-card border-border">
                         {RATING_SOURCES.map((s) => (
-                          <SelectItem key={s.value} value={s.value} className="text-slate-200">{s.label}</SelectItem>
+                          <SelectItem key={s.value} value={s.value} className="text-foreground">{s.label}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -441,13 +441,13 @@ export default function RegisterClient({ slug }: { slug: string }) {
                 </div>
 
                 <div>
-                  <label className="text-sm text-slate-300 mb-1.5 block">Notes for Captains</label>
+                  <label className="text-sm text-foreground/80 mb-1.5 block">Notes for Captains</label>
                   <Textarea
                     placeholder="Preferred roles, availability, anything captains should know..."
                     value={form.notes}
                     onChange={(e) => handleFieldChange("notes", e.target.value)}
                     onBlur={() => handleBlur("notes")}
-                    className={`bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 resize-none ${
+                    className={`bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/60 resize-none ${
                       touched.has("notes") && errors.notes ? "border-red-500/50" : ""
                     }`}
                     rows={3}
@@ -458,7 +458,7 @@ export default function RegisterClient({ slug }: { slug: string }) {
                         <AlertCircle className="h-3 w-3" /> {errors.notes}
                       </p>
                     ) : <span />}
-                    <span className="text-xs text-slate-500">{form.notes.length}/500</span>
+                    <span className="text-xs text-muted-foreground/60">{form.notes.length}/500</span>
                   </div>
                 </div>
               </div>
@@ -467,11 +467,11 @@ export default function RegisterClient({ slug }: { slug: string }) {
                 <Button
                   variant="outline"
                   onClick={() => setStep(0)}
-                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                  className="flex-1 border-border text-foreground/80 hover:bg-muted"
                 >
                   <ChevronLeft className="mr-1 h-4 w-4" /> Back
                 </Button>
-                <Button onClick={nextStep} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
+                <Button onClick={nextStep} className="flex-1 bg-blue-600 hover:bg-blue-700 text-foreground">
                   Review <ChevronRight className="ml-1 h-4 w-4" />
                 </Button>
               </div>
@@ -481,16 +481,16 @@ export default function RegisterClient({ slug }: { slug: string }) {
 
         {/* Step 3: Review & Confirm */}
         {step === 2 && (
-          <Card className="bg-slate-800/50 border-blue-500/20 border">
+          <Card className="bg-card/50 border-blue-500/20 border">
             <CardContent className="py-6 space-y-5">
               <div>
-                <h2 className="text-lg font-semibold text-white mb-1">Review & Confirm</h2>
-                <p className="text-slate-400 text-sm">
+                <h2 className="text-lg font-semibold text-foreground mb-1">Review & Confirm</h2>
+                <p className="text-muted-foreground text-sm">
                   Double-check your details before submitting.
                 </p>
               </div>
 
-              <div className="bg-slate-900/60 rounded-lg divide-y divide-slate-700/50">
+              <div className="bg-background/60 rounded-none divide-y divide-border">
                 <ReviewRow label="Discord" value={form.discord_id} />
                 <ReviewRow label="In-Game Name" value={form.display_name} />
                 {form.steam_id && <ReviewRow label="Steam ID" value={form.steam_id} />}
@@ -508,7 +508,7 @@ export default function RegisterClient({ slug }: { slug: string }) {
               </div>
 
               {submitError && (
-                <div className="flex items-start gap-2 text-sm p-3 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20">
+                <div className="flex items-start gap-2 text-sm p-3 rounded-none bg-red-500/10 text-red-400 border border-red-500/20">
                   <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
                   {submitError}
                 </div>
@@ -518,14 +518,14 @@ export default function RegisterClient({ slug }: { slug: string }) {
                 <Button
                   variant="outline"
                   onClick={() => setStep(1)}
-                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                  className="flex-1 border-border text-foreground/80 hover:bg-muted"
                 >
                   <ChevronLeft className="mr-1 h-4 w-4" /> Edit
                 </Button>
                 <Button
                   onClick={handleSubmit}
                   disabled={submitting}
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-foreground"
                 >
                   {submitting ? (
                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</>
@@ -535,7 +535,7 @@ export default function RegisterClient({ slug }: { slug: string }) {
                 </Button>
               </div>
 
-              <p className="text-xs text-slate-500 text-center">
+              <p className="text-xs text-muted-foreground/60 text-center">
                 By registering, you agree to participate in good faith and follow event rules.
               </p>
             </CardContent>
@@ -573,12 +573,12 @@ function FormField({
 }) {
   return (
     <div>
-      <label className="text-sm text-slate-300 mb-1.5 block">
+      <label className="text-sm text-foreground/80 mb-1.5 block">
         {label} {required && <span className="text-red-400">*</span>}
       </label>
       <div className="relative">
         {icon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">{icon}</div>
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60">{icon}</div>
         )}
         <Input
           type={type}
@@ -586,7 +586,7 @@ function FormField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
-          className={`bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 ${
+          className={`bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/60 ${
             icon ? "pl-9" : ""
           } ${error ? "border-red-500/50" : ""}`}
         />
@@ -596,7 +596,7 @@ function FormField({
           <AlertCircle className="h-3 w-3" /> {error}
         </p>
       ) : hint ? (
-        <p className="text-slate-500 text-xs mt-1">{hint}</p>
+        <p className="text-muted-foreground/60 text-xs mt-1">{hint}</p>
       ) : null}
     </div>
   )
@@ -605,8 +605,8 @@ function FormField({
 function ReviewRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between items-start gap-4 px-4 py-3">
-      <span className="text-xs text-slate-500 uppercase tracking-wide shrink-0 pt-0.5">{label}</span>
-      <span className="text-sm text-slate-200 text-right break-words">{value}</span>
+      <span className="text-xs text-muted-foreground/60 uppercase tracking-wide shrink-0 pt-0.5">{label}</span>
+      <span className="text-sm text-foreground text-right break-words">{value}</span>
     </div>
   )
 }

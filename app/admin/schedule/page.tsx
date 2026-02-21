@@ -43,35 +43,35 @@ export default async function AdminSchedulePage() {
         </CardHeader>
         <CardContent>
           <div className="text-center py-12">
-            <Clock className="mx-auto h-16 w-16 text-gray-300 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">No Schedule Generated Yet</h3>
-            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+            <Clock className="mx-auto h-16 w-16 text-foreground/80 mb-4" />
+            <h3 className="text-xl font-semibold text-muted-foreground mb-2">No Schedule Generated Yet</h3>
+            <p className="text-muted-foreground/60 mb-6 max-w-md mx-auto">
               The tournament schedule will be created automatically once team registration closes and all teams are
               approved through the windrun.io verification process.
             </p>
 
-            <div className="bg-gray-50 p-6 rounded-lg border max-w-2xl mx-auto">
-              <h4 className="font-semibold text-gray-700 mb-3">Schedule Generation Process:</h4>
+            <div className="bg-card p-6 rounded-lg border max-w-2xl mx-auto">
+              <h4 className="font-semibold text-foreground mb-3">Schedule Generation Process:</h4>
               <div className="text-left space-y-2">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span className="text-sm text-gray-600">1. Teams register and join Discord</span>
+                  <span className="text-sm text-muted-foreground">1. Teams register and join Discord</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                  <span className="text-sm text-gray-600">2. Admin verifies teams through windrun.io</span>
+                  <div className="w-2 h-2 bg-muted-foreground/40 rounded-full"></div>
+                  <span className="text-sm text-muted-foreground">2. Admin verifies teams through windrun.io</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                  <span className="text-sm text-gray-600">3. Teams are approved and confirmed</span>
+                  <div className="w-2 h-2 bg-muted-foreground/40 rounded-full"></div>
+                  <span className="text-sm text-muted-foreground">3. Teams are approved and confirmed</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                  <span className="text-sm text-gray-600">4. Balanced brackets are generated</span>
+                  <div className="w-2 h-2 bg-muted-foreground/40 rounded-full"></div>
+                  <span className="text-sm text-muted-foreground">4. Balanced brackets are generated</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                  <span className="text-sm text-gray-600">5. Match schedule is created and published</span>
+                  <div className="w-2 h-2 bg-muted-foreground/40 rounded-full"></div>
+                  <span className="text-sm text-muted-foreground">5. Match schedule is created and published</span>
                 </div>
               </div>
             </div>
@@ -86,7 +86,7 @@ export default async function AdminSchedulePage() {
             <CardTitle>Tournament Format</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2 text-sm text-gray-600">
+            <ul className="space-y-2 text-sm text-muted-foreground">
               <li>• Single-day tournament event</li>
               <li>• 5v5 Dota 2 Ability Draft matches</li>
               <li>• Bracket format (determined by team count)</li>
@@ -101,7 +101,7 @@ export default async function AdminSchedulePage() {
             <CardTitle>Schedule Details</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2 text-sm text-gray-600">
+            <ul className="space-y-2 text-sm text-muted-foreground">
               <li>• Tournament Date: TBD (after registration)</li>
               <li>• Registration Opens: 7:00 AM tournament day</li>
               <li>• Registration Closes: 7:30 AM</li>

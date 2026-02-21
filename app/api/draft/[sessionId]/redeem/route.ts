@@ -5,6 +5,8 @@ import { signCaptainToken } from "@/lib/captain-jwt"
 import { redeemCodeSchema } from "@/lib/validation"
 import crypto from "crypto"
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 // ---------- simple in-memory rate limit for code redemption ----------
 const redeemAttempts = new Map<string, { count: number; firstAttempt: number }>()
 const MAX_REDEEM_ATTEMPTS = 10
@@ -23,10 +25,13 @@ function getIp(hdrs: Headers): string {
  */
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ sessionId: string }> },
+  { params }: { params: { sessionId: string } },
 ) {
   try {
-    const { sessionId } = await params
+    const { sessionId } = params
+    if (!UUID_RE.test(sessionId)) {
+      return NextResponse.json({ error: "Invalid session ID" }, { status: 400 })
+    }
 
     // --- Rate limit by IP + session ---
     const hdrs = headers()
@@ -109,7 +114,7 @@ export async function POST(
     })
 
     // Set httpOnly cookie
-    const cookieStore = await cookies()
+    const cookieStore = cookies()
     cookieStore.set("captain_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

@@ -18,9 +18,9 @@ export function TeamNameButton({ teamName, className = "" }: TeamNameButtonProps
     <>
       <button
         onClick={() => setShowPopup(true)}
-        className={`text-left hover:text-[#aa5a35] border-b border-dashed border-gray-300 hover:border-[#aa5a35] flex items-center gap-1 focus:outline-none mobile-text-truncate ${className}`}
+        className={`text-left hover:text-[#aa5a35] border-b border-dashed border-border hover:border-[#aa5a35] flex items-center gap-1 focus:outline-none mobile-text-truncate ${className}`}
       >
-        <Users className="h-3 w-3 text-gray-400" />
+        <Users className="h-3 w-3 text-muted-foreground" />
         <span className="mobile-text-truncate">{teamName}</span>
       </button>
 

@@ -67,7 +67,7 @@ export default function CreateGamePage() {
                 <div className="space-y-2">
                   <Label htmlFor="game-date">Date</Label>
                   <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input id="game-date" type="date" className="pl-10" />
                   </div>
                 </div>
@@ -91,14 +91,14 @@ export default function CreateGamePage() {
                 <div className="space-y-2">
                   <Label htmlFor="start-time">Start Time</Label>
                   <div className="relative">
-                    <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input id="start-time" type="time" className="pl-10" />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="end-time">End Time</Label>
                   <div className="relative">
-                    <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input id="end-time" type="time" className="pl-10" />
                   </div>
                 </div>
@@ -107,7 +107,7 @@ export default function CreateGamePage() {
               <div className="space-y-2">
                 <Label htmlFor="location">Location</Label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                   <Select>
                     <SelectTrigger id="location" className="pl-10">
                       <SelectValue placeholder="Select location" />
@@ -156,7 +156,7 @@ export default function CreateGamePage() {
                   <div className="font-bold text-xl">{totalSpots}</div>
                 </div>
 
-                <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                   <div className="flex h-full">
                     <div
                       className="bg-blue-500"
@@ -197,7 +197,7 @@ export default function CreateGamePage() {
                         </Button>
                       </div>
                     </div>
-                    <div className="h-2 w-full bg-gray-100 rounded-full">
+                    <div className="h-2 w-full bg-muted rounded-full">
                       <div
                         className="h-full bg-blue-500 rounded-full"
                         style={{ width: `${(reservedSpots.beginners / totalSpots) * 100}%` }}
@@ -229,7 +229,7 @@ export default function CreateGamePage() {
                         </Button>
                       </div>
                     </div>
-                    <div className="h-2 w-full bg-gray-100 rounded-full">
+                    <div className="h-2 w-full bg-muted rounded-full">
                       <div
                         className="h-full bg-pink-500 rounded-full"
                         style={{ width: `${(reservedSpots.women / totalSpots) * 100}%` }}
@@ -261,7 +261,7 @@ export default function CreateGamePage() {
                         </Button>
                       </div>
                     </div>
-                    <div className="h-2 w-full bg-gray-100 rounded-full">
+                    <div className="h-2 w-full bg-muted rounded-full">
                       <div
                         className="h-full bg-green-500 rounded-full"
                         style={{ width: `${(reservedSpots.general / totalSpots) * 100}%` }}

@@ -24,13 +24,13 @@ export default function TournamentPage() {
               className="w-24 h-24 sm:w-32 sm:h-32 mb-6"
             />
             <Badge className="mb-4 bg-[#aa5a35] hover:bg-[#8a4a2b] text-white">TRIAL TOURNAMENT</Badge>
-            <h1 className="text-5xl sm:text-6xl font-bebas tracking-wide leading-none mb-4 text-white">
+            <h1 className="text-5xl sm:text-6xl font-bebas tracking-wide leading-none mb-4 text-foreground">
               DUNKIN' DUCKS
             </h1>
-            <h2 className="text-2xl sm:text-3xl font-teko uppercase tracking-wider text-white mb-6">
+            <h2 className="text-2xl sm:text-3xl font-teko uppercase tracking-wider text-foreground mb-6">
               Ability Draft Tournament
             </h2>
-            <p className="text-lg text-white/90 max-w-2xl mb-8">
+            <p className="text-lg text-foreground/90 max-w-2xl mb-8">
               Join our competitive Ability Draft tournament featuring balanced team matchups, strategic drafting, and
               exciting prizes. Teams are matched based on average windrun.io ratings for fair competition.
             </p>
@@ -46,7 +46,7 @@ export default function TournamentPage() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="border-white text-white hover:bg-white hover:text-duck-dark font-teko text-lg uppercase bg-transparent"
+                className="border-foreground text-foreground hover:bg-foreground hover:text-duck-dark font-teko text-lg uppercase bg-transparent"
               >
                 <Link href="/tournament/schedule">View Schedule</Link>
               </Button>
@@ -56,7 +56,7 @@ export default function TournamentPage() {
       </section>
 
       {/* Tournament Overview */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-card">
         <div className="container px-4 md:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bebas tracking-wide mb-4">TOURNAMENT FORMAT</h2>
@@ -103,7 +103,7 @@ export default function TournamentPage() {
             </Card>
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-8">
+          <div className="bg-muted p-8">
             <h3 className="text-2xl font-bebas tracking-wide mb-4 text-center">TOURNAMENT STRUCTURE</h3>
             <div className="grid md:grid-cols-2 gap-8">
               <div>
@@ -136,28 +136,28 @@ export default function TournamentPage() {
       </section>
 
       {/* Quick Info */}
-      <section className="py-12 bg-gray-50">
+      <section className="py-12 bg-muted">
         <div className="container px-4 md:px-6">
           <div className="grid md:grid-cols-4 gap-6 text-center">
             <div className="flex flex-col items-center">
               <Calendar className="h-8 w-8 text-[#aa5a35] mb-2" />
               <h3 className="font-teko text-lg uppercase">Date</h3>
-              <p className="text-sm text-gray-600">TBA - Announced on Discord</p>
+              <p className="text-sm text-muted-foreground/60">TBA - Announced on Discord</p>
             </div>
             <div className="flex flex-col items-center">
               <Clock className="h-8 w-8 text-[#aa5a35] mb-2" />
               <h3 className="font-teko text-lg uppercase">Duration</h3>
-              <p className="text-sm text-gray-600">3-4 hours</p>
+              <p className="text-sm text-muted-foreground/60">3-4 hours</p>
             </div>
             <div className="flex flex-col items-center">
               <Users className="h-8 w-8 text-[#aa5a35] mb-2" />
               <h3 className="font-teko text-lg uppercase">Team Size</h3>
-              <p className="text-sm text-gray-600">5 Players</p>
+              <p className="text-sm text-muted-foreground/60">5 Players</p>
             </div>
             <div className="flex flex-col items-center">
               <Trophy className="h-8 w-8 text-[#aa5a35] mb-2" />
               <h3 className="font-teko text-lg uppercase">Entry</h3>
-              <p className="text-sm text-gray-600">Free</p>
+              <p className="text-sm text-muted-foreground/60">Free</p>
             </div>
           </div>
         </div>
@@ -166,8 +166,8 @@ export default function TournamentPage() {
       {/* Call to Action */}
       <section className="py-16 bg-duck-dark">
         <div className="container px-4 md:px-6 text-center">
-          <h2 className="text-4xl font-bebas tracking-wide text-white mb-4">READY TO COMPETE?</h2>
-          <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
+          <h2 className="text-4xl font-bebas tracking-wide text-foreground mb-4">READY TO COMPETE?</h2>
+          <p className="text-lg text-foreground/90 mb-8 max-w-2xl mx-auto">
             Gather your team, perfect your strategies, and prepare for the ultimate Ability Draft challenge.
             Registration is now open!
           </p>
@@ -183,7 +183,7 @@ export default function TournamentPage() {
               asChild
               variant="outline"
               size="lg"
-              className="border-white text-white hover:bg-white hover:text-duck-dark font-teko text-lg uppercase bg-transparent"
+              className="border-foreground text-foreground hover:bg-foreground hover:text-duck-dark font-teko text-lg uppercase bg-transparent"
             >
               <Link href="/tournament/rules">Read Rules</Link>
             </Button>

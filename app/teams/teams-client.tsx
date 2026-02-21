@@ -24,9 +24,9 @@ export default function TeamsClient() {
 
   const EmptyState = () => (
     <div className="text-center py-12">
-      <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-      <h3 className="text-lg font-medium text-gray-900 mb-2">No teams registered yet</h3>
-      <p className="text-gray-500 mb-6">Be the first to register your team for the tournament!</p>
+      <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+      <h3 className="text-lg font-medium text-foreground mb-2">No teams registered yet</h3>
+      <p className="text-muted-foreground mb-6">Be the first to register your team for the tournament!</p>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Button asChild className="bg-[#aa5a35] hover:bg-[#8a4a2b] text-white">
           <Link href="/register">
@@ -48,7 +48,7 @@ export default function TeamsClient() {
     <div className="container py-10">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-4 tracking-tight">Registered Teams</h1>
-        <p className="text-lg text-gray-600">
+        <p className="text-lg text-muted-foreground/60">
           View all teams registered for the upcoming D2AD tournament. Team registration is currently open.
         </p>
       </div>
@@ -113,8 +113,8 @@ export default function TeamsClient() {
             ))}
           </div>
 
-          <div className="bg-yellow-50 p-4 rounded-md border border-yellow-200 mt-6">
-            <p className="text-yellow-800 font-medium">
+          <div className="bg-muted p-4 border border-border mt-6">
+            <p className="text-foreground font-medium">
               Important: All teams must report by 7:00 AM. Registration desk closes at 7:30 AM. Any teams that arrive
               after this will be automatically disqualified from the tournament.
             </p>

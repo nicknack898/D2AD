@@ -191,13 +191,13 @@ export default function RegisterClient() {
           <div className="container px-4 md:px-6 relative z-10">
             <div className="flex flex-col items-center text-center">
               <CheckCircle className="h-20 w-20 text-green-400 mb-6" />
-              <h1 className="text-4xl sm:text-5xl font-bebas tracking-wide leading-none mb-4 text-white">
+              <h1 className="text-4xl sm:text-5xl font-bebas tracking-wide leading-none mb-4 text-foreground">
                 REGISTRATION SUCCESSFUL!
               </h1>
-              <p className="text-lg text-white/90 mb-8 max-w-2xl">
+              <p className="text-lg text-foreground/90 mb-8 max-w-2xl">
                 Your team "{formData.teamName}" has been successfully registered for the D2AD tournament.
               </p>
-              <div className="bg-green-900/30 border border-green-500/30 rounded-lg p-6 mb-8 max-w-2xl">
+              <div className="bg-green-900/30 border border-green-500/30 p-6 mb-8 max-w-2xl">
                 <h3 className="font-semibold text-green-300 mb-3">What's Next?</h3>
                 <ul className="text-sm text-green-200 space-y-2 text-left">
                   <li>• You'll receive a confirmation email shortly</li>
@@ -216,7 +216,7 @@ export default function RegisterClient() {
                   asChild
                   size="lg"
                   variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-duck-dark bg-transparent"
+                  className="border-foreground text-foreground hover:bg-foreground hover:text-duck-dark bg-transparent"
                 >
                   <Link href="/">Back to Home</Link>
                 </Button>
@@ -245,25 +245,25 @@ export default function RegisterClient() {
               height={100}
               className="w-20 h-20 sm:w-24 sm:h-24 mb-4"
             />
-            <h1 className="text-4xl sm:text-5xl font-bebas tracking-wide leading-none mb-2 text-white">
+            <h1 className="text-4xl sm:text-5xl font-bebas tracking-wide leading-none mb-2 text-foreground">
               TEAM REGISTRATION
             </h1>
-            <p className="text-lg sm:text-xl font-teko uppercase tracking-wider text-white">Join the Tournament</p>
+            <p className="text-lg sm:text-xl font-teko uppercase tracking-wider text-foreground">Join the Tournament</p>
 
             {/* Progress Indicator */}
             <div className="flex items-center mt-6 space-x-4">
-              <div className={`flex items-center ${currentStep >= 1 ? "text-[#aa5a35]" : "text-white/50"}`}>
+              <div className={`flex items-center ${currentStep >= 1 ? "text-[#aa5a35]" : "text-foreground/50"}`}>
                 <div
-                  className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${currentStep >= 1 ? "border-[#aa5a35] bg-[#aa5a35] text-white" : "border-white/50"}`}
+                  className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${currentStep >= 1 ? "border-[#aa5a35] bg-[#aa5a35] text-white" : "border-foreground/50"}`}
                 >
                   1
                 </div>
                 <span className="ml-2 font-medium">Team & Captain</span>
               </div>
-              <div className={`w-8 h-0.5 ${currentStep >= 2 ? "bg-[#aa5a35]" : "bg-white/30"}`}></div>
-              <div className={`flex items-center ${currentStep >= 2 ? "text-[#aa5a35]" : "text-white/50"}`}>
+              <div className={`w-8 h-0.5 ${currentStep >= 2 ? "bg-[#aa5a35]" : "bg-foreground/30"}`}></div>
+              <div className={`flex items-center ${currentStep >= 2 ? "text-[#aa5a35]" : "text-foreground/50"}`}>
                 <div
-                  className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${currentStep >= 2 ? "border-[#aa5a35] bg-[#aa5a35] text-white" : "border-white/50"}`}
+                  className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${currentStep >= 2 ? "border-[#aa5a35] bg-[#aa5a35] text-white" : "border-foreground/50"}`}
                 >
                   2
                 </div>
@@ -275,35 +275,35 @@ export default function RegisterClient() {
       </section>
 
       {/* Info */}
-      <section className="py-8 bg-gray-50">
+      <section className="py-8 bg-muted">
         <div className="container px-4 md:px-6">
           <div className="grid md:grid-cols-4 gap-6 text-center">
             <div className="flex flex-col items-center">
               <Calendar className="h-8 w-8 text-[#aa5a35] mb-2" aria-hidden="true" />
               <h3 className="font-teko text-lg uppercase">Date</h3>
-              <p className="text-sm text-gray-600">TBA</p>
+              <p className="text-sm text-muted-foreground/60">TBA</p>
             </div>
             <div className="flex flex-col items-center">
               <Clock className="h-8 w-8 text-[#aa5a35] mb-2" aria-hidden="true" />
               <h3 className="font-teko text-lg uppercase">Time</h3>
-              <p className="text-sm text-gray-600">Announced on Discord</p>
+              <p className="text-sm text-muted-foreground/60">Announced on Discord</p>
             </div>
             <div className="flex flex-col items-center">
               <Users className="h-8 w-8 text-[#aa5a35] mb-2" aria-hidden="true" />
               <h3 className="font-teko text-lg uppercase">Team Size</h3>
-              <p className="text-sm text-gray-600">5 Players</p>
+              <p className="text-sm text-muted-foreground/60">5 Players</p>
             </div>
             <div className="flex flex-col items-center">
               <Trophy className="h-8 w-8 text-[#aa5a35] mb-2" aria-hidden="true" />
               <h3 className="font-teko text-lg uppercase">Format</h3>
-              <p className="text-sm text-gray-600">Balanced matchups</p>
+              <p className="text-sm text-muted-foreground/60">Balanced matchups</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Form */}
-      <section className="py-12 bg-white">
+      <section className="py-12 bg-card">
         <div className="container px-4 md:px-6">
           <div className="max-w-2xl mx-auto">
             <Card>
@@ -343,7 +343,7 @@ export default function RegisterClient() {
 
                   {/* Error Message */}
                   {submitError && (
-                    <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                    <div className="flex items-center gap-2 p-4 bg-destructive/10 border border-destructive/30 text-destructive">
                       <AlertCircle className="h-5 w-5 flex-shrink-0" />
                       <p className="text-sm">{submitError}</p>
                     </div>
@@ -368,7 +368,7 @@ export default function RegisterClient() {
                             {errors.teamName}
                           </p>
                         )}
-                        <p className="text-xs text-gray-500">Choose a unique and appropriate team name</p>
+                        <p className="text-xs text-muted-foreground">Choose a unique and appropriate team name</p>
                       </div>
 
                       {/* Captain Information */}
@@ -430,7 +430,7 @@ export default function RegisterClient() {
                                 {errors.captainDiscord}
                               </p>
                             )}
-                            <p className="text-xs text-gray-500">Your Discord username (with or without #1234)</p>
+                            <p className="text-xs text-muted-foreground">Your Discord username (with or without #1234)</p>
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="captainSteam">Captain Steam64 ID *</Label>
@@ -448,7 +448,7 @@ export default function RegisterClient() {
                                 {errors.captainSteam}
                               </p>
                             )}
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-muted-foreground">
                               Find your Steam64 ID at{" "}
                               <a
                                 href="https://steamid.io"
@@ -472,7 +472,7 @@ export default function RegisterClient() {
                         <h3 className="text-lg font-semibold border-b pb-2">Remaining Team Members</h3>
 
                         {[2, 3, 4, 5].map((playerNum) => (
-                          <div key={playerNum} className="grid md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+                          <div key={playerNum} className="grid md:grid-cols-2 gap-4 p-4 bg-muted">
                             <div className="space-y-2">
                               <Label htmlFor={`player${playerNum}Name`}>Player {playerNum} Name *</Label>
                               <Input
@@ -523,7 +523,7 @@ export default function RegisterClient() {
                           rows={4}
                           maxLength={500}
                         />
-                        <p className="text-xs text-gray-500">{formData.additionalInfo.length}/500 characters</p>
+                        <p className="text-xs text-muted-foreground">{formData.additionalInfo.length}/500 characters</p>
                       </div>
                     </>
                   )}
@@ -565,9 +565,9 @@ export default function RegisterClient() {
                   </div>
 
                   {currentStep === 2 && (
-                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                      <h4 className="font-semibold text-blue-900 mb-2">Important Notes:</h4>
-                      <ul className="text-sm text-blue-800 space-y-1">
+                    <div className="bg-muted p-4 border border-border">
+                      <h4 className="font-semibold text-foreground mb-2">Important Notes:</h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
                         <li>• All players must have Discord accounts for communication</li>
                         <li>• Steam64 IDs are required (17 digits starting with 7656119)</li>
                         <li>• You can find your Steam64 ID at steamid.io</li>

@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache"
 
 export async function updatePlayerProfile(formData: FormData) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
 
     // Get current user
     const {
@@ -53,7 +53,7 @@ export async function updatePlayerProfile(formData: FormData) {
 
 export async function getPlayerProfile(userId: string) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
 
     const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single()
 

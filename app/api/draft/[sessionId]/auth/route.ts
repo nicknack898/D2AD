@@ -3,6 +3,8 @@ import { cookies } from "next/headers"
 import { verifyCaptainToken } from "@/lib/captain-jwt"
 import { createClient } from "@/lib/supabase-server"
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 /**
  * GET /api/draft/[sessionId]/auth
  * Checks if the user has a valid captain_token cookie for this session.
@@ -10,11 +12,14 @@ import { createClient } from "@/lib/supabase-server"
  */
 export async function GET(
   _req: Request,
-  { params }: { params: Promise<{ sessionId: string }> },
+  { params }: { params: { sessionId: string } },
 ) {
   try {
-    const { sessionId } = await params
-    const cookieStore = await cookies()
+    const { sessionId } = params
+    if (!UUID_RE.test(sessionId)) {
+      return NextResponse.json({ error: "Invalid session ID" }, { status: 400 })
+    }
+    const cookieStore = cookies()
     const token = cookieStore.get("captain_token")?.value
 
     if (!token) {

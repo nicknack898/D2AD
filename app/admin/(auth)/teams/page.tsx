@@ -53,7 +53,7 @@ export default function AdminTeamsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-[#aa5a35]">Team Management</h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-muted-foreground/60 mt-2">
           Manage team registrations, verify ratings through windrun.io, and coordinate through Discord.
         </p>
       </div>
@@ -64,7 +64,7 @@ export default function AdminTeamsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Teams</p>
+                <p className="text-sm text-muted-foreground/60">Total Teams</p>
                 <p className="text-2xl font-bold text-[#aa5a35]">{totalTeams}</p>
               </div>
               <Users className="h-8 w-8 text-[#aa5a35]" />
@@ -76,7 +76,7 @@ export default function AdminTeamsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Pending</p>
+                <p className="text-sm text-muted-foreground/60">Pending</p>
                 <p className="text-2xl font-bold text-orange-600">{pendingTeams}</p>
               </div>
               <AlertCircle className="h-8 w-8 text-orange-600" />
@@ -88,7 +88,7 @@ export default function AdminTeamsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Under Review</p>
+                <p className="text-sm text-muted-foreground/60">Under Review</p>
                 <p className="text-2xl font-bold text-yellow-600">{underReviewTeams}</p>
               </div>
               <Clock className="h-8 w-8 text-yellow-600" />
@@ -100,7 +100,7 @@ export default function AdminTeamsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Confirmed</p>
+                <p className="text-sm text-muted-foreground/60">Confirmed</p>
                 <p className="text-2xl font-bold text-green-600">{confirmedTeams}</p>
               </div>
               <CheckCircle className="h-8 w-8 text-green-600" />
@@ -112,7 +112,7 @@ export default function AdminTeamsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Available Spots</p>
+                <p className="text-sm text-muted-foreground/60">Available Spots</p>
                 <p className="text-2xl font-bold text-blue-600">{availableSpots}</p>
               </div>
               <Trophy className="h-8 w-8 text-blue-600" />
@@ -149,7 +149,7 @@ export default function AdminTeamsPage() {
 
       {/* Search Bar */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
         <Input
           placeholder="Search teams by name or captain..."
           value={searchTerm}
@@ -161,9 +161,9 @@ export default function AdminTeamsPage() {
       {/* Empty state (no teams) */}
       <Card>
         <CardContent className="p-12 text-center">
-          <Users className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-600 mb-2">No Teams Registered Yet</h3>
-          <p className="text-gray-500 mb-6">When teams register, you can manage them here.</p>
+          <Users className="h-16 w-16 text-muted-foreground/40 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-muted-foreground/60 mb-2">No Teams Registered Yet</h3>
+          <p className="text-muted-foreground mb-6">When teams register, you can manage them here.</p>
           <div className="flex gap-4 justify-center">
             <Button asChild className="bg-[#aa5a35] hover:bg-[#8a4a2b]">
               <a href="/teams-registered">View Public Teams Page</a>

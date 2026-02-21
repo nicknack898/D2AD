@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase-server"
 import { requireAdminApi } from "@/lib/auth"
 import crypto from "crypto"
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 function hashCode(code: string) {
   return crypto.createHash("sha256").update(code).digest("hex")
 }
@@ -17,12 +19,15 @@ function expiresAt(days = 30) {
  */
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ sessionId: string }> },
+  { params }: { params: { sessionId: string } },
 ) {
   try {
     const denied = await requireAdminApi()
     if (denied) return denied
-    const { sessionId } = await params
+    const { sessionId } = params
+    if (!UUID_RE.test(sessionId)) {
+      return NextResponse.json({ error: "Invalid session ID" }, { status: 400 })
+    }
     const json = await req.json().catch(() => null)
     if (!json || !json._action) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 })
@@ -149,12 +154,15 @@ export async function POST(
  */
 export async function GET(
   _req: Request,
-  { params }: { params: Promise<{ sessionId: string }> },
+  { params }: { params: { sessionId: string } },
 ) {
   try {
     const denied = await requireAdminApi()
     if (denied) return denied
-    const { sessionId } = await params
+    const { sessionId } = params
+    if (!UUID_RE.test(sessionId)) {
+      return NextResponse.json({ error: "Invalid session ID" }, { status: 400 })
+    }
     const supabase = await createClient()
 
     // Query seats first, then join codes (reliable approach)

@@ -182,7 +182,7 @@ export default function AdminDraftsPage() {
 
   if (loading) {
     return (
-      <div className="p-6 flex items-center gap-2 text-slate-400">
+      <div className="p-6 flex items-center gap-2 text-muted-foreground">
         <Loader2 className="h-5 w-5 animate-spin" />
         Loading drafts...
       </div>
@@ -216,15 +216,15 @@ export default function AdminDraftsPage() {
 
       {/* Create Form */}
       {showCreate && (
-        <div className="bg-slate-800 border border-slate-700 rounded-lg p-6 mb-6">
+        <div className="bg-card border border-border rounded-lg p-6 mb-6">
           <h2 className="font-teko text-xl mb-4">Create Draft Session</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm text-slate-400 mb-1 block">Event</label>
+              <label className="text-sm text-muted-foreground mb-1 block">Event</label>
               <select
                 value={selectedEventId}
                 onChange={(e) => setSelectedEventId(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-600 rounded-md px-3 py-2 text-sm text-slate-100"
+                className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground"
               >
                 <option value="">Select event...</option>
                 {events.map((ev) => (
@@ -233,33 +233,33 @@ export default function AdminDraftsPage() {
               </select>
             </div>
             <div>
-              <label className="text-sm text-slate-400 mb-1 block">Captains</label>
+              <label className="text-sm text-muted-foreground mb-1 block">Captains</label>
               <Input
                 type="number"
                 value={captainCount}
                 onChange={(e) => setCaptainCount(e.target.value)}
-                className="bg-slate-900 border-slate-600"
+                className="bg-background border-border"
                 min={2}
                 max={12}
               />
             </div>
             <div>
-              <label className="text-sm text-slate-400 mb-1 block">Budget per Captain</label>
+              <label className="text-sm text-muted-foreground mb-1 block">Budget per Captain</label>
               <Input
                 type="number"
                 value={budget}
                 onChange={(e) => setBudget(e.target.value)}
-                className="bg-slate-900 border-slate-600"
+                className="bg-background border-border"
                 min={10}
               />
             </div>
             <div>
-              <label className="text-sm text-slate-400 mb-1 block">Seconds per Lot</label>
+              <label className="text-sm text-muted-foreground mb-1 block">Seconds per Lot</label>
               <Input
                 type="number"
                 value={secondsPerLot}
                 onChange={(e) => setSecondsPerLot(e.target.value)}
-                className="bg-slate-900 border-slate-600"
+                className="bg-background border-border"
                 min={5}
                 max={300}
               />
@@ -281,21 +281,21 @@ export default function AdminDraftsPage() {
           <h2 className="font-teko text-xl text-green-400 mb-3 flex items-center gap-2">
             <CheckCircle2 className="h-5 w-5" /> Draft Created - Captain Codes
           </h2>
-          <p className="text-sm text-slate-400 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             Share these one-time codes with each captain. They will use them to log into the captain panel.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {codes.map((c) => (
-              <div key={c.code} className="flex items-center justify-between bg-slate-800 rounded-lg px-4 py-3 border border-slate-700">
+              <div key={c.code} className="flex items-center justify-between bg-card rounded-lg px-4 py-3 border border-border">
                 <div>
-                  <p className="text-sm text-slate-400">{c.seat_label}</p>
-                  <p className="font-mono text-lg text-slate-100 tracking-widest">{c.code}</p>
+                  <p className="text-sm text-muted-foreground">{c.seat_label}</p>
+                  <p className="font-mono text-lg text-foreground tracking-widest">{c.code}</p>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => copyCode(c.code)}
-                  className="text-slate-400 hover:text-white"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   {copiedCode === c.code ? <CheckCircle2 className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}
                 </Button>
@@ -307,21 +307,21 @@ export default function AdminDraftsPage() {
 
       {/* Sessions List */}
       {sessions.length === 0 ? (
-        <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 text-center">
-          <Gavel className="h-10 w-10 text-slate-600 mx-auto mb-3" />
-          <p className="text-slate-400">No draft sessions yet. Create one from an event with confirmed players.</p>
+        <div className="bg-card/50 border border-border rounded-lg p-8 text-center">
+          <Gavel className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
+          <p className="text-muted-foreground">No draft sessions yet. Create one from an event with confirmed players.</p>
         </div>
       ) : (
         <div className="space-y-3">
           {sessions.map((sess) => {
             const event = events.find((e) => e.id === sess.event_id)
             return (
-              <div key={sess.id} className="bg-slate-800 border border-slate-700 rounded-lg p-4">
+              <div key={sess.id} className="bg-card border border-border rounded-lg p-4">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div>
-                    <h3 className="font-teko text-lg text-slate-200">{event?.name ?? "Unknown Event"}</h3>
-                    <p className="text-xs text-slate-500">
-                      Session: {sess.id.slice(0, 8)}... | Phase: <span className="text-slate-300">{sess.phase}</span>
+                    <h3 className="font-teko text-lg text-foreground">{event?.name ?? "Unknown Event"}</h3>
+                    <p className="text-xs text-muted-foreground/60">
+                      Session: {sess.id.slice(0, 8)}... | Phase: <span className="text-foreground/80">{sess.phase}</span>
                     </p>
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
@@ -371,32 +371,32 @@ export default function AdminDraftsPage() {
 
                 {/* Expandable Codes Panel */}
                 {viewingSessionId === sess.id && (
-                  <div className="mt-4 pt-4 border-t border-slate-700">
+                  <div className="mt-4 pt-4 border-t border-border">
                     {viewCodesLoading ? (
-                      <div className="flex items-center gap-2 text-slate-400 text-sm py-2">
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm py-2">
                         <Loader2 className="h-4 w-4 animate-spin" /> Loading codes...
                       </div>
                     ) : viewCodes.length === 0 ? (
-                      <p className="text-sm text-slate-500 py-2">No codes found for this session.</p>
+                      <p className="text-sm text-muted-foreground/60 py-2">No codes found for this session.</p>
                     ) : (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {viewCodes.map((c: any) => (
                           <div
                             key={c.code}
-                            className={`flex items-center justify-between bg-slate-900 rounded-lg px-4 py-2.5 border ${c.used ? "border-slate-600 opacity-60" : "border-slate-700"}`}
+                            className={`flex items-center justify-between bg-background rounded-lg px-4 py-2.5 border ${c.used ? "border-border opacity-60" : "border-border"}`}
                           >
                             <div>
-                              <p className="text-xs text-slate-400">
+                              <p className="text-xs text-muted-foreground">
                                 {c.seat_label}
                                 {c.used && <span className="ml-2 text-yellow-500">(Used)</span>}
                               </p>
-                              <p className="font-mono text-base text-slate-100 tracking-widest">{c.code}</p>
+                              <p className="font-mono text-base text-foreground tracking-widest">{c.code}</p>
                             </div>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => copyCode(c.code)}
-                              className="text-slate-400 hover:text-white"
+                              className="text-muted-foreground hover:text-foreground"
                             >
                               {copiedCode === c.code ? <CheckCircle2 className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}
                             </Button>

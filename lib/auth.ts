@@ -1,6 +1,7 @@
 "use server"
 
 import { cookies, headers } from "next/headers"
+import { NextResponse } from "next/server"
 import crypto from "crypto"
 
 const ADMIN_ACCESS_ENABLED = true
@@ -145,8 +146,6 @@ export async function requireAuth() {
 export async function requireAdminApi() {
   const ok = await isAuthenticated()
   if (!ok) {
-    // dynamic import to avoid pulling NextResponse into server-action contexts
-    const { NextResponse } = await import("next/server")
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
   return null

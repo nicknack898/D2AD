@@ -16,9 +16,9 @@ export default function NotFound() {
           height={120}
           className="mx-auto mb-8 opacity-80"
         />
-        <h1 className="text-6xl font-bebas text-white mb-4">404</h1>
-        <h2 className="text-2xl font-bebas text-white mb-4">PAGE NOT FOUND</h2>
-        <p className="text-white/80 mb-8 max-w-md mx-auto">
+        <h1 className="text-6xl font-bebas text-foreground mb-4">404</h1>
+        <h2 className="text-2xl font-bebas text-foreground mb-4">PAGE NOT FOUND</h2>
+        <p className="text-foreground/80 mb-8 max-w-md mx-auto">
           The page you're looking for doesn't exist. Head back to our community hub or join our Discord!
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">

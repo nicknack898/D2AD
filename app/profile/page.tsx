@@ -69,7 +69,7 @@ export default function ProfilePage() {
 
   if (authLoading || isLoading || profileCheckLoading) {
     return (
-      <div className="flex min-h-[calc(100vh-64px)] items-center justify-center bg-zinc-950">
+      <div className="flex min-h-[calc(100vh-64px)] items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-duck-orange" />
       </div>
     )
@@ -77,10 +77,10 @@ export default function ProfilePage() {
 
   if (!profile) {
     return (
-      <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center bg-zinc-950 px-4">
+      <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center bg-background px-4">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Profile Not Found</h1>
-          <p className="text-zinc-400 mb-6">We couldn't find your player profile.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-4">Profile Not Found</h1>
+          <p className="text-muted-foreground mb-6">We couldn't find your player profile.</p>
           <Button
             onClick={() => router.push("/profile/complete")}
             className="bg-duck-orange hover:bg-duck-orange/90 text-white"
@@ -93,18 +93,18 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-64px)] flex-col bg-zinc-950 px-4 py-12">
+    <div className="flex min-h-[calc(100vh-64px)] flex-col bg-background px-4 py-12">
       <div className="container mx-auto max-w-4xl">
-        <Card className="border-zinc-800 bg-zinc-900 text-white shadow-xl">
+        <Card className="border-border bg-card text-card-foreground shadow-xl">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="font-bebas text-3xl">PLAYER PROFILE</CardTitle>
-              <CardDescription className="text-zinc-400">Your player profile information</CardDescription>
+              <CardDescription className="text-muted-foreground">Your player profile information</CardDescription>
             </div>
             <Button
               variant="outline"
               size="sm"
-              className="bg-transparent border-zinc-700 text-white hover:bg-zinc-800"
+              className="bg-transparent border-border text-foreground hover:bg-muted"
               onClick={() => router.push("/profile/complete")}
             >
               <Edit className="h-4 w-4 mr-2" />
@@ -113,22 +113,22 @@ export default function ProfilePage() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="profile" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-zinc-800">
+              <TabsList className="grid w-full grid-cols-3 bg-muted">
                 <TabsTrigger
                   value="profile"
-                  className="data-[state=active]:bg-duck-orange data-[state=active]:text-white"
+                  className="data-[state=active]:bg-duck-orange data-[state=active]:text-foreground"
                 >
                   Profile
                 </TabsTrigger>
                 <TabsTrigger
                   value="games"
-                  className="data-[state=active]:bg-duck-orange data-[state=active]:text-white"
+                  className="data-[state=active]:bg-duck-orange data-[state=active]:text-foreground"
                 >
                   My Games
                 </TabsTrigger>
                 <TabsTrigger
                   value="stats"
-                  className="data-[state=active]:bg-duck-orange data-[state=active]:text-white"
+                  className="data-[state=active]:bg-duck-orange data-[state=active]:text-foreground"
                 >
                   Stats
                 </TabsTrigger>
@@ -141,20 +141,20 @@ export default function ProfilePage() {
                       <h3 className="text-lg font-semibold text-duck-orange">Personal Information</h3>
                       <div className="mt-2 space-y-2">
                         <div>
-                          <span className="text-zinc-400">Name:</span>
-                          <span className="ml-2 text-white">{profile.name}</span>
+                          <span className="text-muted-foreground">Name:</span>
+                          <span className="ml-2 text-foreground">{profile.name}</span>
                         </div>
                         <div>
-                          <span className="text-zinc-400">Email:</span>
-                          <span className="ml-2 text-white">{profile.email}</span>
+                          <span className="text-muted-foreground">Email:</span>
+                          <span className="ml-2 text-foreground">{profile.email}</span>
                         </div>
                         <div>
-                          <span className="text-zinc-400">Phone:</span>
-                          <span className="ml-2 text-white">{profile.phone}</span>
+                          <span className="text-muted-foreground">Phone:</span>
+                          <span className="ml-2 text-foreground">{profile.phone}</span>
                         </div>
                         <div>
-                          <span className="text-zinc-400">Area:</span>
-                          <span className="ml-2 text-white">
+                          <span className="text-muted-foreground">Area:</span>
+                          <span className="ml-2 text-foreground">
                             {profile.area === "Other" ? profile.area_other : profile.area}
                           </span>
                         </div>
@@ -166,7 +166,7 @@ export default function ProfilePage() {
                       <div className="mt-2">
                         <Badge
                           variant="outline"
-                          className="bg-zinc-800 text-white border-duck-orange font-normal text-sm"
+                          className="bg-muted text-foreground border-duck-orange font-normal text-sm"
                         >
                           {skillLevelLabels[profile.skill_level] || profile.skill_level}
                         </Badge>
@@ -185,7 +185,7 @@ export default function ProfilePage() {
                           <Badge
                             key={day}
                             variant="outline"
-                            className="bg-zinc-800 text-white border-zinc-700 font-normal"
+                            className="bg-muted text-foreground border-border font-normal"
                           >
                             {day}
                           </Badge>
@@ -203,7 +203,7 @@ export default function ProfilePage() {
                           <Badge
                             key={time}
                             variant="outline"
-                            className="bg-zinc-800 text-white border-zinc-700 font-normal"
+                            className="bg-muted text-foreground border-border font-normal"
                           >
                             {time}
                           </Badge>
@@ -214,7 +214,7 @@ export default function ProfilePage() {
                     <div>
                       <h3 className="text-lg font-semibold text-duck-orange">Games Played</h3>
                       <div className="mt-2">
-                        <span className="text-2xl font-bold text-white">{profile.games_played || 0}</span>
+                        <span className="text-2xl font-bold text-foreground">{profile.games_played || 0}</span>
                       </div>
                     </div>
                   </div>
@@ -222,8 +222,8 @@ export default function ProfilePage() {
               </TabsContent>
 
               <TabsContent value="games" className="space-y-4 mt-4">
-                <div className="rounded-md bg-zinc-800 p-6 text-center">
-                  <p className="text-zinc-400 mb-4">
+                <div className="bg-muted p-6 text-center">
+                  <p className="text-muted-foreground mb-4">
                     {profile.games_played
                       ? "Your upcoming and past games will appear here."
                       : "You haven't played any games yet."}
@@ -235,8 +235,8 @@ export default function ProfilePage() {
               </TabsContent>
 
               <TabsContent value="stats" className="space-y-4 mt-4">
-                <div className="rounded-md bg-zinc-800 p-6 text-center">
-                  <p className="text-zinc-400 mb-4">
+                <div className="bg-muted p-6 text-center">
+                  <p className="text-muted-foreground mb-4">
                     {profile.games_played
                       ? "Your game statistics will appear here."
                       : "Play some games to see your statistics here."}

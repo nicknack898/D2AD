@@ -100,9 +100,9 @@ export default function PlayersPage() {
         </CardHeader>
         <CardContent>
           <div className="text-center py-12">
-            <Users className="mx-auto h-16 w-16 text-gray-300 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">No Players Registered Yet</h3>
-            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+            <Users className="mx-auto h-16 w-16 text-foreground/80 mb-4" />
+            <h3 className="text-xl font-semibold text-muted-foreground mb-2">No Players Registered Yet</h3>
+            <p className="text-muted-foreground/60 mb-6 max-w-md mx-auto">
               Players will automatically appear here when teams register through the main registration form.
             </p>
 
