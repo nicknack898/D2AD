@@ -1,11 +1,10 @@
 import { redirect } from "next/navigation"
-import { cookies } from "next/headers"
+import { verifyAdminSessionCookie } from "@/lib/auth"
 
 export default async function AdminIndex() {
-  const cookieStore = cookies()
-  const isAuthed = cookieStore.get("admin_access")?.value === "1"
+  const session = await verifyAdminSessionCookie()
 
-  if (!isAuthed) {
+  if (!session.valid || session.payload?.role !== "admin") {
     redirect("/admin/access")
   }
 

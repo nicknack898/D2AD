@@ -1,22 +1,33 @@
-"use server"
-
 import { cookies, headers } from "next/headers"
 import { NextResponse } from "next/server"
 import crypto from "crypto"
 
 const ADMIN_ACCESS_ENABLED = true
-
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@abilitydraft.com"
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "8800"
-
-// Session signing secret for cookie integrity
-const SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || "change-me-session-secret"
 const SESSION_COOKIE = "admin-session"
 const SESSION_MAX_AGE_SEC = 60 * 60 * 2 // 2 hours
+
+function getRequiredEnv(name: "ADMIN_EMAIL" | "ADMIN_PASSWORD" | "ADMIN_SESSION_SECRET") {
+  const value = process.env[name]
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`)
+  }
+  return value
+}
+
+const ADMIN_EMAIL = getRequiredEnv("ADMIN_EMAIL")
+const ADMIN_PASSWORD = getRequiredEnv("ADMIN_PASSWORD")
+const SESSION_SECRET = getRequiredEnv("ADMIN_SESSION_SECRET")
 
 type LoginResult = {
   success: boolean
   message: string
+}
+
+type AdminSessionPayload = {
+  iat: number
+  exp: number
+  sub: string
+  role: "admin"
 }
 
 // Simple in-memory rate limit: { key -> { count, lastAttempt } }
@@ -40,25 +51,53 @@ function base64Url(input: Buffer | string) {
     .replace(/\//g, "_")
 }
 
-function sign(payload: object) {
+function sign(payload: AdminSessionPayload) {
   const body = base64Url(JSON.stringify(payload))
   const sig = base64Url(crypto.createHmac("sha256", SESSION_SECRET).update(body).digest())
   return `${body}.${sig}`
 }
 
-function verify(token: string): { valid: boolean; payload?: any } {
-  const [body, sig] = token.split(".")
-  if (!body || !sig) return { valid: false }
-  const expected = base64Url(crypto.createHmac("sha256", SESSION_SECRET).update(body).digest())
-  if (expected !== sig) return { valid: false }
+function parsePayload(body: string): AdminSessionPayload | null {
   try {
     const payload = JSON.parse(Buffer.from(body.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8"))
-    const now = Math.floor(Date.now() / 1000)
-    if (typeof payload.exp === "number" && now > payload.exp) return { valid: false }
-    return { valid: true, payload }
+    if (
+      typeof payload?.iat !== "number" ||
+      typeof payload?.exp !== "number" ||
+      payload?.sub !== "admin" ||
+      payload?.role !== "admin"
+    ) {
+      return null
+    }
+
+    return payload as AdminSessionPayload
   } catch {
-    return { valid: false }
+    return null
   }
+}
+
+export function verifyAdminSessionToken(token: string): { valid: boolean; payload?: AdminSessionPayload } {
+  const [body, sig] = token.split(".")
+  if (!body || !sig) return { valid: false }
+
+  const expected = base64Url(crypto.createHmac("sha256", SESSION_SECRET).update(body).digest())
+  if (expected !== sig) return { valid: false }
+
+  const payload = parsePayload(body)
+  if (!payload) return { valid: false }
+
+  const now = Math.floor(Date.now() / 1000)
+  if (now > payload.exp) return { valid: false }
+
+  return { valid: true, payload }
+}
+
+export async function verifyAdminSessionCookie() {
+  if (!ADMIN_ACCESS_ENABLED) return { valid: false as const }
+
+  const token = cookies().get(SESSION_COOKIE)?.value
+  if (!token) return { valid: false as const }
+
+  return verifyAdminSessionToken(token)
 }
 
 export async function login(email: string, password: string): Promise<LoginResult> {
@@ -96,7 +135,7 @@ export async function login(email: string, password: string): Promise<LoginResul
   if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
     // Issue signed session token
     const nowSec = Math.floor(Date.now() / 1000)
-    const token = sign({ iat: nowSec, exp: nowSec + SESSION_MAX_AGE_SEC, sub: "admin" })
+    const token = sign({ iat: nowSec, exp: nowSec + SESSION_MAX_AGE_SEC, sub: "admin", role: "admin" })
 
     cookies().set(SESSION_COOKIE, token, {
       httpOnly: true,
@@ -118,10 +157,7 @@ export async function logout() {
 }
 
 export async function isAuthenticated() {
-  if (!ADMIN_ACCESS_ENABLED) return false
-  const token = cookies().get(SESSION_COOKIE)?.value
-  if (!token) return false
-  const { valid } = verify(token)
+  const { valid } = await verifyAdminSessionCookie()
   return valid
 }
 
@@ -144,9 +180,11 @@ export async function requireAuth() {
  *   if (denied) return denied
  */
 export async function requireAdminApi() {
-  const ok = await isAuthenticated()
-  if (!ok) {
+  const session = await verifyAdminSessionCookie()
+
+  if (!session.valid || session.payload?.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
+
   return null
 }

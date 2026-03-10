@@ -1,13 +1,12 @@
 import type { ReactNode } from "react"
-import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import AdminSidebar from "@/components/admin/admin-sidebar"
+import { verifyAdminSessionCookie } from "@/lib/auth"
 
 export default async function AdminAuthLayout({ children }: { children: ReactNode }) {
-  const cookieStore = cookies()
-  const isAuthed = cookieStore.get("admin_access")?.value === "1"
+  const session = await verifyAdminSessionCookie()
 
-  if (!isAuthed) {
+  if (!session.valid || session.payload?.role !== "admin") {
     redirect("/admin/access")
   }
 
