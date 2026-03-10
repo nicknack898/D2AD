@@ -21,10 +21,11 @@ export default function CreateGamePage() {
   const totalSpots = reservedSpots.beginners + reservedSpots.women + reservedSpots.general
 
   // Handle spot reservation changes
-  const handleSpotChange = (type, value) => {
+  const handleSpotChange = (type: "beginners" | "women" | "general", value: number | string) => {
+    const normalized = typeof value === "number" ? value : Number.parseInt(value)
     setReservedSpots((prev) => ({
       ...prev,
-      [type]: Number.parseInt(value),
+      [type]: Number.isNaN(normalized) ? 0 : normalized,
     }))
   }
 

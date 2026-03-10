@@ -1,10 +1,20 @@
 "use server"
 
 import { createClient } from "@/lib/supabase-server"
-import { profileSchema } from "@/lib/validation"
 import { revalidatePath } from "next/cache"
 
-export async function updatePlayerProfile(formData: FormData) {
+type ProfileUpdateInput = {
+  name: string
+  email: string
+  phone: string
+  area: string
+  areaOther: string
+  timePreferences: string[]
+  dayPreferences: string[]
+  skillLevel: string
+}
+
+export async function updatePlayerProfile(formData: ProfileUpdateInput) {
   try {
     const supabase = await createClient()
 
@@ -17,24 +27,18 @@ export async function updatePlayerProfile(formData: FormData) {
       return { success: false, message: "Authentication required" }
     }
 
-    // Parse and validate form data
-    const rawData = {
-      full_name: formData.get("full_name") as string,
-      phone: formData.get("phone") as string,
-      emergency_contact: formData.get("emergency_contact") as string,
-      emergency_phone: formData.get("emergency_phone") as string,
-      skill_level: formData.get("skill_level") as string,
-      preferred_position: formData.get("preferred_position") as string,
-      medical_conditions: formData.get("medical_conditions") as string,
-      dietary_restrictions: formData.get("dietary_restrictions") as string,
-    }
-
-    const validatedData = profileSchema.parse(rawData)
-
     // Update profile in database
     const { error } = await supabase.from("profiles").upsert({
       id: user.id,
-      ...validatedData,
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      area: formData.area,
+      area_other: formData.areaOther || null,
+      time_preferences: formData.timePreferences,
+      day_preferences: formData.dayPreferences,
+      skill_level: formData.skillLevel,
+      profile_completed: true,
       updated_at: new Date().toISOString(),
     })
 

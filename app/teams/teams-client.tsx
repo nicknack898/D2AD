@@ -137,7 +137,7 @@ export default function TeamsClient() {
             time: game.time,
             court: game.court,
             opponent: game.team1 === activeGamesPopup ? game.team2 : game.team1,
-            group: game.group || game.stage,
+            group: game.group || game.stage || "TBD",
             day: game.day,
           }))}
           onClose={() => setActiveGamesPopup(null)}
