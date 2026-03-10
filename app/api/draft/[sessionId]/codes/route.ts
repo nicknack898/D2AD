@@ -17,6 +17,43 @@ function createCode() {
   return crypto.randomBytes(4).toString("hex").toUpperCase()
 }
 
+type CodeAction = "generate_all" | "regenerate" | "revoke" | "delete"
+
+type CaptainCodesRequestBody = {
+  _action: CodeAction
+  seat_label?: string
+}
+
+type SeatRow = {
+  id: string
+  seat_label: string
+  captain_name?: string
+}
+
+type CodeStatusRow = {
+  seat_id: string
+  used: boolean | null
+}
+
+function isCaptainCodesRequestBody(value: unknown): value is CaptainCodesRequestBody {
+  if (!value || typeof value !== "object") return false
+
+  const candidate = value as Record<string, unknown>
+  const allowedActions: CodeAction[] = ["generate_all", "regenerate", "revoke", "delete"]
+  const action = candidate._action
+  const seatLabel = candidate.seat_label
+
+  if (typeof action !== "string" || !allowedActions.includes(action as CodeAction)) {
+    return false
+  }
+
+  if (seatLabel !== undefined && typeof seatLabel !== "string") {
+    return false
+  }
+
+  return true
+}
+
 /**
  * POST /api/draft/[sessionId]/codes
  * Admin actions: generate, regenerate, revoke, delete a captain code.
@@ -34,8 +71,8 @@ export async function POST(
       return NextResponse.json({ error: "Invalid session ID" }, { status: 400 })
     }
 
-    const json = await req.json().catch(() => null)
-    if (!json || !json._action) {
+    const json: unknown = await req.json().catch(() => null)
+    if (!isCaptainCodesRequestBody(json)) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 })
     }
 
@@ -54,21 +91,25 @@ export async function POST(
         return NextResponse.json({ error: "No seats found for this session" }, { status: 404 })
       }
 
+      const normalizedSeats = (seats ?? []) as SeatRow[]
+      const seatIds = normalizedSeats.map((s) => s.id)
+      const { data: existingCodes, error: existingErr } = await supabase
+        .from("captain_codes")
+        .select("seat_id")
+        .in("seat_id", seatIds)
+
+      if (existingErr) throw existingErr
+
+      const existingSeatIds = new Set((existingCodes ?? []).map((code) => code.seat_id))
+
       const generatedCodes: Array<{ seat_label: string; code: string }> = []
-      for (const seat of seats) {
-        const { data: existingCode, error: existingErr } = await supabase
-          .from("captain_codes")
-          .select("id")
-          .eq("seat_id", seat.id)
-          .maybeSingle()
+      for (const s of normalizedSeats) {
+        if (existingSeatIds.has(s.id)) continue
 
-        if (existingErr) throw existingErr
-        if (existingCode) continue
-
-        const newCode = createCode()
+        const generatedCode = createCode()
         const insertPayload = {
-          seat_id: seat.id,
-          code_hash: hashCode(newCode),
+          seat_id: s.id,
+          code_hash: hashCode(generatedCode),
           used: false,
           used_at: null,
           expires_at: expiresAt(),
@@ -82,18 +123,19 @@ export async function POST(
           console.error("captain_codes insert failed:", insertErr.message)
           return NextResponse.json(
             {
-              error: `Failed to generate code for ${seat.seat_label}: ${insertErr.message}`,
+              error: `Failed to generate code for ${s.seat_label}: ${insertErr.message}`,
               details: insertErr.details,
             },
             { status: 500 },
           )
         }
 
-        generatedCodes.push({ seat_label: seat.seat_label, code: newCode })
+        generatedCodes.push({ seat_label: s.seat_label, code: generatedCode })
       }
 
       return NextResponse.json({
         success: true,
+        action: "generate_all",
         generated: generatedCodes.length,
         generated_codes: generatedCodes,
         message: `Generated ${generatedCodes.length} new code(s)`,
@@ -148,7 +190,12 @@ export async function POST(
         )
       }
 
-      return NextResponse.json({ success: true, new_code: newCode })
+      return NextResponse.json({
+        success: true,
+        action: "regenerate",
+        seat_label: seat.seat_label,
+        new_code: newCode,
+      })
     }
 
     if (_action === "revoke") {
@@ -159,7 +206,12 @@ export async function POST(
         .eq("used", false)
 
       if (updateErr) throw updateErr
-      return NextResponse.json({ success: true, message: "Code revoked" })
+      return NextResponse.json({
+        success: true,
+        action: "revoke",
+        seat_label: seat.seat_label,
+        message: "Code revoked",
+      })
     }
 
     if (_action === "delete") {
@@ -169,7 +221,12 @@ export async function POST(
         .eq("seat_id", seat.id)
 
       if (deleteErr) throw deleteErr
-      return NextResponse.json({ success: true, message: "Code deleted" })
+      return NextResponse.json({
+        success: true,
+        action: "delete",
+        seat_label: seat.seat_label,
+        message: "Code deleted",
+      })
     }
 
     return NextResponse.json({ error: "Unknown action" }, { status: 400 })
@@ -206,7 +263,8 @@ export async function GET(
 
     if (sErr) throw sErr
 
-    const seatIds = (seats ?? []).map((s) => s.id)
+    const normalizedSeats = (seats ?? []) as SeatRow[]
+    const seatIds = normalizedSeats.map((s) => s.id)
     let codeBySeatId = new Map<string, { hasCode: boolean; used: boolean }>()
 
     if (seatIds.length > 0) {
@@ -217,10 +275,13 @@ export async function GET(
 
       if (cErr) throw cErr
 
-      codeBySeatId = new Map((codes ?? []).map((c) => [c.seat_id, { hasCode: true, used: !!c.used }]))
+      const normalizedCodes = (codes ?? []) as CodeStatusRow[]
+      codeBySeatId = new Map(
+        normalizedCodes.map((c) => [c.seat_id, { hasCode: true, used: c.used === true }]),
+      )
     }
 
-    const seatCodes = (seats ?? []).map((s) => {
+    const seatCodes = normalizedSeats.map((s) => {
       const codeRecord = codeBySeatId.get(s.id)
       return {
         seat_id: s.id,
