@@ -6,17 +6,31 @@ const ADMIN_ACCESS_ENABLED = true
 const SESSION_COOKIE = "admin-session"
 const SESSION_MAX_AGE_SEC = 60 * 60 * 2 // 2 hours
 
-function getRequiredEnv(name: "ADMIN_EMAIL" | "ADMIN_PASSWORD" | "ADMIN_SESSION_SECRET") {
+type RequiredAdminEnv = "ADMIN_EMAIL" | "ADMIN_PASSWORD" | "ADMIN_SESSION_SECRET"
+
+function getRequiredEnv(name: RequiredAdminEnv) {
   const value = process.env[name]
   if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`)
+    return null
   }
   return value
 }
 
-const ADMIN_EMAIL = getRequiredEnv("ADMIN_EMAIL")
-const ADMIN_PASSWORD = getRequiredEnv("ADMIN_PASSWORD")
-const SESSION_SECRET = getRequiredEnv("ADMIN_SESSION_SECRET")
+function getAdminConfig() {
+  const email = getRequiredEnv("ADMIN_EMAIL")
+  const password = getRequiredEnv("ADMIN_PASSWORD")
+  const sessionSecret = getRequiredEnv("ADMIN_SESSION_SECRET")
+
+  if (!email || !password || !sessionSecret) {
+    return null
+  }
+
+  return {
+    email,
+    password,
+    sessionSecret,
+  }
+}
 
 type LoginResult = {
   success: boolean
@@ -52,8 +66,11 @@ function base64Url(input: Buffer | string) {
 }
 
 function sign(payload: AdminSessionPayload) {
+  const config = getAdminConfig()
+  if (!config) return null
+
   const body = base64Url(JSON.stringify(payload))
-  const sig = base64Url(crypto.createHmac("sha256", SESSION_SECRET).update(body).digest())
+  const sig = base64Url(crypto.createHmac("sha256", config.sessionSecret).update(body).digest())
   return `${body}.${sig}`
 }
 
@@ -76,10 +93,13 @@ function parsePayload(body: string): AdminSessionPayload | null {
 }
 
 export function verifyAdminSessionToken(token: string): { valid: boolean; payload?: AdminSessionPayload } {
+  const config = getAdminConfig()
+  if (!config) return { valid: false }
+
   const [body, sig] = token.split(".")
   if (!body || !sig) return { valid: false }
 
-  const expected = base64Url(crypto.createHmac("sha256", SESSION_SECRET).update(body).digest())
+  const expected = base64Url(crypto.createHmac("sha256", config.sessionSecret).update(body).digest())
   if (expected !== sig) return { valid: false }
 
   const payload = parsePayload(body)
@@ -103,6 +123,11 @@ export async function verifyAdminSessionCookie() {
 export async function login(email: string, password: string): Promise<LoginResult> {
   if (!ADMIN_ACCESS_ENABLED) {
     return { success: false, message: "Admin access is currently disabled." }
+  }
+
+  const config = getAdminConfig()
+  if (!config) {
+    return { success: false, message: "Admin auth is not configured on this environment." }
   }
 
   if (!email || !password) {
@@ -132,10 +157,13 @@ export async function login(email: string, password: string): Promise<LoginResul
     attempts.set(key, { count: 1, lastAttempt: now })
   }
 
-  if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+  if (email === config.email && password === config.password) {
     // Issue signed session token
     const nowSec = Math.floor(Date.now() / 1000)
     const token = sign({ iat: nowSec, exp: nowSec + SESSION_MAX_AGE_SEC, sub: "admin", role: "admin" })
+    if (!token) {
+      return { success: false, message: "Admin auth is not configured on this environment." }
+    }
 
     cookies().set(SESSION_COOKIE, token, {
       httpOnly: true,
