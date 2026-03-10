@@ -74,24 +74,13 @@ export async function POST(
     // Hash the submitted code and look up by hash (timing-safe)
     const codeHash = crypto.createHash("sha256").update(parsed.data.code).digest("hex")
 
-    let { data: codeRow, error: codeErr } = await supabase
+    const { data: codeRow, error: codeErr } = await supabase
       .from("captain_codes")
-      .select("*, captain_seats(id, seat_label, captain_name, draft_session_id)")
+      .select("id, used, expires_at, captain_seats(id, seat_label, captain_name, draft_session_id)")
       .eq("code_hash", codeHash)
       .maybeSingle()
 
     if (codeErr) throw codeErr
-
-    if (!codeRow) {
-      const legacyLookup = await supabase
-        .from("captain_codes")
-        .select("*, captain_seats(id, seat_label, captain_name, draft_session_id)")
-        .eq("code", parsed.data.code)
-        .maybeSingle()
-
-      if (legacyLookup.error) throw legacyLookup.error
-      codeRow = legacyLookup.data
-    }
 
     if (!codeRow) {
       return NextResponse.json({ error: "Invalid code" }, { status: 404 })
@@ -105,22 +94,25 @@ export async function POST(
       return NextResponse.json({ error: "This code has already been used" }, { status: 409 })
     }
 
-    // Check expiry
-    if (codeRow.expires_at && new Date(codeRow.expires_at) < new Date()) {
-      return NextResponse.json({ error: "This code has expired" }, { status: 410 })
-    }
 
-    const seat = codeRow.captain_seats
+    const seatRelation = codeRow.captain_seats
+    const seat = Array.isArray(seatRelation) ? seatRelation[0] : seatRelation
     if (!seat || seat.draft_session_id !== sessionId) {
       return NextResponse.json({ error: "Code does not belong to this draft session" }, { status: 403 })
     }
 
     // Mark code as used
-    const { error: markErr } = await supabase
+    const { data: markedRows, error: markErr } = await supabase
       .from("captain_codes")
       .update({ used: true, used_at: new Date().toISOString() })
       .eq("id", codeRow.id)
+      .eq("used", false)
+      .select("id")
+
     if (markErr) throw markErr
+    if (!markedRows || markedRows.length === 0) {
+      return NextResponse.json({ error: "This code has already been used" }, { status: 409 })
+    }
 
     // Sign JWT
     const token = await signCaptainToken({

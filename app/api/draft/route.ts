@@ -80,9 +80,9 @@ export async function POST(req: Request) {
         .from("captain_codes")
         .insert({
           seat_id: seat.id,
-          code,
           code_hash: codeHash,
           used: false,
+          used_at: null,
           expires_at: expiresAt,
         })
       if (codeErr) {

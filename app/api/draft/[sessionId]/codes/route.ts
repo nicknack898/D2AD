@@ -28,10 +28,12 @@ export async function POST(
   try {
     const denied = await requireAdminApi()
     if (denied) return denied
+
     const { sessionId } = params
     if (!UUID_RE.test(sessionId)) {
       return NextResponse.json({ error: "Invalid session ID" }, { status: 400 })
     }
+
     const json = await req.json().catch(() => null)
     if (!json || !json._action) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 })
@@ -52,29 +54,39 @@ export async function POST(
         return NextResponse.json({ error: "No seats found for this session" }, { status: 404 })
       }
 
-      let generated = 0
-      for (const s of seats) {
-        const existingCodes = (s as any).captain_codes ?? []
-        if (existingCodes.length === 0) {
-          const newCode = crypto.randomBytes(4).toString("hex").toUpperCase()
-          const insertPayload = {
-            seat_id: s.id,
-            code: newCode,
-            code_hash: hashCode(newCode),
-            used: false,
-            expires_at: expiresAt(),
-          }
-          const { error: insertErr } = await supabase
-            .from("captain_codes")
-            .insert(insertPayload)
-          if (insertErr) {
-            console.error("captain_codes insert failed:", insertErr.message)
-            return NextResponse.json({
-              error: `Failed to generate code for ${s.seat_label}: ${insertErr.message}`,
+      const generatedCodes: Array<{ seat_label: string; code: string }> = []
+      for (const seat of seats) {
+        const { data: existingCode, error: existingErr } = await supabase
+          .from("captain_codes")
+          .select("id")
+          .eq("seat_id", seat.id)
+          .maybeSingle()
+
+        if (existingErr) throw existingErr
+        if (existingCode) continue
+
+        const newCode = createCode()
+        const insertPayload = {
+          seat_id: seat.id,
+          code_hash: hashCode(newCode),
+          used: false,
+          used_at: null,
+          expires_at: expiresAt(),
+        }
+
+        const { error: insertErr } = await supabase
+          .from("captain_codes")
+          .insert(insertPayload)
+
+        if (insertErr) {
+          console.error("captain_codes insert failed:", insertErr.message)
+          return NextResponse.json(
+            {
+              error: `Failed to generate code for ${seat.seat_label}: ${insertErr.message}`,
               details: insertErr.details,
-            }, { status: 500 })
-          }
-          generated++
+            },
+            { status: 500 },
+          )
         }
 
         generatedCodes.push({ seat_label: seat.seat_label, code: newCode })
@@ -107,14 +119,15 @@ export async function POST(
     if (_action === "regenerate") {
       const newCode = createCode()
 
-      await supabase
+      const { error: deleteErr } = await supabase
         .from("captain_codes")
         .delete()
         .eq("seat_id", seat.id)
 
+      if (deleteErr) throw deleteErr
+
       const regenPayload = {
         seat_id: seat.id,
-        code: newCode,
         code_hash: hashCode(newCode),
         used: false,
         used_at: null,
@@ -126,10 +139,13 @@ export async function POST(
 
       if (insertErr) {
         console.error("regenerate insert failed:", insertErr.message)
-        return NextResponse.json({
-          error: `Failed to regenerate code: ${insertErr.message}`,
-          details: insertErr.details,
-        }, { status: 500 })
+        return NextResponse.json(
+          {
+            error: `Failed to regenerate code: ${insertErr.message}`,
+            details: insertErr.details,
+          },
+          { status: 500 },
+        )
       }
 
       return NextResponse.json({ success: true, new_code: newCode })
@@ -165,7 +181,7 @@ export async function POST(
 
 /**
  * GET /api/draft/[sessionId]/codes
- * Admin-only: returns captain codes for a given draft session.
+ * Admin-only: returns captain code status for a given draft session.
  */
 export async function GET(
   _req: Request,
@@ -174,13 +190,14 @@ export async function GET(
   try {
     const denied = await requireAdminApi()
     if (denied) return denied
+
     const { sessionId } = params
     if (!UUID_RE.test(sessionId)) {
       return NextResponse.json({ error: "Invalid session ID" }, { status: 400 })
     }
+
     const supabase = await createClient()
 
-    // Query seats first, then join codes (reliable approach)
     const { data: seats, error: sErr } = await supabase
       .from("captain_seats")
       .select("id, seat_label, captain_name")
@@ -190,19 +207,17 @@ export async function GET(
     if (sErr) throw sErr
 
     const seatIds = (seats ?? []).map((s) => s.id)
-    let codeBySeatId = new Map<string, { code: string | null; used: boolean }>()
+    let codeBySeatId = new Map<string, { hasCode: boolean; used: boolean }>()
 
     if (seatIds.length > 0) {
       const { data: codes, error: cErr } = await supabase
         .from("captain_codes")
-        .select("seat_id, code, used")
+        .select("seat_id, used")
         .in("seat_id", seatIds)
 
       if (cErr) throw cErr
 
-      codeBySeatId = new Map(
-        (codes ?? []).map((c) => [c.seat_id, { code: c.code ? normalizeCode(c.code) : null, used: !!c.used }]),
-      )
+      codeBySeatId = new Map((codes ?? []).map((c) => [c.seat_id, { hasCode: true, used: !!c.used }]))
     }
 
     const seatCodes = (seats ?? []).map((s) => {
@@ -211,9 +226,9 @@ export async function GET(
         seat_id: s.id,
         seat_label: s.seat_label,
         captain_name: s.captain_name,
-        code: codeRecord?.code ?? null,
+        code: null,
         used: codeRecord?.used ?? false,
-        has_code: !!codeRecord?.code,
+        has_code: codeRecord?.hasCode ?? false,
       }
     })
 
