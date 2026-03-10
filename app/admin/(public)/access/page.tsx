@@ -35,8 +35,6 @@ function SubmitButton() {
 export default function AdminAccessPage() {
   const router = useRouter()
   const [state, setState] = useState<ActionState>({})
-  const [isPending, setIsPending] = useState(false)
-
   useEffect(() => {
     if (state.success) {
       router.push("/admin")
@@ -44,10 +42,8 @@ export default function AdminAccessPage() {
   }, [state.success, router])
 
   async function handleSubmit(formData: FormData) {
-    setIsPending(true)
     const result = await accessAction(undefined, formData)
     setState(result)
-    setIsPending(false)
   }
 
   return (
@@ -67,10 +63,26 @@ export default function AdminAccessPage() {
               <h1 className="font-bebas text-2xl tracking-wide text-foreground">Admin Access</h1>
             </div>
             <p className="font-mono text-[10px] tracking-wider uppercase text-muted-foreground">
-              Enter the admin password to continue
+              Enter your admin credentials to continue
             </p>
           </div>
           <form action={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="email" className="mb-1.5 block font-mono text-xs tracking-wider uppercase text-muted-foreground">
+                Email
+              </label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="username"
+                required
+                className="bg-background border-border text-foreground placeholder:text-muted-foreground/40 rounded-none h-11"
+                placeholder="admin@example.com"
+                autoFocus
+              />
+            </div>
+
             <div>
               <label htmlFor="password" className="mb-1.5 block font-mono text-xs tracking-wider uppercase text-muted-foreground">
                 Password
@@ -83,7 +95,6 @@ export default function AdminAccessPage() {
                 required
                 className="bg-background border-border text-foreground placeholder:text-muted-foreground/40 rounded-none h-11"
                 placeholder="Enter admin password"
-                autoFocus
                 aria-invalid={!!state?.error}
                 aria-describedby={state?.error ? "password-error" : undefined}
               />
