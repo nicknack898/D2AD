@@ -21,6 +21,7 @@ export interface DraftSeat {
 export interface DraftLotPlayer {
   display_name: string
   discord_id: string | null
+  rating: number | null
 }
 
 export interface DraftLot {
@@ -28,6 +29,8 @@ export interface DraftLot {
   draft_session_id: string
   player_id: string
   lot_order: number
+  phase: "phase1" | "resale" | "phase2"
+  min_bid: number
   status: "upcoming" | "active" | "sold" | "unsold"
   winning_seat_id: string | null
   winning_price: number | null
@@ -43,6 +46,16 @@ export interface DraftState {
     phase: "lobby" | "picking" | "paused" | "finished"
     current_lot_id: string | null
     seconds_per_lot: number
+  }
+  rules: {
+    phase1: { selection: { mode: "top_n" | "percentage"; top_n?: number; percentage?: number }; min_bid_pct: number }
+    resale: { enabled: boolean; max_lots: number; min_bid_pct_of_winning: number }
+    phase2: { min_bid: number }
+    rating: { baseline: number; base_value: number; points_per_rating: number; round_to: number }
+  }
+  phase_metadata: {
+    session_phase: string
+    resale_enabled: boolean
   }
   lots: DraftLot[]
   seats: DraftSeat[]

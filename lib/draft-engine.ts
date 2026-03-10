@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase-server"
+import { parseDraftConfig } from "@/lib/draft-config"
+import type { DraftConfigInput } from "@/lib/validation"
 
 /**
  * Draft Engine – server-side helpers for advancing the auction draft.
@@ -15,6 +17,7 @@ export interface DraftSession {
   phase: DraftPhase
   current_lot_id: string | null
   seconds_per_lot: number
+  config_json: DraftConfigInput
   created_at: string
   updated_at: string
 }
@@ -24,6 +27,8 @@ export interface Lot {
   draft_session_id: string
   player_id: string
   lot_order: number
+  phase: "phase1" | "resale" | "phase2"
+  min_bid: number
   status: "upcoming" | "active" | "sold" | "unsold"
   winning_seat_id: string | null
   winning_price: number | null
@@ -64,7 +69,11 @@ export async function getDraftSession(sessionId: string): Promise<DraftSession |
     .eq("id", sessionId)
     .maybeSingle()
   if (error) throw error
-  return data
+  if (!data) return null
+  return {
+    ...data,
+    config_json: parseDraftConfig(data.config_json),
+  }
 }
 
 export async function getDraftSessionByEvent(eventId: string): Promise<DraftSession | null> {
@@ -77,7 +86,11 @@ export async function getDraftSessionByEvent(eventId: string): Promise<DraftSess
     .limit(1)
     .maybeSingle()
   if (error) throw error
-  return data
+  if (!data) return null
+  return {
+    ...data,
+    config_json: parseDraftConfig(data.config_json),
+  }
 }
 
 export async function setPhase(sessionId: string, phase: DraftPhase) {

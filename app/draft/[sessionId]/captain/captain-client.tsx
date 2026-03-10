@@ -284,7 +284,7 @@ function CaptainDashboard({
         {(phase === "picking" || phase === "paused") && activeLot && (
           <div className={`rounded-none border-2 p-6 ${phase === "paused" ? "border-yellow-500/50 bg-yellow-500/5" : "border-blue-500/50 bg-blue-500/5"}`}>
             <p className="text-xs text-muted-foreground/60 uppercase tracking-wider mb-1">
-              Lot #{activeLot.lot_order} {phase === "paused" && "-- PAUSED"}
+              Lot #{activeLot.lot_order} • {activeLot.phase} • Min Bid {activeLot.min_bid} {phase === "paused" && "-- PAUSED"}
             </p>
             <h2 className="font-bebas text-3xl tracking-wide text-foreground mb-4">
               {activeLot.player.display_name}
@@ -294,12 +294,12 @@ function CaptainDashboard({
               <div className="flex flex-col sm:flex-row gap-3">
                 <Input
                   type="number"
-                  placeholder="Enter bid amount"
+                  placeholder={`Enter bid (min ${activeLot.min_bid})`}
                   value={bidAmount}
                   onChange={(e) => setBidAmount(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleBid()}
                   className="bg-background border-border font-mono text-lg flex-1"
-                  min={1}
+                  min={Math.max(1, activeLot.min_bid)}
                   max={mySeat?.balance ?? 0}
                 />
                 <Button

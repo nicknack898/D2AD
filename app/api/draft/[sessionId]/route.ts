@@ -89,26 +89,31 @@ export async function GET(
     // Enrich lots with player display names
     const supabase = await createClient()
     const playerIds = lots.map((l) => l.player_id).filter(Boolean)
-    let playerMap: Record<string, { display_name: string; discord_id: string | null }> = {}
+    let playerMap: Record<string, { display_name: string; discord_id: string | null; rating: number | null }> = {}
     if (playerIds.length > 0) {
       const { data: players } = await supabase
         .from("players")
-        .select("id, display_name, discord_id")
+        .select("id, display_name, discord_id, rating")
         .in("id", playerIds)
       if (players) {
         playerMap = Object.fromEntries(
-          players.map((p) => [p.id, { display_name: p.display_name, discord_id: p.discord_id }]),
+          players.map((p) => [p.id, { display_name: p.display_name, discord_id: p.discord_id, rating: p.rating ?? null }]),
         )
       }
     }
 
     const enrichedLots = lots.map((lot) => ({
       ...lot,
-      player: playerMap[lot.player_id] ?? { display_name: "Unknown", discord_id: null },
+      player: playerMap[lot.player_id] ?? { display_name: "Unknown", discord_id: null, rating: null },
     }))
 
     return NextResponse.json({
       session,
+      rules: session.config_json,
+      phase_metadata: {
+        session_phase: session.phase,
+        resale_enabled: session.config_json.resale.enabled,
+      },
       lots: enrichedLots,
       seats: seats.map((s) => ({
         id: s.id,
