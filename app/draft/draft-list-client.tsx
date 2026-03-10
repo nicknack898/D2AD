@@ -20,10 +20,10 @@ import useSWR from "swr"
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 const statusConfig: Record<string, { label: string; color: string; icon: typeof Clock }> = {
-  pending: { label: "STARTING SOON", color: "text-muted-foreground border-border", icon: Clock },
-  active: { label: "LIVE", color: "text-emerald-400 border-emerald-400/30", icon: Radio },
+  lobby: { label: "STARTING SOON", color: "text-muted-foreground border-border", icon: Clock },
+  picking: { label: "LIVE", color: "text-emerald-400 border-emerald-400/30", icon: Radio },
   paused: { label: "PAUSED", color: "text-muted-foreground border-border", icon: Clock },
-  completed: { label: "ENDED", color: "text-muted-foreground border-border", icon: CheckCircle2 },
+  finished: { label: "ENDED", color: "text-muted-foreground border-border", icon: CheckCircle2 },
 }
 
 export default function DraftListClient() {
@@ -36,9 +36,9 @@ export default function DraftListClient() {
   const [codeError, setCodeError] = useState<string | null>(null)
   const [codeSuccess, setCodeSuccess] = useState(false)
 
-  const liveSessions = sessions.filter((s: any) => s.status === "active" || s.status === "paused")
-  const upcomingSessions = sessions.filter((s: any) => s.status === "pending")
-  const pastSessions = sessions.filter((s: any) => s.status === "completed")
+  const liveSessions = sessions.filter((s: any) => s.phase === "picking" || s.phase === "paused")
+  const upcomingSessions = sessions.filter((s: any) => s.phase === "lobby")
+  const pastSessions = sessions.filter((s: any) => s.phase === "finished")
 
   const handleCodeRedeem = useCallback(async () => {
     if (!code.trim()) return
@@ -47,7 +47,7 @@ export default function DraftListClient() {
     setCodeSuccess(false)
 
     try {
-      const activeSessions = sessions.filter((s: any) => s.status !== "completed")
+      const activeSessions = sessions.filter((s: any) => s.phase !== "finished")
       if (activeSessions.length === 0) {
         setCodeError("No active draft sessions found")
         setCodeLoading(false)
@@ -224,9 +224,9 @@ export default function DraftListClient() {
 }
 
 function SessionRow({ session }: { session: any }) {
-  const st = statusConfig[session.status] ?? statusConfig.pending
+  const st = statusConfig[session.phase] ?? statusConfig.lobby
   const Icon = st.icon
-  const isLive = session.status === "active"
+  const isLive = session.phase === "picking"
 
   return (
     <Link
@@ -258,7 +258,7 @@ function SessionRow({ session }: { session: any }) {
         </span>
         <span className="font-mono text-[10px] text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-1">
           <Eye className="h-3 w-3" />
-          {session.status === "completed" ? "Results" : isLive ? "Watch" : "Open"}
+          {session.phase === "finished" ? "Results" : isLive ? "Watch" : "Open"}
         </span>
       </div>
     </Link>

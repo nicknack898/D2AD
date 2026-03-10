@@ -69,7 +69,7 @@ export async function POST(req: Request) {
       // Create wallet
       const { error: walErr } = await supabase
         .from("wallets")
-        .insert({ seat_id: seat.id, balance: budget_per_captain, starting_budget: budget_per_captain, remaining_budget: budget_per_captain })
+        .insert({ seat_id: seat.id, balance: budget_per_captain })
       if (walErr) throw walErr
 
       // Generate unique code

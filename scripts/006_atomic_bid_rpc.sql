@@ -20,7 +20,6 @@ DECLARE
   v_wallet    record;
   v_top_bid   numeric;
   v_bid_id    uuid;
-  v_min_bid   numeric;
 BEGIN
   -- Lock the lot row to prevent concurrent state changes
   SELECT * INTO v_lot
@@ -31,8 +30,6 @@ BEGIN
   IF v_lot IS NULL OR v_lot.status != 'active' THEN
     RAISE EXCEPTION 'LOT_NOT_ACTIVE';
   END IF;
-
-  v_min_bid := COALESCE(v_lot.min_bid, 0);
 
   -- Lock the wallet row to prevent concurrent balance changes
   SELECT * INTO v_wallet
@@ -49,12 +46,8 @@ BEGIN
     FROM bids
    WHERE lot_id = p_lot_id;
 
-  -- Bid must exceed current top bid AND meet minimum bid
+  -- Bid must exceed current top bid
   IF p_amount <= v_top_bid THEN
-    RAISE EXCEPTION 'BID_TOO_LOW';
-  END IF;
-
-  IF p_amount < v_min_bid THEN
     RAISE EXCEPTION 'BID_TOO_LOW';
   END IF;
 
