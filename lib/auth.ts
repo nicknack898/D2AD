@@ -25,8 +25,12 @@ function getAdminConfig() {
     return null
   }
 
+  if (Buffer.byteLength(sessionSecret, "utf8") < 32) {
+    return null
+  }
+
   return {
-    email,
+    email: email.trim().toLowerCase(),
     password,
     sessionSecret,
   }
