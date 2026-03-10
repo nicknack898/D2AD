@@ -58,6 +58,18 @@ export default function AdminDraftsPage() {
   const [captainCount, setCaptainCount] = useState("2")
   const [budget, setBudget] = useState("1000")
   const [secondsPerLot, setSecondsPerLot] = useState("30")
+  const [phase1Mode, setPhase1Mode] = useState<"top_n" | "percentage">("top_n")
+  const [phase1TopN, setPhase1TopN] = useState("20")
+  const [phase1Percentage, setPhase1Percentage] = useState("30")
+  const [phase1MinBidPct, setPhase1MinBidPct] = useState("20")
+  const [resaleEnabled, setResaleEnabled] = useState(false)
+  const [resaleMaxLots, setResaleMaxLots] = useState("5")
+  const [resaleMinPctOfWinning, setResaleMinPctOfWinning] = useState("100")
+  const [phase2MinBid, setPhase2MinBid] = useState("10")
+  const [ratingBaseline, setRatingBaseline] = useState("3000")
+  const [ratingBaseValue, setRatingBaseValue] = useState("10")
+  const [ratingPointsPer, setRatingPointsPer] = useState("0.02")
+  const [ratingRoundTo, setRatingRoundTo] = useState("1")
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -99,6 +111,26 @@ export default function AdminDraftsPage() {
           captain_count: parseInt(captainCount),
           budget_per_captain: parseInt(budget),
           seconds_per_lot: parseInt(secondsPerLot),
+          config: {
+            phase1: {
+              selection: phase1Mode === "top_n"
+                ? { mode: "top_n", top_n: parseInt(phase1TopN) }
+                : { mode: "percentage", percentage: parseFloat(phase1Percentage) },
+              min_bid_pct: parseFloat(phase1MinBidPct),
+            },
+            resale: {
+              enabled: resaleEnabled,
+              max_lots: parseInt(resaleMaxLots),
+              min_bid_pct_of_winning: parseFloat(resaleMinPctOfWinning),
+            },
+            phase2: { min_bid: parseInt(phase2MinBid) },
+            rating: {
+              baseline: parseInt(ratingBaseline),
+              base_value: parseFloat(ratingBaseValue),
+              points_per_rating: parseFloat(ratingPointsPer),
+              round_to: parseInt(ratingRoundTo),
+            },
+          },
         }),
       })
       const data = await res.json()
@@ -264,7 +296,58 @@ export default function AdminDraftsPage() {
                 max={300}
               />
             </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">Phase 1 Selection Mode</label>
+              <select value={phase1Mode} onChange={(e) => setPhase1Mode(e.target.value as "top_n" | "percentage")} className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground">
+                <option value="top_n">Top N</option>
+                <option value="percentage">Percentage</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">Phase 1 {phase1Mode === "top_n" ? "Top N" : "Percentage"}</label>
+              <Input type="number" value={phase1Mode === "top_n" ? phase1TopN : phase1Percentage} onChange={(e) => phase1Mode === "top_n" ? setPhase1TopN(e.target.value) : setPhase1Percentage(e.target.value)} className="bg-background border-border" min={1} max={phase1Mode === "top_n" ? 500 : 100} />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">Phase 1 Min Bid (%)</label>
+              <Input type="number" value={phase1MinBidPct} onChange={(e) => setPhase1MinBidPct(e.target.value)} className="bg-background border-border" min={0} max={200} />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">Resale Enabled</label>
+              <select value={resaleEnabled ? "yes" : "no"} onChange={(e) => setResaleEnabled(e.target.value === "yes")} className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">Resale Max Lots</label>
+              <Input type="number" value={resaleMaxLots} onChange={(e) => setResaleMaxLots(e.target.value)} className="bg-background border-border" min={1} max={200} />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">Resale Min Bid (% of winning)</label>
+              <Input type="number" value={resaleMinPctOfWinning} onChange={(e) => setResaleMinPctOfWinning(e.target.value)} className="bg-background border-border" min={0} max={200} />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">Phase 2 Min Bid</label>
+              <Input type="number" value={phase2MinBid} onChange={(e) => setPhase2MinBid(e.target.value)} className="bg-background border-border" min={1} />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">Rating Baseline</label>
+              <Input type="number" value={ratingBaseline} onChange={(e) => setRatingBaseline(e.target.value)} className="bg-background border-border" min={0} />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">Rating Base Value</label>
+              <Input type="number" value={ratingBaseValue} onChange={(e) => setRatingBaseValue(e.target.value)} className="bg-background border-border" min={0} step="0.1" />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">Points per Rating</label>
+              <Input type="number" value={ratingPointsPer} onChange={(e) => setRatingPointsPer(e.target.value)} className="bg-background border-border" min={0.01} step="0.01" />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">Value Round To</label>
+              <Input type="number" value={ratingRoundTo} onChange={(e) => setRatingRoundTo(e.target.value)} className="bg-background border-border" min={1} />
+            </div>
           </div>
+          <p className="text-xs text-muted-foreground mt-4">Preview: Phase 1 uses {phase1Mode === "top_n" ? `top ${phase1TopN}` : `${phase1Percentage}%`} players at {phase1MinBidPct}% seeded value min bid. Phase 2 min bid is {phase2MinBid}. Resale is {resaleEnabled ? "enabled" : "disabled"}.</p>
           <div className="flex items-center gap-3 mt-4">
             <Button onClick={handleCreate} disabled={creating || !selectedEventId} className="bg-green-600 hover:bg-green-700">
               {creating ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Plus className="h-4 w-4 mr-1" />}

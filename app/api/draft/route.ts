@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase-server"
 import { createDraftSchema } from "@/lib/validation"
+import { classifyLotsByPhase } from "@/lib/draft-config"
 import { requireAdminApi } from "@/lib/auth"
 import crypto from "crypto"
 
@@ -26,7 +27,7 @@ export async function POST(req: Request) {
       )
     }
 
-    const { event_id, seconds_per_lot, captain_count, budget_per_captain } = parsed.data
+    const { event_id, seconds_per_lot, captain_count, budget_per_captain, config } = parsed.data
     const supabase = await createClient()
 
     // Verify event exists
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
     // Create draft session
     const { data: session, error: sessErr } = await supabase
       .from("draft_sessions")
-      .insert({ event_id, seconds_per_lot, phase: "lobby" })
+      .insert({ event_id, seconds_per_lot, phase: "lobby", config_json: config })
       .select()
       .single()
     if (sessErr) throw sessErr
@@ -95,18 +96,20 @@ export async function POST(req: Request) {
     // Create lots from confirmed players (shuffled)
     const { data: players, error: plErr } = await supabase
       .from("players")
-      .select("id")
+      .select("id, rating")
       .eq("event_id", event_id)
       .eq("status", "confirmed")
     if (plErr) throw plErr
 
-    const shuffled = (players ?? []).sort(() => Math.random() - 0.5)
+    const seededLots = classifyLotsByPhase(players ?? [], config)
 
-    for (let i = 0; i < shuffled.length; i++) {
+    for (const seededLot of seededLots) {
       const { error: lotErr } = await supabase.from("lots").insert({
         draft_session_id: session.id,
-        player_id: shuffled[i].id,
-        lot_order: i + 1,
+        player_id: seededLot.id,
+        phase: seededLot.phase,
+        min_bid: seededLot.min_bid,
+        lot_order: seededLot.lot_order,
         status: "upcoming",
       })
       if (lotErr) throw lotErr
@@ -117,7 +120,8 @@ export async function POST(req: Request) {
       session,
       seats: seats.map((s) => ({ id: s.id, seat_label: s.seat_label })),
       codes,
-      lot_count: shuffled.length,
+      lot_count: seededLots.length,
+      config,
     })
   } catch (err) {
     console.error("Create draft error:", err)

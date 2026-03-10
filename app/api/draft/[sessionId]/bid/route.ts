@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { cookies } from "next/headers"
 import { verifyCaptainToken } from "@/lib/captain-jwt"
-import { placeBid, getActiveLot } from "@/lib/draft-engine"
+import { placeBid, getActiveLot, getDraftSession } from "@/lib/draft-engine"
 import { placeBidSchema } from "@/lib/validation"
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -54,10 +54,30 @@ export async function POST(
       )
     }
 
+    const session = await getDraftSession(sessionId)
+    if (!session) {
+      return NextResponse.json({ error: "Draft session not found" }, { status: 404 })
+    }
+
     // Verify the lot belongs to this session
     const activeLot = await getActiveLot(sessionId)
     if (!activeLot || activeLot.id !== parsed.data.lot_id) {
       return NextResponse.json({ error: "This lot is not currently active" }, { status: 409 })
+    }
+
+    if (activeLot.phase === "phase1" && session.phase !== "picking") {
+      return NextResponse.json({ error: "Phase 1 bidding is currently paused" }, { status: 409 })
+    }
+
+    if (activeLot.phase === "resale" && !session.config_json.resale.enabled) {
+      return NextResponse.json({ error: "Resale phase is disabled for this draft" }, { status: 422 })
+    }
+
+    const effectiveMinBid = Math.max(1, Number(activeLot.min_bid ?? 1))
+    if (parsed.data.amount < effectiveMinBid) {
+      return NextResponse.json({
+        error: `Bid must be at least ${effectiveMinBid} for ${activeLot.phase.toUpperCase()} lots`,
+      }, { status: 422 })
     }
 
     const bid = await placeBid(parsed.data.lot_id, parsed.data.seat_id, parsed.data.amount)

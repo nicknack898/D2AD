@@ -80,11 +80,49 @@ export const placeBidSchema = z.object({
   amount: z.number().int().min(1, "Bid must be at least 1"),
 })
 
+const phase1SelectionSchema = z.discriminatedUnion("mode", [
+  z.object({
+    mode: z.literal("top_n"),
+    top_n: z.number().int().min(1).max(500),
+  }),
+  z.object({
+    mode: z.literal("percentage"),
+    percentage: z.number().min(1).max(100),
+  }),
+])
+
+export const draftConfigSchema = z.object({
+  phase1: z.object({
+    selection: phase1SelectionSchema.default({ mode: "top_n", top_n: 20 }),
+    min_bid_pct: z.number().min(0).max(200).default(20),
+  }).default({ selection: { mode: "top_n", top_n: 20 }, min_bid_pct: 20 }),
+  resale: z.object({
+    enabled: z.boolean().default(false),
+    max_lots: z.number().int().min(1).max(200).default(5),
+    min_bid_pct_of_winning: z.number().min(0).max(200).default(100),
+  }).default({ enabled: false, max_lots: 5, min_bid_pct_of_winning: 100 }),
+  phase2: z.object({
+    min_bid: z.number().int().min(1).max(5000).default(10),
+  }).default({ min_bid: 10 }),
+  rating: z.object({
+    baseline: z.number().int().min(0).max(15000).default(3000),
+    base_value: z.number().min(0).max(10000).default(10),
+    points_per_rating: z.number().min(0.01).max(100).default(0.02),
+    round_to: z.number().int().min(1).max(100).default(1),
+  }).default({ baseline: 3000, base_value: 10, points_per_rating: 0.02, round_to: 1 }),
+})
+
 export const createDraftSchema = z.object({
   event_id: z.string().uuid("Invalid event ID"),
   seconds_per_lot: z.number().int().min(5).max(300).default(30),
   captain_count: z.number().int().min(2).max(12).default(2),
   budget_per_captain: z.number().int().min(10).max(10000).default(1000),
+  config: draftConfigSchema.default({
+    phase1: { selection: { mode: "top_n", top_n: 20 }, min_bid_pct: 20 },
+    resale: { enabled: false, max_lots: 5, min_bid_pct_of_winning: 100 },
+    phase2: { min_bid: 10 },
+    rating: { baseline: 3000, base_value: 10, points_per_rating: 0.02, round_to: 1 },
+  }),
 })
 
 export type RegistrationInput = z.infer<typeof registrationSchema>
@@ -96,3 +134,4 @@ export type PlayerRegistrationInput = z.infer<typeof playerRegistrationSchema>
 export type RedeemCodeInput = z.infer<typeof redeemCodeSchema>
 export type PlaceBidInput = z.infer<typeof placeBidSchema>
 export type CreateDraftInput = z.infer<typeof createDraftSchema>
+export type DraftConfigInput = z.infer<typeof draftConfigSchema>
