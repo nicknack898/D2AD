@@ -426,7 +426,7 @@ export default async function UserDetailPage({ params }: { params: { id: string 
   )
 }
 
-function StatusBadge({ status }) {
+function StatusBadge({ status }: { status: string }) {
   switch (status) {
     case "active":
       return <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">Active</Badge>
@@ -439,7 +439,7 @@ function StatusBadge({ status }) {
   }
 }
 
-function GameStatusBadge({ status }) {
+function GameStatusBadge({ status }: { status: string }) {
   switch (status) {
     case "upcoming":
       return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 border-blue-200">Upcoming</Badge>
@@ -452,7 +452,7 @@ function GameStatusBadge({ status }) {
   }
 }
 
-function PaymentStatusBadge({ status }) {
+function PaymentStatusBadge({ status }: { status: string }) {
   switch (status) {
     case "paid":
     case "successful":
@@ -468,7 +468,7 @@ function PaymentStatusBadge({ status }) {
   }
 }
 
-function ActivityIcon({ type }) {
+function ActivityIcon({ type }: { type: string }) {
   switch (type) {
     case "registration":
       return <Calendar className="h-5 w-5 text-blue-500" />

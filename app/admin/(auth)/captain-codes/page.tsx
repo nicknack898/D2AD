@@ -648,7 +648,7 @@ export default function CaptainCodesPage() {
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      onClick={() => regenerateCode(sc.session.id, c.seat_label, c.code ?? "")}
+                                      onClick={() => regenerateCode(sc.session.id, c.seat_label)}
                                       disabled={actionLoading === c.code || !c.code}
                                       className="h-7 px-2 text-xs text-muted-foreground/60 hover:text-blue-400"
                                     >
@@ -663,7 +663,7 @@ export default function CaptainCodesPage() {
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      onClick={() => revokeCode(sc.session.id, c.seat_label, c.code ?? "")}
+                                      onClick={() => revokeCode(sc.session.id, c.seat_label)}
                                       disabled={actionLoading === c.code || !c.code}
                                       className="h-7 px-2 text-xs text-muted-foreground/60 hover:text-red-400"
                                     >

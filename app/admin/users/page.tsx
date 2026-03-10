@@ -301,7 +301,7 @@ export default async function AdminUsersPage() {
   )
 }
 
-function StatusBadge({ status }) {
+function StatusBadge({ status }: { status: string }) {
   switch (status) {
     case "active":
       return <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">Active</Badge>

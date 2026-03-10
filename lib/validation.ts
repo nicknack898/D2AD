@@ -29,18 +29,17 @@ export const profileSchema = z.object({
 
 export const teamRegistrationSchema = z.object({
   teamName: z.string().min(1, "Team name is required").max(50, "Team name must be less than 50 characters"),
-  captainName: z.string().min(1, "Captain name is required").max(50, "Captain name must be less than 50 characters"),
-  captainEmail: z.string().email("Invalid email address"),
-  captainPhone: z.string().min(10, "Phone number must be at least 10 digits"),
-  captainSteamId: z.string().optional(),
-  players: z.array(z.object({
+  contact: z.object({
+    email: z.string().email("Invalid email address"),
+    discord: z.string().optional(),
+    steam: z.string().optional(),
+  }),
+  members: z.array(z.object({
     name: z.string().min(1, "Player name is required"),
-    steamId: z.string().optional(),
-    role: z.string().optional(),
-  })).min(2, "At least 2 additional players are required").max(6, "Maximum 6 additional players"),
-  emergencyContact: z.string().optional(),
-  emergencyPhone: z.string().optional(),
-  agreeToTerms: z.boolean().refine((val) => val === true, "You must agree to the terms and conditions"),
+    steamId: z.string().min(1, "Steam ID is required"),
+    isCaptain: z.boolean().optional(),
+  })).min(5, "Exactly 5 players are required").max(5, "Exactly 5 players are required"),
+  notes: z.string().optional(),
 })
 
 // --- Phase 1: Events & Players ---

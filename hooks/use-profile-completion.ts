@@ -18,6 +18,11 @@ export function useProfileCompletion() {
         return
       }
 
+      if (!supabase) {
+        setIsLoading(false)
+        return
+      }
+
       try {
         // Check if player exists with this auth_id
         const { data: player, error } = await supabase.from("players").select("*").eq("email", user.email).single()
